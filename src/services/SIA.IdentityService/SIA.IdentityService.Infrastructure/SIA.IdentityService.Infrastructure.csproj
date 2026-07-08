@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIA.IdentityService.Application\SIA.IdentityService.Application.csproj" />
+    <ProjectReference Include="..\SIA.IdentityService.Domain\SIA.IdentityService.Domain.csproj" />
+    <ProjectReference Include="..\SIA.IdentityService.Contracts\SIA.IdentityService.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Infrastructure\SIA.BuildingBlocks.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

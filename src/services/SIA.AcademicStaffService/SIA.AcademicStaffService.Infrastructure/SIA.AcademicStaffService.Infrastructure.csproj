@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIA.AcademicStaffService.Application\SIA.AcademicStaffService.Application.csproj" />
+    <ProjectReference Include="..\SIA.AcademicStaffService.Domain\SIA.AcademicStaffService.Domain.csproj" />
+    <ProjectReference Include="..\SIA.AcademicStaffService.Contracts\SIA.AcademicStaffService.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Infrastructure\SIA.BuildingBlocks.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

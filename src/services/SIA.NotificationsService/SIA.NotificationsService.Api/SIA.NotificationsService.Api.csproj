@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIA.NotificationsService.Application\SIA.NotificationsService.Application.csproj" />
+    <ProjectReference Include="..\SIA.NotificationsService.Infrastructure\SIA.NotificationsService.Infrastructure.csproj" />
+    <ProjectReference Include="..\SIA.NotificationsService.Contracts\SIA.NotificationsService.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

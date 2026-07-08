@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIA.DocumentsService.Domain\SIA.DocumentsService.Domain.csproj" />
+    <ProjectReference Include="..\SIA.DocumentsService.Contracts\SIA.DocumentsService.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Application\SIA.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Domain\SIA.BuildingBlocks.Domain.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

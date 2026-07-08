@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIA.ReportingService.Application\SIA.ReportingService.Application.csproj" />
+    <ProjectReference Include="..\SIA.ReportingService.Infrastructure\SIA.ReportingService.Infrastructure.csproj" />
+    <ProjectReference Include="..\SIA.ReportingService.Contracts\SIA.ReportingService.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>

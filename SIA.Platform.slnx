@@ -1,0 +1,115 @@
+<Solution>
+  <Folder Name="/deploy/" />
+  <Folder Name="/docs/">
+    <File Path="docs/README.md" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/bff/">
+    <Project Path="src/bff/SIA.AdminBff/SIA.AdminBff.csproj" />
+    <Project Path="src/bff/SIA.MobileBff/SIA.MobileBff.csproj" />
+    <Project Path="src/bff/SIA.StudentBff/SIA.StudentBff.csproj" />
+    <Project Path="src/bff/SIA.TeacherBff/SIA.TeacherBff.csproj" />
+  </Folder>
+  <Folder Name="/src/building-blocks/">
+    <Project Path="src/building-blocks/SIA.BuildingBlocks.Application/SIA.BuildingBlocks.Application.csproj" />
+    <Project Path="src/building-blocks/SIA.BuildingBlocks.Contracts/SIA.BuildingBlocks.Contracts.csproj" />
+    <Project Path="src/building-blocks/SIA.BuildingBlocks.Domain/SIA.BuildingBlocks.Domain.csproj" />
+    <Project Path="src/building-blocks/SIA.BuildingBlocks.Infrastructure/SIA.BuildingBlocks.Infrastructure.csproj" />
+    <Project Path="src/building-blocks/SIA.BuildingBlocks.Messaging/SIA.BuildingBlocks.Messaging.csproj" />
+    <Project Path="src/building-blocks/SIA.BuildingBlocks.Observability/SIA.BuildingBlocks.Observability.csproj" />
+  </Folder>
+  <Folder Name="/src/gateways/">
+    <Project Path="src/gateways/SIA.IntegrationGateway/SIA.IntegrationGateway.csproj" />
+    <Project Path="src/gateways/SIA.PublicGateway/SIA.PublicGateway.csproj" />
+  </Folder>
+  <Folder Name="/src/services/" />
+  <Folder Name="/src/services/SIA.AcademicService/">
+    <Project Path="src/services/SIA.AcademicService/SIA.AcademicService.Api/SIA.AcademicService.Api.csproj" />
+    <Project Path="src/services/SIA.AcademicService/SIA.AcademicService.Application/SIA.AcademicService.Application.csproj" />
+    <Project Path="src/services/SIA.AcademicService/SIA.AcademicService.Contracts/SIA.AcademicService.Contracts.csproj" />
+    <Project Path="src/services/SIA.AcademicService/SIA.AcademicService.Domain/SIA.AcademicService.Domain.csproj" />
+    <Project Path="src/services/SIA.AcademicService/SIA.AcademicService.Infrastructure/SIA.AcademicService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.AcademicService/SIA.AcademicService.Tests/SIA.AcademicService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.AcademicStaffService/">
+    <Project Path="src/services/SIA.AcademicStaffService/SIA.AcademicStaffService.Api/SIA.AcademicStaffService.Api.csproj" />
+    <Project Path="src/services/SIA.AcademicStaffService/SIA.AcademicStaffService.Application/SIA.AcademicStaffService.Application.csproj" />
+    <Project Path="src/services/SIA.AcademicStaffService/SIA.AcademicStaffService.Contracts/SIA.AcademicStaffService.Contracts.csproj" />
+    <Project Path="src/services/SIA.AcademicStaffService/SIA.AcademicStaffService.Domain/SIA.AcademicStaffService.Domain.csproj" />
+    <Project Path="src/services/SIA.AcademicStaffService/SIA.AcademicStaffService.Infrastructure/SIA.AcademicStaffService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.AcademicStaffService/SIA.AcademicStaffService.Tests/SIA.AcademicStaffService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.DocumentsService/">
+    <Project Path="src/services/SIA.DocumentsService/SIA.DocumentsService.Api/SIA.DocumentsService.Api.csproj" />
+    <Project Path="src/services/SIA.DocumentsService/SIA.DocumentsService.Application/SIA.DocumentsService.Application.csproj" />
+    <Project Path="src/services/SIA.DocumentsService/SIA.DocumentsService.Contracts/SIA.DocumentsService.Contracts.csproj" />
+    <Project Path="src/services/SIA.DocumentsService/SIA.DocumentsService.Domain/SIA.DocumentsService.Domain.csproj" />
+    <Project Path="src/services/SIA.DocumentsService/SIA.DocumentsService.Infrastructure/SIA.DocumentsService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.DocumentsService/SIA.DocumentsService.Tests/SIA.DocumentsService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.EvaluationService/">
+    <Project Path="src/services/SIA.EvaluationService/SIA.EvaluationService.Api/SIA.EvaluationService.Api.csproj" />
+    <Project Path="src/services/SIA.EvaluationService/SIA.EvaluationService.Application/SIA.EvaluationService.Application.csproj" />
+    <Project Path="src/services/SIA.EvaluationService/SIA.EvaluationService.Contracts/SIA.EvaluationService.Contracts.csproj" />
+    <Project Path="src/services/SIA.EvaluationService/SIA.EvaluationService.Domain/SIA.EvaluationService.Domain.csproj" />
+    <Project Path="src/services/SIA.EvaluationService/SIA.EvaluationService.Infrastructure/SIA.EvaluationService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.EvaluationService/SIA.EvaluationService.Tests/SIA.EvaluationService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.IdentityService/">
+    <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Api/SIA.IdentityService.Api.csproj" />
+    <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Application/SIA.IdentityService.Application.csproj" />
+    <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Contracts/SIA.IdentityService.Contracts.csproj" />
+    <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Domain/SIA.IdentityService.Domain.csproj" />
+    <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Infrastructure/SIA.IdentityService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Tests/SIA.IdentityService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.NotificationsService/">
+    <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Api/SIA.NotificationsService.Api.csproj" />
+    <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Application/SIA.NotificationsService.Application.csproj" />
+    <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Contracts/SIA.NotificationsService.Contracts.csproj" />
+    <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Domain/SIA.NotificationsService.Domain.csproj" />
+    <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Infrastructure/SIA.NotificationsService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Tests/SIA.NotificationsService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.ReportingService/">
+    <Project Path="src/services/SIA.ReportingService/SIA.ReportingService.Api/SIA.ReportingService.Api.csproj" />
+    <Project Path="src/services/SIA.ReportingService/SIA.ReportingService.Application/SIA.ReportingService.Application.csproj" />
+    <Project Path="src/services/SIA.ReportingService/SIA.ReportingService.Contracts/SIA.ReportingService.Contracts.csproj" />
+    <Project Path="src/services/SIA.ReportingService/SIA.ReportingService.Domain/SIA.ReportingService.Domain.csproj" />
+    <Project Path="src/services/SIA.ReportingService/SIA.ReportingService.Infrastructure/SIA.ReportingService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.ReportingService/SIA.ReportingService.Tests/SIA.ReportingService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.SchedulingService/">
+    <Project Path="src/services/SIA.SchedulingService/SIA.SchedulingService.Api/SIA.SchedulingService.Api.csproj" />
+    <Project Path="src/services/SIA.SchedulingService/SIA.SchedulingService.Application/SIA.SchedulingService.Application.csproj" />
+    <Project Path="src/services/SIA.SchedulingService/SIA.SchedulingService.Contracts/SIA.SchedulingService.Contracts.csproj" />
+    <Project Path="src/services/SIA.SchedulingService/SIA.SchedulingService.Domain/SIA.SchedulingService.Domain.csproj" />
+    <Project Path="src/services/SIA.SchedulingService/SIA.SchedulingService.Infrastructure/SIA.SchedulingService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.SchedulingService/SIA.SchedulingService.Tests/SIA.SchedulingService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.SchoolControlService/">
+    <Project Path="src/services/SIA.SchoolControlService/SIA.SchoolControlService.Api/SIA.SchoolControlService.Api.csproj" />
+    <Project Path="src/services/SIA.SchoolControlService/SIA.SchoolControlService.Application/SIA.SchoolControlService.Application.csproj" />
+    <Project Path="src/services/SIA.SchoolControlService/SIA.SchoolControlService.Contracts/SIA.SchoolControlService.Contracts.csproj" />
+    <Project Path="src/services/SIA.SchoolControlService/SIA.SchoolControlService.Domain/SIA.SchoolControlService.Domain.csproj" />
+    <Project Path="src/services/SIA.SchoolControlService/SIA.SchoolControlService.Infrastructure/SIA.SchoolControlService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.SchoolControlService/SIA.SchoolControlService.Tests/SIA.SchoolControlService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.TenancyService/">
+    <Project Path="src/services/SIA.TenancyService/SIA.TenancyService.Api/SIA.TenancyService.Api.csproj" />
+    <Project Path="src/services/SIA.TenancyService/SIA.TenancyService.Application/SIA.TenancyService.Application.csproj" />
+    <Project Path="src/services/SIA.TenancyService/SIA.TenancyService.Contracts/SIA.TenancyService.Contracts.csproj" />
+    <Project Path="src/services/SIA.TenancyService/SIA.TenancyService.Domain/SIA.TenancyService.Domain.csproj" />
+    <Project Path="src/services/SIA.TenancyService/SIA.TenancyService.Infrastructure/SIA.TenancyService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.TenancyService/SIA.TenancyService.Tests/SIA.TenancyService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/src/services/SIA.WorkflowService/">
+    <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Api/SIA.WorkflowService.Api.csproj" />
+    <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Application/SIA.WorkflowService.Application.csproj" />
+    <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Contracts/SIA.WorkflowService.Contracts.csproj" />
+    <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Domain/SIA.WorkflowService.Domain.csproj" />
+    <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Infrastructure/SIA.WorkflowService.Infrastructure.csproj" />
+    <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Tests/SIA.WorkflowService.Tests.csproj" />
+  </Folder>
+  <Folder Name="/test/" />
+</Solution>
