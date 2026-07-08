@@ -1,8 +1,6 @@
 <Solution>
   <Folder Name="/deploy/" />
-  <Folder Name="/docs/">
-    <File Path="docs/README.md" />
-  </Folder>
+  <Folder Name="/docs/" />
   <Folder Name="/src/" />
   <Folder Name="/src/bff/">
     <Project Path="src/bff/SIA.AdminBff/SIA.AdminBff.csproj" />
