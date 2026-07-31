@@ -19,6 +19,10 @@ public sealed class AcademicDbContext : DbContext
 
   public DbSet<AcademicPeriods> AcademicPeriods => Set<AcademicPeriods>();
 
+  public DbSet<EducationalPrograms> EducationalPrograms => Set<EducationalPrograms>();
+
+  public DbSet<StudyPlans> StudyPlans => Set<StudyPlans>();
+
   protected override void OnModelCreating(
       ModelBuilder modelBuilder)
   {
