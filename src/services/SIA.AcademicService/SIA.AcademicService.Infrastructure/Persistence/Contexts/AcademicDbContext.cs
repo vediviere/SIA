@@ -14,6 +14,8 @@ public sealed class AcademicDbContext : DbContext
 
   public DbSet<Subject> Subjects => Set<Subject>();
 
+    public DbSet<StudyPlanSubject> StudyPlanSubjects => Set<StudyPlanSubject>();
+
   public DbSet<OutboxMessage> OutboxMessages =>
       Set<OutboxMessage>();
 
