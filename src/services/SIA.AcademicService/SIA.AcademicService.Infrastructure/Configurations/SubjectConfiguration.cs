@@ -15,10 +15,14 @@ public sealed class SubjectConfiguration
     builder.HasKey(subject => subject.Id);
 
     builder.Property(subject => subject.Id)
+        .HasColumnName("SubjectId")
         .ValueGeneratedNever();
 
     builder.Property(subject => subject.TenantId)
         .IsRequired();
+
+    builder.Property(subject => subject.StudyPlanId)
+         .IsRequired();
 
     builder.Property(subject => subject.Code)
         .HasMaxLength(30)
@@ -28,11 +32,13 @@ public sealed class SubjectConfiguration
         .HasMaxLength(200)
         .IsRequired();
 
+    builder.Property(subject => subject.Semester)
+        .IsRequired();
+
     builder.Property(subject => subject.Credits)
         .IsRequired();
 
     builder.Property(subject => subject.Status)
-        .HasMaxLength(30)
         .IsRequired();
 
     builder.Property(subject => subject.CreatedAtUtc)
@@ -52,6 +58,17 @@ public sealed class SubjectConfiguration
       tableBuilder.HasCheckConstraint(
           "CK_Subjects_Credits_Positive",
           "[Credits] > 0");
+      tableBuilder.HasCheckConstraint(
+          "CK_Subjects_Semester_Positive",
+          "[Semester] > 0");
+
+      tableBuilder.HasCheckConstraint(
+          "CK_Subjects_TheoryHours_NonNegative",
+          "[TheoryHours] >= 0");
+
+      tableBuilder.HasCheckConstraint(
+          "CK_Subjects_PracticeHours_NonNegative",
+          "[PracticeHours] >= 0");
     });
   }
 }
