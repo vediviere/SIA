@@ -8,8 +8,12 @@ public sealed class Subject
 
   public Subject(
       Guid tenantId,
+      Guid studyPlanId,
       string code,
       string name,
+      int semester,
+      int theoryHours,
+      int practiceHours,
       int credits)
   {
     if (tenantId == Guid.Empty)
@@ -18,6 +22,13 @@ public sealed class Subject
           "El tenant es obligatorio.",
           nameof(tenantId));
     }
+
+    if (studyPlanId == Guid.Empty)
+        {
+            throw new ArgumentException(
+                "El plan de estudio es obligatorio.",
+                nameof(studyPlanId));
+        }
 
     if (string.IsNullOrWhiteSpace(code))
     {
@@ -33,6 +44,28 @@ public sealed class Subject
           nameof(name));
     }
 
+    if (semester <= 0) 
+        {
+            throw new ArgumentOutOfRangeException
+                (nameof(semester), 
+                "El semestre debe ser mayor a cero." );
+        }
+
+    if (theoryHours < 0) 
+        {
+            throw new ArgumentOutOfRangeException
+                (nameof(theoryHours),
+                "Las horas teóricas no puedes ser negativas.");
+        }
+
+    if (practiceHours < 0) 
+        {
+            throw new ArgumentOutOfRangeException
+                (nameof(practiceHours),
+                "Las horas prácticas no pueden ser negativas."
+                );
+        }
+
     if (credits <= 0)
     {
       throw new ArgumentOutOfRangeException(
@@ -42,14 +75,20 @@ public sealed class Subject
 
     Id = Guid.NewGuid();
     TenantId = tenantId;
+    StudyPlanId = studyPlanId;
     Code = code.Trim().ToUpperInvariant();
     Name = name.Trim();
+    Semester = semester;
+    TheoryHours = theoryHours;
+    PracticeHours = practiceHours;
     Credits = credits;
-    Status = "Active";
+    Status = true;
     CreatedAtUtc = DateTime.UtcNow;
   }
 
   public Guid Id { get; private set; }
+
+  public Guid StudyPlanId { get; private set; }
 
   public Guid TenantId { get; private set; }
 
@@ -57,11 +96,17 @@ public sealed class Subject
 
   public string Name { get; private set; } = string.Empty;
 
+  public int Semester { get; private set; }
+
+  public int TheoryHours { get; private set; }
+
+  public int PracticeHours { get; private set; }
+
   public int Credits { get; private set; }
 
-  public string Status { get; private set; } = string.Empty;
+  public bool Status { get; private set; } 
 
-  public DateTime CreatedAtUtc { get; private set; }
+  public DateTime CreatedAtUtc { get; private set; } 
 
   public DateTime? UpdatedAtUtc { get; private set; }
 }

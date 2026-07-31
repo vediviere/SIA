@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+/deploy/compose
+/src/services/SIA.AcademicService/SIA.AcademicService.Api/appsettings.json
+/src/services/SIA.SchoolControlService/SIA.SchoolControlService.Api/appsettings.json
