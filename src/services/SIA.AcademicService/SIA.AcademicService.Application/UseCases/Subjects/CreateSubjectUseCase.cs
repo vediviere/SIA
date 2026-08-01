@@ -29,35 +29,42 @@ public sealed class CreateSubjectUseCase
       throw new InvalidOperationException($"Ya existe una materia con el código {normalizedCode}.");
     }
 
-    var subject = new Subject(request.TenantId, normalizedCode, request.Name, request.Credits);
+        var subject = new Subject(request.TenantId,request.StudyPlanId,normalizedCode,request.Name,request.Semester,request.TheoryHours,request.PracticeHours,request.Credits);
 
-    var integrationEvent =
-        new SubjectCreatedIntegrationEvent
+        var integrationEvent =
+                new SubjectCreatedIntegrationEvent
+                {
+                    EventId = Guid.NewGuid(),
+                    CorrelationId = correlationId,
+                    OccurredAtUtc = subject.CreatedAtUtc,
+                    TenantId = subject.TenantId,
+                    SubjectId = subject.Id,
+                    StudyPlanId = subject.StudyPlanId,
+                    Code = subject.Code,
+                    Name = subject.Name,
+                    Semester = subject.Semester,
+                    TheoryHours = subject.TheoryHours,
+                    PracticeHours = subject.PracticeHours,
+                    Credits = subject.Credits,
+                    Status = subject.Status, 
+                    Version = 1
+                };
+        await _dataStore.AddSubjectWithOutboxAsync(subject, integrationEvent, cancellationToken);
+
+        return new CreateSubjectResponse
         {
-          EventId = Guid.NewGuid(),
-          CorrelationId = correlationId,
-          OccurredAtUtc = subject.CreatedAtUtc,
-          TenantId = subject.TenantId,
-          SubjectId = subject.Id,
-          Code = subject.Code,
-          Name = subject.Name,
-          Credits = subject.Credits,
-          Status = subject.Status,
-          Version = 1
+            Id = subject.Id,
+            TenantId = subject.TenantId,
+            StudyPlanId = subject.StudyPlanId,
+            Code = subject.Code,
+            Name = subject.Name,
+            Semester = subject.Semester,
+            TheoryHours = subject.TheoryHours,
+            PracticeHours = subject.PracticeHours,
+            Credits = subject.Credits,
+            Status = subject.Status, 
+            CreatedAtUtc = subject.CreatedAtUtc,
+            CorrelationId = correlationId
         };
-
-    await _dataStore.AddSubjectWithOutboxAsync(subject, integrationEvent, cancellationToken);
-
-    return new CreateSubjectResponse
-    {
-      Id = subject.Id,
-      TenantId = subject.TenantId,
-      Code = subject.Code,
-      Name = subject.Name,
-      Credits = subject.Credits,
-      Status = subject.Status,
-      CreatedAtUtc = subject.CreatedAtUtc,
-      CorrelationId = correlationId
-    };
-  }
+    }
 }
