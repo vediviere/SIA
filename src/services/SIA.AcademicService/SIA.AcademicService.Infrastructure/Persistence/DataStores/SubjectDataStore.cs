@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using SIA.AcademicService.Application.Interfaces;
+using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents;
 using SIA.AcademicService.Domain.Entities;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
@@ -8,11 +8,11 @@ using SIA.AcademicService.Infrastructure.Persistence.Entities;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.DataStores;
 
-public sealed class AcademicDataStore : IAcademicDataStore
+public sealed class SubjectDataStore : ISubjectDataStore
 {
   private readonly AcademicDbContext _dbContext;
 
-  public AcademicDataStore(
+  public SubjectDataStore(
       AcademicDbContext dbContext)
   {
     _dbContext = dbContext;

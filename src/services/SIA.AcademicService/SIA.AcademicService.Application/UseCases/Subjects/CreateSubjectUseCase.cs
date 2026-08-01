@@ -1,4 +1,4 @@
-using SIA.AcademicService.Application.Interfaces;
+using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents;
 using SIA.AcademicService.Contracts.Requests;
 using SIA.AcademicService.Contracts.Responses;
@@ -8,28 +8,28 @@ namespace SIA.AcademicService.Application.UseCases.Subjects;
 
 public sealed class CreateSubjectUseCase
 {
-  private readonly IAcademicDataStore _dataStore;
+    private readonly ISubjectDataStore _dataStore;
 
-  public CreateSubjectUseCase(IAcademicDataStore dataStore)
-  {
-    _dataStore = dataStore;
-  }
-
-  public async Task<CreateSubjectResponse> ExecuteAsync(CreateSubjectRequest request, Guid correlationId, CancellationToken cancellationToken)
-  {
-    var normalizedCode = request.Code
-        .Trim()
-        .ToUpperInvariant();
-
-    var codeExists =
-        await _dataStore.SubjectCodeExistsAsync(request.TenantId, normalizedCode, cancellationToken);
-
-    if (codeExists)
+    public CreateSubjectUseCase(ISubjectDataStore dataStore)
     {
-      throw new InvalidOperationException($"Ya existe una materia con el código {normalizedCode}.");
+        _dataStore = dataStore;
     }
 
-        var subject = new Subject(request.TenantId,request.StudyPlanId,normalizedCode,request.Name,request.Semester,request.TheoryHours,request.PracticeHours,request.Credits);
+    public async Task<CreateSubjectResponse> ExecuteAsync(CreateSubjectRequest request, Guid correlationId, CancellationToken cancellationToken)
+    {
+        var normalizedCode = request.Code
+            .Trim()
+            .ToUpperInvariant();
+
+        var codeExists =
+            await _dataStore.SubjectCodeExistsAsync(request.TenantId, normalizedCode, cancellationToken);
+
+        if (codeExists)
+        {
+            throw new InvalidOperationException($"Ya existe una materia con el código {normalizedCode}.");
+        }
+
+        var subject = new Subject(request.TenantId, request.StudyPlanId, normalizedCode, request.Name, request.Semester, request.TheoryHours, request.PracticeHours, request.Credits);
 
         var integrationEvent =
                 new SubjectCreatedIntegrationEvent
@@ -46,9 +46,10 @@ public sealed class CreateSubjectUseCase
                     TheoryHours = subject.TheoryHours,
                     PracticeHours = subject.PracticeHours,
                     Credits = subject.Credits,
-                    Status = subject.Status, 
+                    Status = subject.Status,
                     Version = 1
                 };
+
         await _dataStore.AddSubjectWithOutboxAsync(subject, integrationEvent, cancellationToken);
 
         return new CreateSubjectResponse
@@ -62,7 +63,7 @@ public sealed class CreateSubjectUseCase
             TheoryHours = subject.TheoryHours,
             PracticeHours = subject.PracticeHours,
             Credits = subject.Credits,
-            Status = subject.Status, 
+            Status = subject.Status,
             CreatedAtUtc = subject.CreatedAtUtc,
             CorrelationId = correlationId
         };
