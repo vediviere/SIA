@@ -46,7 +46,7 @@ public sealed class SubjectCreatedConsumer
         integrationEvent.Code,
         integrationEvent.Name,
         integrationEvent.Credits,
-        integrationEvent.Status);
+        integrationEvent.Status ? "Active" : "Inactive");
 
     await using var transaction =
         await _dbContext.Database.BeginTransactionAsync(

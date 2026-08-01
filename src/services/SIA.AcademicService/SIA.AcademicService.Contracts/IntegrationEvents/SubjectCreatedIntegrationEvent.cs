@@ -12,13 +12,21 @@ public sealed record SubjectCreatedIntegrationEvent
 
   public required Guid SubjectId { get; init; }
 
+  public required Guid StudyPlanId { get; init; }
+
   public required string Code { get; init; }
 
   public required string Name { get; init; }
 
+  public required int Semester { get; init; }
+
+  public required int TheoryHours { get; init; }
+
+  public required int PracticeHours { get; init; }
+
   public required int Credits { get; init; }
 
-  public required string Status { get; init; }
+  public required bool Status { get; init; }
 
   public int Version { get; init; } = 1;
 }
