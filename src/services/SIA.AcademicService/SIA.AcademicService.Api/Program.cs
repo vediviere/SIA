@@ -1,9 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using SIA.AcademicService.Infrastructure.Persistence.Contexts;
-using SIA.AcademicService.Application.UseCases.Subjects;
 using MassTransit;
-using SIA.AcademicService.Infrastructure.MessageBus.Publishers;
+using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
+using SIA.AcademicService.Application.UseCases.Subjects;
+using SIA.AcademicService.Infrastructure.MessageBus.Publishers;
+using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.DataStores;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +59,10 @@ builder.Services.AddHostedService<OutboxPublisherService>();
 builder.Services.AddScoped<ISubjectDataStore, SubjectDataStore>();
 
 builder.Services.AddScoped<CreateSubjectUseCase>();
+
+builder.Services.AddScoped<IEducationalProgramsDataStore, EducationalProgramsDataStore>();
+
+builder.Services.AddScoped<CreateEducationalProgramsUseCase>();
 
 var app = builder.Build();
 

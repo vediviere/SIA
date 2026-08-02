@@ -105,7 +105,18 @@ namespace SIA.AcademicService.Infrastructure.MessageBus.Publishers
 
         return;
       }
+      if (eventType == $"{nameof(EducationalProgramCreatedIntegrationEvent)}.v1")
+      {
+        var integrationEvent = JsonSerializer.Deserialize<EducationalProgramCreatedIntegrationEvent>(payload);
 
+        if (integrationEvent is null)
+        {
+            throw new InvalidOperationException("No fue posible deserializar el evento de programa educativo creado.");
+        }
+
+        await publishEndpoint.Publish(integrationEvent, cancellationToken);
+        return;
+      }
       throw new NotSupportedException(
           $"El tipo de evento {eventType} no está soportado.");
     }
