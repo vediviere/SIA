@@ -92,8 +92,7 @@ namespace SIA.AcademicService.Infrastructure.MessageBus.Publishers
     {
       if (eventType == $"{nameof(SubjectCreatedIntegrationEvent)}.v1")
       {
-        var integrationEvent =
-            JsonSerializer.Deserialize<SubjectCreatedIntegrationEvent>(payload);
+        var integrationEvent = JsonSerializer.Deserialize<SubjectCreatedIntegrationEvent>(payload);
 
         if (integrationEvent is null)
         {
