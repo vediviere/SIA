@@ -4,6 +4,6 @@ namespace SIA.AcademicService.Application.Interfaces.Queries;
 
 public interface IEducationalProgramsQueries
 {
-    public EducationalPrograms GetById(Guid id);
-    public List<EducationalPrograms> GetAll();
+    Task<EducationalProgram?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<List<EducationalProgram>> GetAllAsync(CancellationToken cancellationToken);
 }

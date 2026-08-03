@@ -1,18 +1,30 @@
-﻿using SIA.AcademicService.Application.Interfaces;
-using SIA.AcademicService.Application.Interfaces.Queries;
+﻿using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Domain.Entities;
+using SIA.AcademicService.Infrastructure.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Queries;
 
-public class EducationalProgramsQueries : IEducationalProgramsQueries 
+public sealed class EducationalProgramsQueries : IEducationalProgramsQueries
 {
-    public List<EducationalPrograms> GetAll()
+    private readonly AcademicDbContext _dbContext;
+
+    public EducationalProgramsQueries(AcademicDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public EducationalPrograms GetById(Guid id)
+    public async Task<EducationalProgram?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return await _dbContext.EducationalPrograms
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+    }
+
+    public async Task<List<EducationalProgram>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.EducationalPrograms
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 }

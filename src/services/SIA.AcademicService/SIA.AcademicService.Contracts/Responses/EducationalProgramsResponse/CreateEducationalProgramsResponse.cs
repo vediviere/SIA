@@ -1,4 +1,4 @@
-﻿namespace SIA.AcademicService.Contracts.Responses;
+﻿namespace SIA.AcademicService.Contracts.Responses.EducationalProgramsResponse;
 public sealed class CreateEducationalProgramsResponse
 {
     public required Guid Id { get; set; }

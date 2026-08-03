@@ -1,11 +1,13 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
 using SIA.AcademicService.Application.UseCases.Subjects;
 using SIA.AcademicService.Infrastructure.MessageBus.Publishers;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.DataStores;
+using SIA.AcademicService.Infrastructure.Persistence.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,15 @@ builder.Services.AddScoped<CreateSubjectUseCase>();
 builder.Services.AddScoped<IEducationalProgramsDataStore, EducationalProgramsDataStore>();
 
 builder.Services.AddScoped<CreateEducationalProgramsUseCase>();
+
+builder.Services.AddScoped<IEducationalProgramsQueries, EducationalProgramsQueries>();
+
+builder.Services.AddScoped<UpdateEducationalProgramsUseCase>();
+
+builder.Services.AddScoped<DeactivateEducationalProgramsUseCase>();
+
+builder.Services.AddScoped<RestoreEducationalProgramsUseCase>();
+
 
 var app = builder.Build();
 

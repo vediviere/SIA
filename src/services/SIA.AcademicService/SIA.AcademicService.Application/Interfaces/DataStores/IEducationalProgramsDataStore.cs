@@ -6,9 +6,9 @@ public interface IEducationalProgramsDataStore
 {
     Task<bool> EducationalProgramCodeExistsAsync(Guid tenantId, string code, CancellationToken cancellationToken);
 
-    Task AddEducationalProgramWithOutboxAsync(EducationalPrograms educationalProgram, EducationalProgramCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
+    Task AddEducationalProgramWithOutboxAsync(EducationalProgram educationalProgram, EducationalProgramCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 
-    Task<EducationalPrograms?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<EducationalProgram?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task Update(EducationalPrograms educationalPrograms, CancellationToken cancellationToken);
+    Task UpdateAsync(EducationalProgram educationalPrograms, CancellationToken cancellationToken);
 }

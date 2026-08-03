@@ -1,4 +1,4 @@
-﻿namespace SIA.AcademicService.Contracts.Requests;
+﻿namespace SIA.AcademicService.Contracts.Requests.EducationalProgramsRequest;
 public sealed class CreateEducationalProgramsRequest
 {
     public required Guid TenantId { get; set; }

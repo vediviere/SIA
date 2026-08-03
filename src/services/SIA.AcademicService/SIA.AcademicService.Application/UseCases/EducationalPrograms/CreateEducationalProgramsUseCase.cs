@@ -1,7 +1,7 @@
 ﻿using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents;
-using SIA.AcademicService.Contracts.Requests;
-using SIA.AcademicService.Contracts.Responses;
+using SIA.AcademicService.Contracts.Requests.EducationalProgramsRequest;
+using SIA.AcademicService.Contracts.Responses.EducationalProgramsResponse;
 using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
@@ -26,7 +26,7 @@ public sealed class CreateEducationalProgramsUseCase
             throw new InvalidOperationException($"Ya existe un Programa Educativo con este codigo{normalizedCode}.");
         }
 
-        var educationalPrograms = new EducationalPrograms(request.TenantId, normalizedCode, request.Name, request.Level);
+        var educationalPrograms = new EducationalProgram(request.TenantId, normalizedCode, request.Name, request.Level);
 
         var integrationEvent = new EducationalProgramCreatedIntegrationEvent
         {

@@ -23,7 +23,7 @@ public sealed class EducationalProgramsDataStore : IEducationalProgramsDataStore
         return _dbContext.EducationalPrograms.AnyAsync(educationalPrograms => educationalPrograms.TenantId == tenantId && educationalPrograms.Code == code, cancellationToken);
     }
 
-    public async Task AddEducationalProgramWithOutboxAsync(EducationalPrograms educationalPrograms, EducationalProgramCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task AddEducationalProgramWithOutboxAsync(EducationalProgram educationalPrograms, EducationalProgramCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
 
@@ -51,12 +51,12 @@ public sealed class EducationalProgramsDataStore : IEducationalProgramsDataStore
         }
     }
 
-    public async Task<EducationalPrograms?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<EducationalProgram?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _dbContext.EducationalPrograms.FirstOrDefaultAsync(educationalProgram => educationalProgram.Id == id, cancellationToken);
     }
 
-    public async Task Update(EducationalPrograms educationalPrograms, CancellationToken cancellationToken)
+    public async Task UpdateAsync(EducationalProgram educationalPrograms, CancellationToken cancellationToken)
     {
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
