@@ -1,12 +1,13 @@
-﻿namespace SIA.AcademicService.Domain.Entities;
+﻿
+namespace SIA.AcademicService.Domain.Entities;
 
-public sealed class AcademicPeriods
+public sealed class AcademicPeriod
 {
-    private AcademicPeriods() 
+    private AcademicPeriod() 
     { 
     }
 
-    public AcademicPeriods(
+    public AcademicPeriod(
         Guid tenantId,
         string code,
         string name,
@@ -93,4 +94,52 @@ public sealed class AcademicPeriods
         Status = true;
         UpdatedAtUtc = DateTime.UtcNow;
     }
+
+    public void Update(
+        string code,
+        string name,
+        DateOnly startDate,
+        DateOnly endDate,
+        DateOnly academicLoadProcessStartDate,
+        DateOnly academicLoadProcessEndDate,
+        DateOnly enrollmentProcessStartDate,
+        DateOnly enrollmentProcessEndDate,
+        DateOnly planningSubmissionDate,
+        DateOnly firstPartialGradeReportDate,
+        DateOnly secondPartialGradeReportDate,
+        DateOnly thirdPartialGradeReportDate,
+        DateOnly finalMinutesSubmissionDate)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            throw new ArgumentException("El código del periodo académico es obligatorio.", nameof(code));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("El nombre del periodo académico es obligatorio.", nameof(name));
+        }
+
+        if (endDate < startDate)
+        {
+            throw new ArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.", nameof(endDate));
+        }
+
+        Code = code.Trim().ToUpperInvariant();
+        Name = name.Trim();
+        StartDate = startDate;
+        EndDate = endDate;
+        AcademicLoadProcessStartDate = academicLoadProcessStartDate;
+        AcademicLoadProcessEndDate = academicLoadProcessEndDate;
+        EnrollmentProcessStartDate = enrollmentProcessStartDate;
+        EnrollmentProcessEndDate = enrollmentProcessEndDate;
+        PlanningSubmissionDate = planningSubmissionDate;
+        FirstPartialGradeReportDate = firstPartialGradeReportDate;
+        SecondPartialGradeReportDate = secondPartialGradeReportDate;
+        ThirdPartialGradeReportDate = thirdPartialGradeReportDate;
+        FinalMinutesSubmissionDate = finalMinutesSubmissionDate;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+
 }
