@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace SIA.AcademicService.Application.DTOs.AcademicPeriod
 {
     public sealed class AcademicPeriodFilter

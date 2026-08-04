@@ -8,8 +8,8 @@ namespace SIA.AcademicService.Application.Interfaces.Queries
 {
     public interface IAcademicPeriodQueries
     {
-        Task<AcademicPeriods?> GetByIdAsync(Guid tenantId,Guid academicPeriodId,CancellationToken cancellationToken);
+        Task<AcademicPeriod?> GetByIdAsync(Guid tenantId,Guid academicPeriodId,CancellationToken cancellationToken);
 
-        Task<IReadOnlyCollection<AcademicPeriods>> SearchAsync(AcademicPeriodFilter filter,CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<AcademicPeriod>> SearchAsync(AcademicPeriodFilter filter,CancellationToken cancellationToken);
     }
 }
