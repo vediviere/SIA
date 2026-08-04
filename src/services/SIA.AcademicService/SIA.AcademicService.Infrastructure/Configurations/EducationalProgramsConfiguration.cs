@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Configurations;
-public sealed class EducationalProgramsConfiguration : IEntityTypeConfiguration<EducationalPrograms>
+public sealed class EducationalProgramsConfiguration : IEntityTypeConfiguration<EducationalProgram>
 {
-    public void Configure(EntityTypeBuilder<EducationalPrograms> builder)
+    public void Configure(EntityTypeBuilder<EducationalProgram> builder)
     {
         builder.ToTable("EducationalPrograms");
         builder.HasKey(EducationalPrograms => EducationalPrograms.Id);

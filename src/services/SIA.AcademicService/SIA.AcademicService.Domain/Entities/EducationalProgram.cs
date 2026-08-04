@@ -1,12 +1,12 @@
 ﻿namespace SIA.AcademicService.Domain.Entities;
 
-public sealed class EducationalPrograms
+public sealed class EducationalProgram
 {
-    private EducationalPrograms()
+    private EducationalProgram()
     {
     }
 
-    public EducationalPrograms(
+    public EducationalProgram(
         Guid tenantId,
         string code,
         string name,
@@ -67,6 +67,29 @@ public sealed class EducationalPrograms
     public void Activate()
     {
         Status = true;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void UpdateDetails(string code, string name, string level)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            throw new ArgumentException("El código del programa educacional es obligatorio.", nameof(code));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("El nombre del programa educacional es obligatorio.", nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(level))
+        {
+            throw new ArgumentException("Debe de asignar un nivel educativo.", nameof(level));
+        }
+
+        Code = code.Trim().ToUpperInvariant();
+        Name = name.Trim();
+        Level = level.Trim();
         UpdatedAtUtc = DateTime.UtcNow;
     }
 }
