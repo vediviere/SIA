@@ -18,7 +18,7 @@ public sealed class AcademicDbContext : DbContext
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
-    public DbSet<AcademicPeriods> AcademicPeriods => Set<AcademicPeriods>();
+  public DbSet<AcademicPeriod> AcademicPeriods => Set<AcademicPeriod>();
 
   public DbSet<EducationalProgram> EducationalPrograms => Set<EducationalProgram>();
 

@@ -4,9 +4,9 @@ using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Configurations;
 
-public sealed class AcademicPeriodsConfiguration : IEntityTypeConfiguration<AcademicPeriods>
+public sealed class AcademicPeriodsConfiguration : IEntityTypeConfiguration<AcademicPeriod>
 {
-    public void Configure(EntityTypeBuilder<AcademicPeriods> builder)
+    public void Configure(EntityTypeBuilder<AcademicPeriod> builder)
     {
         builder.ToTable("AcademicPeriods");
 

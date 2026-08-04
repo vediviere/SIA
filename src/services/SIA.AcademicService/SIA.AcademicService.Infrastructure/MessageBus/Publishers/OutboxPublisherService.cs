@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SIA.AcademicService.Contracts.IntegrationEvents;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
+using SIA.AcademicService.Contracts.IntegrationEvents.AcademicPeriods;
 
 namespace SIA.AcademicService.Infrastructure.MessageBus.Publishers
 {
@@ -96,8 +97,72 @@ namespace SIA.AcademicService.Infrastructure.MessageBus.Publishers
 
         if (integrationEvent is null)
         {
-          throw new InvalidOperationException(
-              "No fue posible deserializar el evento de materia creada.");
+            if (eventType == $"{nameof(SubjectCreatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<SubjectCreatedIntegrationEvent>(payload);
+
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de materia creada.");
+                }
+
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            if (eventType == $"{nameof(AcademicPeriodCreatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<AcademicPeriodCreatedIntegrationEvent>(payload);
+
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de periodo académico creado.");
+                }
+
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            if (eventType == $"{nameof(AcademicPeriodUpdatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<AcademicPeriodUpdatedIntegrationEvent>(payload);
+
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de periodo académico actualizado.");
+                }
+
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            if (eventType == $"{nameof(AcademicPeriodDeactivatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<AcademicPeriodDeactivatedIntegrationEvent>(payload);
+
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de periodo académico desactivado.");
+                }
+
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            if (eventType == $"{nameof(AcademicPeriodActivatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<AcademicPeriodActivatedIntegrationEvent>(payload);
+
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de periodo académico activado.");
+                }
+
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            throw new NotSupportedException($"El tipo de evento {eventType} no está soportado.");
         }
 
         await publishEndpoint.Publish(integrationEvent, cancellationToken);
@@ -131,5 +196,4 @@ namespace SIA.AcademicService.Infrastructure.MessageBus.Publishers
       throw new NotSupportedException(
           $"El tipo de evento {eventType} no está soportado.");
     }
-  }
 }
