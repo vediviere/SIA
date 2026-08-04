@@ -1,24 +1,25 @@
 ﻿
+using SIA.AcademicService.Application.DTOs.AcademicPeriod;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Contracts.Responses.AcademicPeriods;
 using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Application.UseCases.AcademicPeriods;
 
-public sealed class GetAllAcademicPeriodsUseCase
+public sealed class SearchAcademicPeriodsUseCase
 {
-    private readonly IAcademicPeriodsQueries _queries;
+    private readonly IAcademicPeriodQueries _queries;
 
-    public GetAllAcademicPeriodsUseCase(IAcademicPeriodsQueries queries)
+    public SearchAcademicPeriodsUseCase(IAcademicPeriodQueries queries)
     {
         _queries = queries;
     }
 
-    public async Task<List<AcademicPeriodResponse>> ExecuteAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<AcademicPeriodDto>> ExecuteAsync(AcademicPeriodFilter filter, CancellationToken cancellationToken)
     {
-        var academicPeriods = await _queries.GetAllAsync(cancellationToken);
+        var academicPeriods = await _queries.SearchAsync(filter, cancellationToken);
 
-        return academicPeriods.Select(academicPeriod => new AcademicPeriodResponse
+        return academicPeriods.Select(academicPeriod => new AcademicPeriodDto
         {
             Id = academicPeriod.Id,
             TenantId = academicPeriod.TenantId,
