@@ -64,14 +64,14 @@ builder.Services.AddScoped<ISubjectDataStore, SubjectDataStore>();
 
 
 builder.Services.AddScoped<IAcademicPeriodsDataStore, AcademicPeriodsDataStore>();
-builder.Services.AddScoped<IAcademicPeriodsQueries, AcademicPeriodsQueries>();
+builder.Services.AddScoped<IAcademicPeriodQueries, AcademicPeriodQueries>();
 
 builder.Services.AddScoped<CreateAcademicPeriodsUseCase>();
 builder.Services.AddScoped<UpdateAcademicPeriodUseCase>();
 builder.Services.AddScoped<PatchAcademicPeriodUseCase>();
 builder.Services.AddScoped<DeactivateAcademicPeriodUseCase>();
 builder.Services.AddScoped<ActivateAcademicPeriodUseCase>();
-builder.Services.AddScoped<GetAllAcademicPeriodsUseCase>();
+builder.Services.AddScoped<SearchAcademicPeriodsUseCase>();
 builder.Services.AddScoped<GetAcademicPeriodByIdUseCase>();
 
 builder.Services.AddScoped<CreateSubjectUseCase>();
