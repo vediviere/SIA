@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
+using SIA.AcademicService.Application.UseCases.StudyPlans;
 using SIA.AcademicService.Application.UseCases.Subjects;
 using SIA.AcademicService.Infrastructure.MessageBus.Publishers;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
@@ -62,7 +63,7 @@ builder.Services.AddScoped<ISubjectDataStore, SubjectDataStore>();
 
 builder.Services.AddScoped<CreateSubjectUseCase>();
 
-builder.Services.AddScoped<IEducationalProgramsDataStore, EducationalProgramsDataStore>();
+builder.Services.AddScoped<IEducationalProgramDataStore, EducationalProgramsDataStore>();
 
 builder.Services.AddScoped<CreateEducationalProgramsUseCase>();
 
@@ -73,6 +74,18 @@ builder.Services.AddScoped<UpdateEducationalProgramsUseCase>();
 builder.Services.AddScoped<DeactivateEducationalProgramsUseCase>();
 
 builder.Services.AddScoped<RestoreEducationalProgramsUseCase>();
+
+builder.Services.AddScoped<IStudyPlanDataStore, StudyPlanDataStore>();
+
+builder.Services.AddScoped<IStudyPlanQueries, StudyPlanQueries>();
+
+builder.Services.AddScoped<CreateStudyPlanUseCase>();
+
+builder.Services.AddScoped<UpdateStudyPlanUseCase>();
+
+builder.Services.AddScoped<DeactivateStudyPlanUseCase>();
+
+builder.Services.AddScoped<RestoreStudyPlanUseCase>();
 
 
 var app = builder.Build();

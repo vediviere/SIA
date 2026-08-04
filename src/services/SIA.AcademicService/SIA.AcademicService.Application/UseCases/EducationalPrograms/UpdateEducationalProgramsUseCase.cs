@@ -6,9 +6,9 @@ namespace SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
 
 public sealed class UpdateEducationalProgramsUseCase
 {
-    private readonly IEducationalProgramsDataStore _dataStore;
+    private readonly IEducationalProgramDataStore _dataStore;
 
-    public UpdateEducationalProgramsUseCase(IEducationalProgramsDataStore dataStore)
+    public UpdateEducationalProgramsUseCase(IEducationalProgramDataStore dataStore)
     {
         _dataStore = dataStore;
     }

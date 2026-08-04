@@ -8,7 +8,7 @@ using SIA.AcademicService.Infrastructure.Persistence.Entities;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.DataStores;
 
-public sealed class EducationalProgramsDataStore : IEducationalProgramsDataStore
+public sealed class EducationalProgramsDataStore : IEducationalProgramDataStore
 {
     private readonly AcademicDbContext _dbContext;
 

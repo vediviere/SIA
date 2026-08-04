@@ -8,9 +8,9 @@ namespace SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
 
 public sealed class CreateEducationalProgramsUseCase
 {
-    private readonly IEducationalProgramsDataStore _dataStore;
+    private readonly IEducationalProgramDataStore _dataStore;
 
-    public CreateEducationalProgramsUseCase(IEducationalProgramsDataStore dataStore)
+    public CreateEducationalProgramsUseCase(IEducationalProgramDataStore dataStore)
     {
         _dataStore = dataStore;
     }

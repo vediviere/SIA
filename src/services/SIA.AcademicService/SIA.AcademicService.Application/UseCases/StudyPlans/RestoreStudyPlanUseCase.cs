@@ -1,10 +1,11 @@
 ﻿using SIA.AcademicService.Application.Interfaces.DataStores;
 
-public sealed class DeactivateEducationalProgramsUseCase
+namespace SIA.AcademicService.Application.UseCases.StudyPlans;
+public sealed class RestoreStudyPlanUseCase
 {
-    private readonly IEducationalProgramDataStore _dataStore;
+    private readonly IStudyPlanDataStore _dataStore;
 
-    public DeactivateEducationalProgramsUseCase(IEducationalProgramDataStore dataStore)
+    public RestoreStudyPlanUseCase(IStudyPlanDataStore dataStore)
     {
         _dataStore = dataStore;
     }
@@ -12,14 +13,12 @@ public sealed class DeactivateEducationalProgramsUseCase
     public async Task ExecuteAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await _dataStore.GetByIdAsync(id, cancellationToken);
-
         if (entity is null)
         {
-            throw new InvalidOperationException($"No se encontró un programa educativo con el id {id}.");
+            throw new InvalidOperationException($"No se encontró un plan de estudios con el id {id}.");
         }
 
-        entity.Deactivate();
-
+        entity.Activate();
         await _dataStore.UpdateAsync(entity, cancellationToken);
     }
 }

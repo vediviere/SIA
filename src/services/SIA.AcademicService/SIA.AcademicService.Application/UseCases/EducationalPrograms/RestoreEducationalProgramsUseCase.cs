@@ -5,9 +5,9 @@ using System.Text;
 
 public sealed class RestoreEducationalProgramsUseCase
 {
-    private readonly IEducationalProgramsDataStore _dataStore;
+    private readonly IEducationalProgramDataStore _dataStore;
 
-    public RestoreEducationalProgramsUseCase(IEducationalProgramsDataStore dataStore)
+    public RestoreEducationalProgramsUseCase(IEducationalProgramDataStore dataStore)
     {
         _dataStore = dataStore;
     }

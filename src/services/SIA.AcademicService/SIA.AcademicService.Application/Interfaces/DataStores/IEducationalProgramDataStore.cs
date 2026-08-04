@@ -2,7 +2,7 @@
 using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Application.Interfaces.DataStores;
-public interface IEducationalProgramsDataStore
+public interface IEducationalProgramDataStore
 {
     Task<bool> EducationalProgramCodeExistsAsync(Guid tenantId, string code, CancellationToken cancellationToken);
 
