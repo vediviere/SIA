@@ -1,4 +1,5 @@
-﻿using SIA.AcademicService.Domain.Entities;
+﻿using SIA.AcademicService.Application.DTOs.Subjects;
+using SIA.AcademicService.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,8 +8,8 @@ namespace SIA.AcademicService.Application.Interfaces.Queries
 {
     public interface ISubjectQueries
     {
-        public Subject GetById(Guid id);
+        Task<Subject?> GetByIdAsync(Guid tenantId,Guid subjectId,CancellationToken cancellationToken);
 
-        public List<Subject> GetAll();
+        Task<IReadOnlyCollection<Subject>> SearchAsync(SubjectFilter filter, CancellationToken cancellationToken);
     }
 }

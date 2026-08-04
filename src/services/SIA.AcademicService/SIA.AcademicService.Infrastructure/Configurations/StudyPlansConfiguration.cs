@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Configurations;
-public sealed class StudyPlansConfiguration : IEntityTypeConfiguration<StudyPlans>
+public sealed class StudyPlansConfiguration : IEntityTypeConfiguration<StudyPlan>
 {
-    public void Configure(EntityTypeBuilder<StudyPlans> builder)
+    public void Configure(EntityTypeBuilder<StudyPlan> builder)
     {
         builder.ToTable("StudyPlans");
         builder.HasKey(StudyPlans => StudyPlans.Id);
@@ -20,7 +20,7 @@ public sealed class StudyPlansConfiguration : IEntityTypeConfiguration<StudyPlan
         builder.Property(StudyPlans => StudyPlans.CreatedAtUtc).IsRequired();
         builder.Property(StudyPlans => StudyPlans.UpdatedAtUtc);
 
-        builder.HasOne<EducationalPrograms>().WithMany().HasForeignKey(StudyPlans => StudyPlans.EducationalProgramId).IsRequired();
+        builder.HasOne<EducationalProgram>().WithMany().HasForeignKey(StudyPlans => StudyPlans.EducationalProgramId).IsRequired();
 
         builder.HasIndex(StudyPlans => new
         {

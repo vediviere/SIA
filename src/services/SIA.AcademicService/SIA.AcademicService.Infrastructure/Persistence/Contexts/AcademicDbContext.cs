@@ -6,31 +6,29 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Contexts;
 
 public sealed class AcademicDbContext : DbContext
 {
-  public AcademicDbContext(
-      DbContextOptions<AcademicDbContext> options)
-      : base(options)
-  {
-  }
+    public AcademicDbContext(
+        DbContextOptions<AcademicDbContext> options)
+        : base(options)
+    {
+    }
 
-  public DbSet<Subject> Subjects => Set<Subject>();
+    public DbSet<Subject> Subjects => Set<Subject>();
 
     public DbSet<StudyPlanSubject> StudyPlanSubjects => Set<StudyPlanSubject>();
 
-  public DbSet<OutboxMessage> OutboxMessages =>
-      Set<OutboxMessage>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
   public DbSet<AcademicPeriod> AcademicPeriods => Set<AcademicPeriod>();
 
-  public DbSet<EducationalPrograms> EducationalPrograms => Set<EducationalPrograms>();
+  public DbSet<EducationalProgram> EducationalPrograms => Set<EducationalProgram>();
 
-  public DbSet<StudyPlans> StudyPlans => Set<StudyPlans>();
+  public DbSet<StudyPlan> StudyPlans => Set<StudyPlan>();
 
-  protected override void OnModelCreating(
-      ModelBuilder modelBuilder)
-  {
-    base.OnModelCreating(modelBuilder);
 
-    modelBuilder.ApplyConfigurationsFromAssembly(
-        typeof(AcademicDbContext).Assembly);
-  }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AcademicDbContext).Assembly);
+    }
 }

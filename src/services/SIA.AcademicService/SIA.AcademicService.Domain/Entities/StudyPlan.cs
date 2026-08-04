@@ -1,11 +1,11 @@
 ﻿namespace SIA.AcademicService.Domain.Entities;
-public sealed class StudyPlans
+public sealed class StudyPlan
 {
-    private StudyPlans()
+    private StudyPlan()
     {
     }
 
-    public StudyPlans(
+    public StudyPlan(
         Guid tenantId,
         Guid educationalProgramId,
         string code,
@@ -86,6 +86,35 @@ public sealed class StudyPlans
     public void Activate()
     {
         Status = true;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void UpdateDetails(string code, string name, string version, DateOnly effectiveFrom)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            throw new ArgumentException("El código del plan de estudios es obligatorio.", nameof(code));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("El nombre del plan de estudios es obligatorio.", nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(version))
+        {
+            throw new ArgumentException("La versión del plan de estudios es obligatoria.", nameof(version));
+        }
+
+        if (effectiveFrom == default)
+        {
+            throw new ArgumentException("La fecha de vigencia del plan de estudios es obligatoria.", nameof(effectiveFrom));
+        }
+
+        Code = code.Trim().ToUpperInvariant();
+        Name = name.Trim();
+        Version = version.Trim();
+        EffectiveFrom = effectiveFrom;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 }
