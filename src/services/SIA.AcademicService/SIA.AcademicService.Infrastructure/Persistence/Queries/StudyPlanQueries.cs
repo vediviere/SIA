@@ -18,7 +18,7 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
             _dbContext = dbContext;
         }
 
-        public async Task<StudyPlans?> GetByIdAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken)
+        public async Task<StudyPlan?> GetByIdAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken)
         {
             return await _dbContext.StudyPlans
                                     .AsNoTracking()
@@ -28,9 +28,9 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                                         cancellationToken);
         }
 
-        public async Task<IReadOnlyCollection<StudyPlans>> SearchAsync(StudyPlanFilter filter, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<StudyPlan>> SearchAsync(StudyPlanFilter filter, CancellationToken cancellationToken)
         {
-            IQueryable<StudyPlans> query = _dbContext.StudyPlans
+            IQueryable<StudyPlan> query = _dbContext.StudyPlans
                                      .AsNoTracking()
                                      .Where(x => x.TenantId == filter.TenantId);
 
@@ -38,7 +38,6 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
             {
                 query = query.Where(x => x.EducationalProgramId == filter.EducationalProgramId);
             }
-
 
             if (!string.IsNullOrWhiteSpace(filter.Code))
             {
@@ -68,7 +67,7 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                                 .ToListAsync(cancellationToken);
         }
 
-        public async Task GetSubjectsByStudyPlanAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<StudyPlanSubjectDto>> GetSubjectsByStudyPlanAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken)
         {
             var result = await
             (
@@ -76,17 +75,22 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                 join s in _dbContext.Subjects on sps.SubjectId equals s.Id
                 where sps.TenantId == tenantId
                       && sps.StudyPlanId == studyPlanId
-                      && sps.Status
+                      && sps.Status 
                 select new StudyPlanSubjectDto
                 {
+                    TenantId = sps.TenantId,
+                    StudyPlanId = sps.StudyPlanId,
                     SubjectId = s.Id,
                     Code = s.Code,
                     Name = s.Name,
                     Semester = sps.Semester,
                     Credits = sps.Credits,
-                    IsRequired = sps.IsRequired
+                    IsRequired = sps.IsRequired,
+                    Status = sps.Status
                 }
             ).ToListAsync(cancellationToken);
+
+            return result;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
             _dbContext = dbContext;
         }
 
-        public async Task<AcademicPeriods?> GetByIdAsync(Guid tenantId, Guid academicPeriodId, CancellationToken cancellationToken)
+        public async Task<AcademicPeriod?> GetByIdAsync(Guid tenantId, Guid academicPeriodId, CancellationToken cancellationToken)
         {
             return await _dbContext.AcademicPeriods
                                     .AsNoTracking()
@@ -28,9 +28,9 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                                         cancellationToken);
         }
 
-        public async Task<IReadOnlyCollection<AcademicPeriods>> SearchAsync(AcademicPeriodFilter filter, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<AcademicPeriod>> SearchAsync(AcademicPeriodFilter filter, CancellationToken cancellationToken)
         {
-            IQueryable<AcademicPeriods> query = _dbContext.AcademicPeriods
+            IQueryable<AcademicPeriod> query = _dbContext.AcademicPeriods
                                                     .AsNoTracking()
                                                     .Where(x => x.TenantId == filter.TenantId);
 

@@ -18,7 +18,7 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
             _dbContext = dbContext;
         }
 
-        public async Task<EducationalPrograms?> GetByIdAsync(Guid tenantId, Guid educationalProgramId, CancellationToken cancellationToken)
+        public async Task<EducationalProgram?> GetByIdAsync(Guid tenantId, Guid educationalProgramId, CancellationToken cancellationToken)
         {
             return await _dbContext.EducationalPrograms
                                     .AsNoTracking()
@@ -28,9 +28,9 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                                         cancellationToken);
         }
 
-        public async Task<IReadOnlyCollection<EducationalPrograms>> SearchAsync(EducationalProgramFilter filter, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<EducationalProgram>> SearchAsync(EducationalProgramFilter filter, CancellationToken cancellationToken)
         {
-            IQueryable<EducationalPrograms> query = _dbContext.EducationalPrograms
+            IQueryable<EducationalProgram> query = _dbContext.EducationalPrograms
                                      .AsNoTracking()
                                      .Where(x => x.TenantId == filter.TenantId);
 

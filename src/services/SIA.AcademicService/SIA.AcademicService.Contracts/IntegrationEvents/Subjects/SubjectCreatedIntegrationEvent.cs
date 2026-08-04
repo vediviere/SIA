@@ -1,4 +1,4 @@
-namespace SIA.AcademicService.Contracts.IntegrationEvents;
+namespace SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 
 public sealed record SubjectCreatedIntegrationEvent
 {
@@ -11,8 +11,6 @@ public sealed record SubjectCreatedIntegrationEvent
   public required Guid TenantId { get; init; }
 
   public required Guid SubjectId { get; init; }
-
-  public required Guid StudyPlanId { get; init; }
 
   public required string Code { get; init; }
 

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using SIA.AcademicService.Contracts.IntegrationEvents;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Contracts.IntegrationEvents.AcademicPeriods;
+using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 
 namespace SIA.AcademicService.Infrastructure.MessageBus.Publishers
 {

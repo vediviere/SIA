@@ -15,7 +15,7 @@ public sealed class SubjectQueries : ISubjectQueries
         _dbContext = dbContext;
     }
 
-    public async Task<Subject?> GetByIdAsync(Guid tenantId,Guid subjectId,CancellationToken cancellationToken)
+    public async Task<Subject?> GetByIdAsync(Guid tenantId, Guid subjectId, CancellationToken cancellationToken)
     {
         return await _dbContext.Subjects
                             .AsNoTracking()
@@ -25,16 +25,12 @@ public sealed class SubjectQueries : ISubjectQueries
                                 cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Subject>> SearchAsync(SubjectFilter filter,CancellationToken cancellationToken)
+
+    public async Task<IReadOnlyCollection<Subject>> SearchAsync(SubjectFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<Subject> query = _dbContext.Subjects
                                     .AsNoTracking()
                                     .Where(x => x.TenantId == filter.TenantId);
-
-        if (filter.StudyPlanId.HasValue)
-        {
-            query = query.Where(x => x.StudyPlanId == filter.StudyPlanId.Value);
-        }
 
         if (!string.IsNullOrWhiteSpace(filter.Code))
         {
@@ -64,3 +60,4 @@ public sealed class SubjectQueries : ISubjectQueries
                             .ToListAsync(cancellationToken);
     }
 }
+   

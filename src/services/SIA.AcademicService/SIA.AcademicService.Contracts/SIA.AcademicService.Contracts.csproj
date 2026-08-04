@@ -1,6 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Remove="IntegrationEvents\AcademicPeriods\**" />
+    <Compile Remove="Requests\AcademicPeriods\**" />
+    <Compile Remove="Responses\AcademicPeriods\**" />
+    <EmbeddedResource Remove="IntegrationEvents\AcademicPeriods\**" />
+    <EmbeddedResource Remove="Requests\AcademicPeriods\**" />
+    <EmbeddedResource Remove="Responses\AcademicPeriods\**" />
+    <None Remove="IntegrationEvents\AcademicPeriods\**" />
+    <None Remove="Requests\AcademicPeriods\**" />
+    <None Remove="Responses\AcademicPeriods\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Contracts\SIA.BuildingBlocks.Contracts.csproj" />
   </ItemGroup>
 

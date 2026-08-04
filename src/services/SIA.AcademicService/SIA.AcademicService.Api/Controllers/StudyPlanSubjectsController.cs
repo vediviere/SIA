@@ -1,90 +1,61 @@
-using Microsoft.AspNetCore.Mvc;
-using SIA.AcademicService.Application.DTOs.Subjects;
+﻿using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Application.DTOs.StudyPlan;
 using SIA.AcademicService.Application.Interfaces.Queries;
-using SIA.AcademicService.Application.UseCases.Subjects;
-using SIA.AcademicService.Contracts.Requests.Subjects;
-using SIA.AcademicService.Contracts.Responses.Subjects;
-using SIA.AcademicService.Domain.Entities;
+using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
+using SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
+using SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
 
 namespace SIA.AcademicService.Api.Controllers;
 
-[ApiController]
-[Route("api/subjects")]
-public sealed class SubjectsController : ControllerBase
-{
-    private readonly CreateSubjectUseCase _createSubjectUseCase;
-    private readonly UpdateSubjectUseCase _updateSubjectUseCase;
-    private readonly SoftDeleteSubjectUseCase _softDeleteSubjectUseCase;
-    private readonly RestoreSubjectUseCase _restoreSubjectUseCase;
-    private readonly ISubjectQueries _subjectQueries;
 
-    public SubjectsController(
-        CreateSubjectUseCase createSubjectUseCase,
-        UpdateSubjectUseCase updateSubjectUseCase,
-        SoftDeleteSubjectUseCase softDeleteSubjectUseCase,
-        RestoreSubjectUseCase restoreSubjectUseCase,
-        ISubjectQueries subjectQueries)
+[ApiController]
+[Route("api/study-plan-subjects")]
+public sealed class StudyPlanSubjectsController : ControllerBase
+{
+    private readonly CreateStudyPlanSubjectUseCase _createStudyPlanSubjectUseCase;
+    private readonly UpdateStudyPlanSubjectUseCase _updateStudyPlanSubjectUseCase;
+    private readonly DeleteStudyPlanSubjectUseCase _deleteStudyPlanSubjectUseCase;
+    private readonly RestoreStudyPlanSubjectUseCase _restoreStudyPlanSubjectUseCase;
+    private readonly IStudyPlanQueries _studyPlanQueries;
+
+    public StudyPlanSubjectsController(
+        CreateStudyPlanSubjectUseCase createStudyPlanSubjectUseCase,
+        UpdateStudyPlanSubjectUseCase updateStudyPlanSubjectUseCase,
+        DeleteStudyPlanSubjectUseCase deleteStudyPlanSubjectUseCase,
+        RestoreStudyPlanSubjectUseCase restoreStudyPlanSubjectUseCase,
+        IStudyPlanQueries studyPlanQueries)
     {
-        _createSubjectUseCase = createSubjectUseCase;
-        _updateSubjectUseCase = updateSubjectUseCase;
-        _softDeleteSubjectUseCase = softDeleteSubjectUseCase;
-        _restoreSubjectUseCase = restoreSubjectUseCase;
-        _subjectQueries = subjectQueries;
+        _createStudyPlanSubjectUseCase = createStudyPlanSubjectUseCase;
+        _updateStudyPlanSubjectUseCase = updateStudyPlanSubjectUseCase;
+        _deleteStudyPlanSubjectUseCase = deleteStudyPlanSubjectUseCase;
+        _restoreStudyPlanSubjectUseCase = restoreStudyPlanSubjectUseCase;
+        _studyPlanQueries = studyPlanQueries;
     }
 
-
-    [HttpGet("Filter")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<Subject>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<Subject>>> SearchAsync(
-        [FromQuery] SubjectFilter filter,
+    [HttpGet("{tenantId:guid}/study-plan/{studyPlanId:guid}")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<StudyPlanSubjectDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<StudyPlanSubjectDto>>> GetSubjectsByStudyPlanAsync(
+        [FromRoute] Guid tenantId,
+        [FromRoute] Guid studyPlanId,
         CancellationToken cancellationToken)
     {
-        var secureFilter = new SubjectFilter
-        {
-            TenantId = filter.TenantId,
-            Code = filter.Code,
-            Name = filter.Name,
-            Semester = filter.Semester,
-            Status = filter.Status,
-            Page = filter.Page,
-            PageSize = filter.PageSize
-        };
-
-        var subjects = await _subjectQueries.SearchAsync(secureFilter, cancellationToken);
+        var subjects = await _studyPlanQueries.GetSubjectsByStudyPlanAsync(tenantId, studyPlanId, cancellationToken);
         return Ok(subjects);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
-    [ProducesResponseType(typeof(Subject), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Subject>> GetByIdAsync(
-        [FromRoute] Guid tenantId,
-        [FromRoute] Guid id,
-        CancellationToken cancellationToken)
-    {
-        var subject = await _subjectQueries.GetByIdAsync(tenantId, id, cancellationToken);
-
-        if (subject == null)
-        {
-            return NotFound(new { message = $"No se encontró la materia con Id {id}." });
-        }
-
-        return Ok(subject);
-    }
-
     [HttpPost]
-    [ProducesResponseType(typeof(CreateSubjectResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(CreateStudyPlanSubjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<CreateSubjectResponse>> CreateAsync(
-        [FromBody] CreateSubjectRequest request,
+    public async Task<ActionResult<CreateStudyPlanSubjectResponse>> CreateAsync(
+        [FromBody] CreateStudyPlanSubjectRequest request,
         CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
 
         try
         {
-            var response = await _createSubjectUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+            var response = await _createStudyPlanSubjectUseCase.ExecuteAsync(request, correlationId, cancellationToken);
 
             Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -109,24 +80,25 @@ public sealed class SubjectsController : ControllerBase
     }
 
     [HttpPut("{tenantId:guid}/{id:guid}")]
-    [ProducesResponseType(typeof(UpdateSubjectResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UpdateStudyPlanSubjectResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateSubjectResponse>> UpdateAsync(
+    public async Task<ActionResult<UpdateStudyPlanSubjectResponse>> UpdateAsync(
         [FromRoute] Guid tenantId,
         [FromRoute] Guid id,
-        [FromBody] UpdateSubjectRequest request,
+        [FromBody] UpdateStudyPlanSubjectRequest request,
         CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
         try
         {
-            var response = await _updateSubjectUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
+            var response = await _updateStudyPlanSubjectUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
+
             Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
             return Ok(response);
         }
-        catch (InvalidOperationException exception) when (exception.Message.Contains("Ya existe"))
+        catch (InvalidOperationException exception) when (exception.Message.Contains("asignada") || exception.Message.Contains("existe"))
         {
             return Conflict(new { message = exception.Message, correlationId });
         }
@@ -152,7 +124,14 @@ public sealed class SubjectsController : ControllerBase
 
         try
         {
-            await _softDeleteSubjectUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+            // Mapeamos los datos de la ruta al Request creado en el paso anterior
+            var request = new DeleteStudyPlanSubjectRequest
+            {
+                TenantId = tenantId,
+                Id = id
+            };
+
+            await _deleteStudyPlanSubjectUseCase.ExecuteAsync(request, correlationId, cancellationToken);
             Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
             return NoContent();
         }
@@ -178,7 +157,13 @@ public sealed class SubjectsController : ControllerBase
 
         try
         {
-            await _restoreSubjectUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+            var request = new RestoreStudyPlanSubjectRequest
+            {
+                TenantId = tenantId,
+                Id = id
+            };
+
+            await _restoreStudyPlanSubjectUseCase.ExecuteAsync(request, correlationId, cancellationToken);
             Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
             return NoContent();

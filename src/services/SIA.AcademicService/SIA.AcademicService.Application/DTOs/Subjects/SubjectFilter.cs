@@ -4,8 +4,6 @@ public sealed class SubjectFilter
 {
     public Guid TenantId { get; init; }
 
-    public Guid? StudyPlanId { get; init; }
-
     public string? Code { get; init; }
 
     public string? Name { get; init; }

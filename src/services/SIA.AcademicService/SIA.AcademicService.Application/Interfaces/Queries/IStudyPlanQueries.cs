@@ -9,10 +9,10 @@ namespace SIA.AcademicService.Application.Interfaces.Queries
 {
     public interface IStudyPlanQueries
     {
-        Task<StudyPlans?> GetByIdAsync(Guid tenantId,Guid studyPlanId,CancellationToken cancellationToken);
+        Task<StudyPlan?> GetByIdAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken);
 
-        Task<IReadOnlyCollection<StudyPlans>>SearchAsync(StudyPlanFilter filter,CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<StudyPlan>> SearchAsync(StudyPlanFilter filter, CancellationToken cancellationToken);
 
-        Task GetSubjectsByStudyPlanAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<StudyPlanSubjectDto>> GetSubjectsByStudyPlanAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken);
     }
 }

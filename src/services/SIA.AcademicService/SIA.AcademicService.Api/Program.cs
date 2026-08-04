@@ -2,14 +2,17 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Application.Interfaces.Queries;
+//using SIA.AcademicService.Application.UseCases.AcademicPeriods;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
-using SIA.AcademicService.Application.UseCases.AcademicPeriods;
 using SIA.AcademicService.Application.UseCases.StudyPlans;
+using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
 using SIA.AcademicService.Application.UseCases.Subjects;
 using SIA.AcademicService.Infrastructure.MessageBus.Publishers;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.DataStores;
 using SIA.AcademicService.Infrastructure.Persistence.Queries;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,7 +65,7 @@ builder.Services.AddHostedService<OutboxPublisherService>();
 
 builder.Services.AddScoped<ISubjectDataStore, SubjectDataStore>();
 
-
+/*
 builder.Services.AddScoped<IAcademicPeriodsDataStore, AcademicPeriodsDataStore>();
 builder.Services.AddScoped<IAcademicPeriodsQueries, AcademicPeriodsQueries>();
 
@@ -73,6 +76,28 @@ builder.Services.AddScoped<DeactivateAcademicPeriodUseCase>();
 builder.Services.AddScoped<ActivateAcademicPeriodUseCase>();
 builder.Services.AddScoped<GetAllAcademicPeriodsUseCase>();
 builder.Services.AddScoped<GetAcademicPeriodByIdUseCase>();
+*/
+
+
+//  DataStores y Queries
+builder.Services.AddScoped<ISubjectDataStore, SubjectDataStore>();
+builder.Services.AddScoped<ISubjectQueries, SubjectQueries>();
+
+// DataStores y Queries de los Planes de Estudio
+builder.Services.AddScoped<IStudyPlanSubjectDataStore, StudyPlanSubjectDataStore>();
+builder.Services.AddScoped<IStudyPlanQueries, StudyPlanQueries>();
+
+// UseCases Subjects
+builder.Services.AddScoped<CreateSubjectUseCase>();
+builder.Services.AddScoped<UpdateSubjectUseCase>();
+builder.Services.AddScoped<SoftDeleteSubjectUseCase>();
+builder.Services.AddScoped<RestoreSubjectUseCase>();
+
+// UseCases de StudyPlanSubjects
+builder.Services.AddScoped<CreateStudyPlanSubjectUseCase>();
+builder.Services.AddScoped<UpdateStudyPlanSubjectUseCase>();
+builder.Services.AddScoped<DeleteStudyPlanSubjectUseCase>();
+builder.Services.AddScoped<RestoreStudyPlanSubjectUseCase>();
 
 builder.Services.AddScoped<CreateSubjectUseCase>();
 
@@ -111,7 +136,7 @@ if (app.Environment.IsDevelopment())
   {
     options.SwaggerEndpoint(
         "/openapi/v1.json",
-        "SIA SchoolControlService API v1");
+        "SIA AcademicService API v1");
   });
 }
 

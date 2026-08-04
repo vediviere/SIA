@@ -1,6 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using SIA.AcademicService.Contracts.IntegrationEvents;
+using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 using SIA.SchoolControlService.Domain.Entities;
 using SIA.SchoolControlService.Infrastructure.Persistence.Contexts;
 using SIA.SchoolControlService.Infrastructure.Persistence.Entities;
