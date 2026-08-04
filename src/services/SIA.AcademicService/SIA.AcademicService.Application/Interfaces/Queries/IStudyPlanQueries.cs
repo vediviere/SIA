@@ -1,9 +1,18 @@
-﻿using SIA.AcademicService.Domain.Entities;
 
-namespace SIA.AcademicService.Application.Interfaces.Queries;
+﻿using SIA.AcademicService.Application.DTOs.StudyPlan;
+using SIA.AcademicService.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-public interface IStudyPlanQueries
+namespace SIA.AcademicService.Application.Interfaces.Queries
 {
-    Task<StudyPlan?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task<List<StudyPlan>> GetAllAsync(CancellationToken cancellationToken);
+    public interface IStudyPlanQueries
+    {
+        Task<StudyPlans?> GetByIdAsync(Guid tenantId,Guid studyPlanId,CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<StudyPlans>>SearchAsync(StudyPlanFilter filter,CancellationToken cancellationToken);
+
+        Task GetSubjectsByStudyPlanAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken);
+    }
 }
