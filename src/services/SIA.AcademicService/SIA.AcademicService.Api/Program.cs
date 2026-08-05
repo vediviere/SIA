@@ -5,7 +5,7 @@ using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.AcademicPeriods;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
 using SIA.AcademicService.Application.UseCases.StudyPlans;
-using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
+//using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
 using SIA.AcademicService.Application.UseCases.Subjects;
 using SIA.AcademicService.Infrastructure.MessageBus.Publishers;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
@@ -84,8 +84,8 @@ builder.Services.AddScoped<ISubjectDataStore, SubjectDataStore>();
 builder.Services.AddScoped<ISubjectQueries, SubjectQueries>();
 
 // DataStores y Queries de los Planes de Estudio
-builder.Services.AddScoped<IStudyPlanSubjectDataStore, StudyPlanSubjectDataStore>();
-builder.Services.AddScoped<IStudyPlanQueries, StudyPlanQueries>();
+//builder.Services.AddScoped<IStudyPlanSubjectDataStore, StudyPlanSubjectDataStore>();
+//builder.Services.AddScoped<IStudyPlanQueries, StudyPlanQueries>();
 
 // UseCases Subjects
 builder.Services.AddScoped<CreateSubjectUseCase>();
@@ -94,10 +94,10 @@ builder.Services.AddScoped<SoftDeleteSubjectUseCase>();
 builder.Services.AddScoped<RestoreSubjectUseCase>();
 
 // UseCases de StudyPlanSubjects
-builder.Services.AddScoped<CreateStudyPlanSubjectUseCase>();
-builder.Services.AddScoped<UpdateStudyPlanSubjectUseCase>();
-builder.Services.AddScoped<DeleteStudyPlanSubjectUseCase>();
-builder.Services.AddScoped<RestoreStudyPlanSubjectUseCase>();
+//builder.Services.AddScoped<CreateStudyPlanSubjectUseCase>();
+//builder.Services.AddScoped<UpdateStudyPlanSubjectUseCase>();
+//builder.Services.AddScoped<DeleteStudyPlanSubjectUseCase>();
+//builder.Services.AddScoped<RestoreStudyPlanSubjectUseCase>();
 
 builder.Services.AddScoped<CreateSubjectUseCase>();
 

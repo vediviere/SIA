@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,3 +13,4 @@ public sealed class RestoreStudyPlanSubjectResponse
     public DateTime? UpdatedAtUtc { get; init; }
     public Guid CorrelationId { get; init; }
 }
+*/

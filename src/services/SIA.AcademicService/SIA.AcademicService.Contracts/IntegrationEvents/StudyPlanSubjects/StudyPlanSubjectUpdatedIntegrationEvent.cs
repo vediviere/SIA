@@ -1,4 +1,5 @@
-﻿namespace SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
+﻿/*
+namespace SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 
 public sealed class StudyPlanSubjectUpdatedIntegrationEvent
 {
@@ -15,3 +16,4 @@ public sealed class StudyPlanSubjectUpdatedIntegrationEvent
     public bool Status { get; init; }
     public int Version { get; init; }
 }
+*/

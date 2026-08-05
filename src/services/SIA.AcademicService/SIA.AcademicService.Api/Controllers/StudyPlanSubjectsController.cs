@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicService.Application.DTOs.StudyPlan;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
@@ -185,3 +186,4 @@ public sealed class StudyPlanSubjectsController : ControllerBase
         return Guid.NewGuid();
     }
 }
+*/

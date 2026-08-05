@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿/*
+using System.Text.Json.Serialization;
 
 namespace SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
 
@@ -14,3 +15,4 @@ public sealed class UpdateStudyPlanSubjectRequest
 
     public bool IsRequired { get; init; }
 }
+*/

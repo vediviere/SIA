@@ -1,4 +1,5 @@
-﻿using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
+﻿/*
+using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Application.Interfaces.DataStores;
@@ -17,3 +18,5 @@ public interface IStudyPlanSubjectDataStore
 
     Task RestoreStudyPlanSubjectWithOutboxAsync(StudyPlanSubject studyPlanSubject, StudyPlanSubjectRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 }
+
+*/

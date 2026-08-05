@@ -1,4 +1,5 @@
-﻿using SIA.AcademicService.Application.Interfaces.DataStores;
+﻿/*
+using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 using SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
 using SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
@@ -53,3 +54,4 @@ public sealed class DeleteStudyPlanSubjectUseCase
         };
     }
 }
+*/

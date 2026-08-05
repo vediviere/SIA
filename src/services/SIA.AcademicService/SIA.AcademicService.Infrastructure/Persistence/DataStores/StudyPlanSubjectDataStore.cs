@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿/*
+using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 using SIA.AcademicService.Domain.Entities;
@@ -123,3 +124,4 @@ public sealed class StudyPlanSubjectDataStore : IStudyPlanSubjectDataStore
         }
     }
 }
+*/

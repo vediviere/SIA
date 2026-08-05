@@ -1,4 +1,5 @@
-﻿namespace SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
+﻿/*
+namespace SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
 
 public sealed class CreateStudyPlanSubjectResponse
 {
@@ -22,3 +23,4 @@ public sealed class CreateStudyPlanSubjectResponse
 
     public Guid CorrelationId { get; init; }
 }
+*/

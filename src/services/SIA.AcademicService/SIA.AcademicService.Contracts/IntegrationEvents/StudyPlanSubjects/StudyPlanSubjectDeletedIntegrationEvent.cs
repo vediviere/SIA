@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+/*
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -16,3 +18,4 @@ public sealed class StudyPlanSubjectDeletedIntegrationEvent
     public bool Status { get; init; }
     public int Version { get; init; }
 }
+*/

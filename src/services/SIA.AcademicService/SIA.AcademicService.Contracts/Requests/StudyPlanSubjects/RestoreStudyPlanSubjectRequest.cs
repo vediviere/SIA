@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿/*
+using System.Text.Json.Serialization;
 
 namespace SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
 
@@ -8,3 +9,4 @@ public sealed class RestoreStudyPlanSubjectRequest
 
     public Guid Id { get; set; }
 }
+*/

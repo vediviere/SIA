@@ -1,4 +1,5 @@
-﻿namespace SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
+﻿/*
+namespace SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
 
 public sealed class DeleteStudyPlanSubjectResponse
 {
@@ -8,3 +9,4 @@ public sealed class DeleteStudyPlanSubjectResponse
     public DateTime? UpdatedAtUtc { get; init; }
     public Guid CorrelationId { get; init; }
 }
+*/

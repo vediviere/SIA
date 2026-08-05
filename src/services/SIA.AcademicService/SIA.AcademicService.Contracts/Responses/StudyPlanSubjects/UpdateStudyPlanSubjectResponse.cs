@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,3 +27,4 @@ public sealed class UpdateStudyPlanSubjectResponse
 
     public Guid CorrelationId { get; init; }
 }
+*/
