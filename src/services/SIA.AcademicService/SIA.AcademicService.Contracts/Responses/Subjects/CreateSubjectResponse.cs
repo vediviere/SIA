@@ -1,12 +1,10 @@
-namespace SIA.AcademicService.Contracts.Responses;
+namespace SIA.AcademicService.Contracts.Responses.Subjects;
 
 public sealed record CreateSubjectResponse
 {
   public required Guid Id { get; init; }
 
   public required Guid TenantId { get; init; }
-
-  public required Guid StudyPlanId { get; init; }
 
   public required string Code { get; init; }
 

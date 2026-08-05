@@ -16,6 +16,7 @@ public sealed class StudyPlanSubjectConfiguration
         builder.HasKey(sps => sps.Id);
 
         builder.Property(sps => sps.Id)
+            .HasColumnName("StudyPlanSubjectId")
             .ValueGeneratedNever();
 
         builder.Property(sps => sps.TenantId)
@@ -47,6 +48,11 @@ public sealed class StudyPlanSubjectConfiguration
         builder.HasOne(sps => sps.Subject)
             .WithMany() 
             .HasForeignKey(sps => sps.SubjectId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(sps => sps.StudyPlan)
+            .WithMany()
+            .HasForeignKey(sps => sps.StudyPlanId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(sps => new { sps.TenantId, sps.StudyPlanId });

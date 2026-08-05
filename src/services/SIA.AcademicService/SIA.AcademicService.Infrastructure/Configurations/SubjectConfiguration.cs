@@ -21,9 +21,6 @@ public sealed class SubjectConfiguration
     builder.Property(subject => subject.TenantId)
         .IsRequired();
 
-    builder.Property(subject => subject.StudyPlanId)
-         .IsRequired();
-
     builder.Property(subject => subject.Code)
         .HasMaxLength(30)
         .IsRequired();

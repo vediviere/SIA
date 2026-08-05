@@ -1,39 +1,46 @@
-using SIA.AcademicService.Application.Interfaces.DataStores;
+﻿using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 using SIA.AcademicService.Contracts.Requests.Subjects;
 using SIA.AcademicService.Contracts.Responses.Subjects;
-using SIA.AcademicService.Domain.Entities;
+
 
 namespace SIA.AcademicService.Application.UseCases.Subjects;
 
-public sealed class CreateSubjectUseCase
+public sealed class UpdateSubjectUseCase
 {
-    private readonly ISubjectDataStore _dataStore;
+    private readonly ISubjectDataStore _subjectDataStore;
 
-    public CreateSubjectUseCase(ISubjectDataStore dataStore)
+    public UpdateSubjectUseCase(ISubjectDataStore subjectDataStore)
     {
-        _dataStore = dataStore;
+        _subjectDataStore = subjectDataStore;
     }
 
-    public async Task<CreateSubjectResponse> ExecuteAsync(
-        CreateSubjectRequest request,
+    public async Task<UpdateSubjectResponse> ExecuteAsync(
+        Guid tenantId,
+        Guid subjectId,
+        UpdateSubjectRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
-        var normalizedCode = request.Code.Trim().ToUpperInvariant();
+        var subject = await _subjectDataStore.GetSubjectByIdAsync(tenantId, subjectId, cancellationToken);
 
-        var codeExists = await _dataStore.SubjectCodeExistsAsync(
-            request.TenantId,
-            normalizedCode,
-            cancellationToken);
-
-        if (codeExists)
+        if (subject == null)
         {
-            throw new InvalidOperationException($"Ya existe una materia con el código {normalizedCode}.");
+            throw new InvalidOperationException($"No se encontró la asignatura con Id {subjectId}.");
         }
 
-        var subject = new Subject(
-            request.TenantId,
+        var normalizedCode = request.Code.Trim().ToUpperInvariant();
+
+        if (subject.Code != normalizedCode)
+        {
+            var codeExists = await _subjectDataStore.SubjectCodeExistsAsync(tenantId, normalizedCode, cancellationToken);
+            if (codeExists)
+            {
+                throw new InvalidOperationException($"Ya existe una materia con el código {normalizedCode}.");
+            }
+        }
+
+        subject.Update(
             normalizedCode,
             request.Name,
             request.Semester,
@@ -41,11 +48,11 @@ public sealed class CreateSubjectUseCase
             request.PracticeHours,
             request.Credits);
 
-        var integrationEvent = new SubjectCreatedIntegrationEvent
+        var integrationEvent = new SubjectUpdatedIntegrationEvent
         {
             EventId = Guid.NewGuid(),
             CorrelationId = correlationId,
-            OccurredAtUtc = subject.CreatedAtUtc,
+            OccurredAtUtc = subject.UpdatedAtUtc ?? DateTime.UtcNow,
             TenantId = subject.TenantId,
             SubjectId = subject.Id,
             Code = subject.Code,
@@ -58,9 +65,9 @@ public sealed class CreateSubjectUseCase
             Version = 1
         };
 
-        await _dataStore.AddSubjectWithOutboxAsync(subject, integrationEvent, cancellationToken);
+        await _subjectDataStore.UpdateSubjectWithOutboxAsync(subject, integrationEvent, cancellationToken);
 
-        return new CreateSubjectResponse
+        return new UpdateSubjectResponse
         {
             Id = subject.Id,
             TenantId = subject.TenantId,
@@ -71,7 +78,7 @@ public sealed class CreateSubjectUseCase
             PracticeHours = subject.PracticeHours,
             Credits = subject.Credits,
             Status = subject.Status,
-            CreatedAtUtc = subject.CreatedAtUtc,
+            UpdatedAtUtc = subject.UpdatedAtUtc,
             CorrelationId = correlationId
         };
     }
