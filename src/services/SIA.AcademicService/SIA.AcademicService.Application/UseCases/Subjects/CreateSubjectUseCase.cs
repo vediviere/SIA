@@ -3,6 +3,7 @@ using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 using SIA.AcademicService.Contracts.Requests.Subjects;
 using SIA.AcademicService.Contracts.Responses.Subjects;
 using SIA.AcademicService.Domain.Entities;
+using SIA.AcademicService.Application.Common.Exceptions;
 
 namespace SIA.AcademicService.Application.UseCases.Subjects;
 
@@ -29,10 +30,10 @@ public sealed class CreateSubjectUseCase
 
         if (codeExists)
         {
-            throw new InvalidOperationException($"Ya existe una materia con el código {normalizedCode}.");
+          throw new DuplicateSubjectCodeException(normalizedCode);
         }
 
-        var subject = new Subject(
+    var subject = new Subject(
             request.TenantId,
             normalizedCode,
             request.Name,

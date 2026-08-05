@@ -1,4 +1,5 @@
-﻿using SIA.AcademicService.Application.DTOs.AcademicPeriod;
+using SIA.AcademicService.Application.Common.Exceptions;
+using SIA.AcademicService.Application.DTOs.AcademicPeriod;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Contracts.Responses;
 using SIA.AcademicService.Contracts.Responses.AcademicPeriods;
@@ -20,10 +21,10 @@ public sealed class GetAcademicPeriodByIdUseCase
 
         if (academicPeriod is null)
         {
-            throw new InvalidOperationException($"No existe un periodo académico con el id {academicPeriodId}.");
+          throw new AcademicPeriodNotFoundException(academicPeriodId);
         }
 
-        return new AcademicPeriodDto
+    return new AcademicPeriodDto
         {
             Id = academicPeriod.Id,
             TenantId = academicPeriod.TenantId,

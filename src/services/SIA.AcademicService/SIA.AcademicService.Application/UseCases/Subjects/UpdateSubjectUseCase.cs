@@ -1,7 +1,8 @@
-﻿using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 using SIA.AcademicService.Contracts.Requests.Subjects;
 using SIA.AcademicService.Contracts.Responses.Subjects;
+using SIA.AcademicService.Application.Common.Exceptions;
 
 
 namespace SIA.AcademicService.Application.UseCases.Subjects;
@@ -24,9 +25,10 @@ public sealed class UpdateSubjectUseCase
     {
         var subject = await _subjectDataStore.GetSubjectByIdAsync(tenantId, subjectId, cancellationToken);
 
-        if (subject == null)
+        if (subject is null)
         {
-            throw new InvalidOperationException($"No se encontró la asignatura con Id {subjectId}.");
+            //throw new InvalidOperationException($"No se encontró la asignatura con Id {subjectId}.");
+            throw new SubjectNotFoundException(subjectId);
         }
 
         var normalizedCode = request.Code.Trim().ToUpperInvariant();
@@ -34,11 +36,12 @@ public sealed class UpdateSubjectUseCase
         if (subject.Code != normalizedCode)
         {
             var codeExists = await _subjectDataStore.SubjectCodeExistsAsync(tenantId, normalizedCode, cancellationToken);
-            if (codeExists)
-            {
-                throw new InvalidOperationException($"Ya existe una materia con el código {normalizedCode}.");
-            }
-        }
+
+              if (codeExists)
+              {
+                throw new DuplicateSubjectCodeException(normalizedCode);
+              }
+    }
 
         subject.Update(
             normalizedCode,
