@@ -1,5 +1,6 @@
-﻿using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
+using SIA.AcademicService.Application.Common.Exceptions;
 
 namespace SIA.AcademicService.Application.UseCases.Subjects;
 
@@ -20,9 +21,9 @@ public sealed class SoftDeleteSubjectUseCase
     {
         var subject = await _subjectDataStore.GetSubjectByIdAsync(tenantId, subjectId, cancellationToken);
 
-        if (subject == null)
+        if (subject is null)
         {
-            throw new InvalidOperationException($"No se encontró la asignatura con Id {subjectId}.");
+            throw new SubjectNotFoundException(subjectId);
         }
 
         subject.SoftDelete();
