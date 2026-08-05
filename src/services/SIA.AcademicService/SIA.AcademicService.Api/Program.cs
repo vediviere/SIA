@@ -2,7 +2,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Application.Interfaces.Queries;
-//using SIA.AcademicService.Application.UseCases.AcademicPeriods;
+using SIA.AcademicService.Application.UseCases.AcademicPeriods;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
 using SIA.AcademicService.Application.UseCases.StudyPlans;
 using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
@@ -65,7 +65,7 @@ builder.Services.AddHostedService<OutboxPublisherService>();
 
 builder.Services.AddScoped<ISubjectDataStore, SubjectDataStore>();
 
-/*
+
 builder.Services.AddScoped<IAcademicPeriodsDataStore, AcademicPeriodsDataStore>();
 builder.Services.AddScoped<IAcademicPeriodQueries, AcademicPeriodQueries>();
 
@@ -76,7 +76,7 @@ builder.Services.AddScoped<DeactivateAcademicPeriodUseCase>();
 builder.Services.AddScoped<ActivateAcademicPeriodUseCase>();
 builder.Services.AddScoped<SearchAcademicPeriodsUseCase>();
 builder.Services.AddScoped<GetAcademicPeriodByIdUseCase>();
-*/
+
 
 
 //  DataStores y Queries

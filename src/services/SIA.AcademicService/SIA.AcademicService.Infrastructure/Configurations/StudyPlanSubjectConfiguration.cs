@@ -50,7 +50,7 @@ public sealed class StudyPlanSubjectConfiguration
             .HasForeignKey(sps => sps.SubjectId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<StudyPlan>()
+        builder.HasOne(sps => sps.StudyPlan)
             .WithMany()
             .HasForeignKey(sps => sps.StudyPlanId)
             .OnDelete(DeleteBehavior.Restrict);

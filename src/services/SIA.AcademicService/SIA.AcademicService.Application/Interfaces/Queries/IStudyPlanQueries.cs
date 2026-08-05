@@ -8,6 +8,7 @@ using System.Text;
 namespace SIA.AcademicService.Application.Interfaces.Queries
 {
     public interface IStudyPlanQueries
+
     {
         Task<StudyPlan?> GetByIdAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken);
 

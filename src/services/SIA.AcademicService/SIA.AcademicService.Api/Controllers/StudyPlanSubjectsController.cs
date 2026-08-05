@@ -124,7 +124,6 @@ public sealed class StudyPlanSubjectsController : ControllerBase
 
         try
         {
-            // Mapeamos los datos de la ruta al Request creado en el paso anterior
             var request = new DeleteStudyPlanSubjectRequest
             {
                 TenantId = tenantId,

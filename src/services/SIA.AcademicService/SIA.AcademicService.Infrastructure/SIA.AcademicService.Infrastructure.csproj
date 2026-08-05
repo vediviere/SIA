@@ -1,16 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <Compile Remove="Persistence\DataStores\AcademicPeriods\**" />
-    <EmbeddedResource Remove="Persistence\DataStores\AcademicPeriods\**" />
-    <None Remove="Persistence\DataStores\AcademicPeriods\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Persistence\Queries\AcademicPeriodQueries.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SIA.AcademicService.Application\SIA.AcademicService.Application.csproj" />
     <ProjectReference Include="..\SIA.AcademicService.Domain\SIA.AcademicService.Domain.csproj" />
     <ProjectReference Include="..\SIA.AcademicService.Contracts\SIA.AcademicService.Contracts.csproj" />

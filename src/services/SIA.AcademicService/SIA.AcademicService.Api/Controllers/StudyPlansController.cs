@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Application.DTOs.StudyPlan;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.StudyPlans;
 using SIA.AcademicService.Contracts.Requests.StudyPlans;
@@ -46,13 +47,16 @@ public sealed class StudyPlansController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<StudyPlan>>> GetAllAsync(CancellationToken cancellationToken)
-        => Ok(await _queries.GetAllAsync(cancellationToken));
-
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<StudyPlan>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SearchAsync([FromQuery] StudyPlanFilter filter, CancellationToken cancellationToken)
     {
-        var result = await _queries.GetByIdAsync(id, cancellationToken);
+        var results = await _queries.SearchAsync(filter, cancellationToken);
+        return Ok(results);
+    }
+
+    [HttpGet("{tenantId:guid}/{id:guid}")]
+    public async Task<ActionResult<StudyPlan>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var result = await _queries.GetByIdAsync(tenantId, id, cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 
