@@ -9,6 +9,7 @@
     <Project Path="src/bff/SIA.TeacherBff/SIA.TeacherBff.csproj" />
   </Folder>
   <Folder Name="/src/building-blocks/">
+    <Project Path="SIA.BuildingBlocks.WebApi/SIA.BuildingBlocks.WebApi.csproj" Id="04c235bd-46c9-4cc0-a358-633c115883bd" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Application/SIA.BuildingBlocks.Application.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Contracts/SIA.BuildingBlocks.Contracts.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Domain/SIA.BuildingBlocks.Domain.csproj" />

@@ -11,7 +11,7 @@ using SIA.AcademicService.Infrastructure.MessageBus.Publishers;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.DataStores;
 using SIA.AcademicService.Infrastructure.Persistence.Queries;
-using SIA.AcademicService.Api.ExceptionHandling;
+using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 
 
 
@@ -126,9 +126,7 @@ builder.Services.AddScoped<DeactivateStudyPlanUseCase>();
 
 builder.Services.AddScoped<RestoreStudyPlanUseCase>();
 
-builder.Services.AddProblemDetails();
-
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddSiaExceptionHandling();
 
 var app = builder.Build();
 
@@ -157,6 +155,6 @@ app.MapGet("/health", () =>
     });
 });
 
-app.UseExceptionHandler();
+app.UseSiaExceptionHandling();
 
 app.Run();

@@ -1,3 +1,5 @@
+using SIA.BuildingBlocks.Application.Exceptions;
+
 namespace SIA.AcademicService.Application.Common.Exceptions;
 
 public sealed class AcademicPeriodNotFoundException : NotFoundException
