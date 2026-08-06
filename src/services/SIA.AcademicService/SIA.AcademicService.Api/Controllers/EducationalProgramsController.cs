@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Application.DTOs.EducationalProgram;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
 using SIA.AcademicService.Contracts.Requests.EducationalProgramsRequest;
@@ -13,14 +14,14 @@ namespace SIA.AcademicService.Api.Controllers;
 public sealed class EducationalProgramsController : ControllerBase
 {
     private readonly CreateEducationalProgramsUseCase _createEducationalProgramsUseCase;
-    private readonly IEducationalProgramsQueries _queries;
+    private readonly IEducationalProgramQueries _queries;
     private readonly UpdateEducationalProgramsUseCase _updateUseCase;
     private readonly DeactivateEducationalProgramsUseCase _deactivateUseCase;
     private readonly RestoreEducationalProgramsUseCase _restoreUseCase;
 
     public EducationalProgramsController(
         CreateEducationalProgramsUseCase createEducationalProgramsUseCase, 
-        IEducationalProgramsQueries queries,
+        IEducationalProgramQueries queries,
         UpdateEducationalProgramsUseCase updateUseCase,
         DeactivateEducationalProgramsUseCase deactivateUseCase,
         RestoreEducationalProgramsUseCase restoreUseCase)
@@ -58,16 +59,36 @@ public sealed class EducationalProgramsController : ControllerBase
         }
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<EducationalProgram>>> GetAllAsync(CancellationToken cancellationToken)
+    [HttpGet("Filter")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<EducationalProgram>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<EducationalProgram>>> SearchAsync(
+        [FromQuery] EducationalProgramFilter filter,
+        CancellationToken cancellationToken)
     {
-        return Ok(await _queries.GetAllAsync(cancellationToken));
+        var secureFilter = new EducationalProgramFilter
+        {
+            TenantId = filter.TenantId,
+            Code = filter.Code,
+            Name = filter.Name,
+            Level = filter.Level,
+            Status = filter.Status,
+            Page = filter.Page,
+            PageSize = filter.PageSize
+        };
+
+        var programs = await _queries.SearchAsync(secureFilter, cancellationToken);
+        return Ok(programs);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<EducationalProgram>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [ProducesResponseType(typeof(EducationalProgram), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<EducationalProgram>> GetByIdAsync(
+        [FromRoute] Guid tenantId,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
     {
-        var result = await _queries.GetByIdAsync(id, cancellationToken);
+        var result = await _queries.GetByIdAsync(tenantId, id, cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 

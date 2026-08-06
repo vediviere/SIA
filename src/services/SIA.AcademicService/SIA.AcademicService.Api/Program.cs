@@ -105,7 +105,7 @@ builder.Services.AddScoped<IEducationalProgramDataStore, EducationalProgramsData
 
 builder.Services.AddScoped<CreateEducationalProgramsUseCase>();
 
-builder.Services.AddScoped<IEducationalProgramsQueries, EducationalProgramsQueries>();
+builder.Services.AddScoped<IEducationalProgramQueries, EducationalProgramQueries>();
 
 builder.Services.AddScoped<UpdateEducationalProgramsUseCase>();
 
