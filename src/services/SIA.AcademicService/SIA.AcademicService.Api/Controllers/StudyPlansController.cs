@@ -46,10 +46,25 @@ public sealed class StudyPlansController : ControllerBase
         catch (ArgumentException ex) { return BadRequest(new { message = ex.Message, correlationId }); }
     }
 
-    [HttpGet]
-    public async Task<IActionResult> SearchAsync([FromQuery] StudyPlanFilter filter, CancellationToken cancellationToken)
+    [HttpGet("Filter")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<StudyPlan>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<StudyPlan>>> SearchAsync(
+        [FromQuery] StudyPlanFilter filter,
+        CancellationToken cancellationToken)
     {
-        var results = await _queries.SearchAsync(filter, cancellationToken);
+        var secureFilter = new StudyPlanFilter
+        {
+            TenantId = filter.TenantId,
+            EducationalProgramId = filter.EducationalProgramId,
+            Code = filter.Code,
+            Name = filter.Name,
+            Version = filter.Version,
+            Status = filter.Status,
+            Page = filter.Page,
+            PageSize = filter.PageSize
+        };
+
+        var results = await _queries.SearchAsync(secureFilter, cancellationToken);
         return Ok(results);
     }
 
