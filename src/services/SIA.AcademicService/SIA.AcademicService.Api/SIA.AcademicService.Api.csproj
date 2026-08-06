@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
     <ProjectReference Include="..\SIA.AcademicService.Application\SIA.AcademicService.Application.csproj" />
     <ProjectReference Include="..\SIA.AcademicService.Infrastructure\SIA.AcademicService.Infrastructure.csproj" />
     <ProjectReference Include="..\SIA.AcademicService.Contracts\SIA.AcademicService.Contracts.csproj" />
