@@ -15,7 +15,7 @@ public sealed class ActivateAcademicPeriodUseCase
     _dataStore = dataStore;
   }
 
-  public async Task<ActivateAcademicPeriodResponse> ExecuteAsync(Guid id, Guid correlationId, CancellationToken cancellationToken)
+  public async Task<ActivateAcademicPeriodResponse> ExecuteAsync(Guid tenantId, Guid id, Guid correlationId, CancellationToken cancellationToken)
   {
     var academicPeriod = await _dataStore.GetByIdAsync(id, cancellationToken);
 

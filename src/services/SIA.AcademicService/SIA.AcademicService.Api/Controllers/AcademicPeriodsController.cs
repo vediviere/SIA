@@ -45,169 +45,90 @@ public sealed class AcademicPeriodsController : ControllerBase
     {
         var correlationId = ResolveCorrelationId();
 
-        try
-        {
-            var response = await _createAcademicPeriodsUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        var response = await _createAcademicPeriodsUseCase.ExecuteAsync(request, correlationId, cancellationToken);
 
-            return StatusCode(StatusCodes.Status201Created, response);
-        }
-        catch (InvalidOperationException exception)
-        {
-            return Conflict(new { message = exception.Message, correlationId });
-        }
-        catch (ArgumentException exception)
-        {
-            return BadRequest(new { message = exception.Message, correlationId });
-        }
+        return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPut("{id:guid}")]
+    [HttpPut("{tenantId:guid}/{id:guid}")]
     [ProducesResponseType(typeof(UpdateAcademicPeriodResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateAcademicPeriodResponse>> UpdateAsync(Guid id, [FromBody] UpdateAcademicPeriodRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateAcademicPeriodResponse>> UpdateAsync([FromRoute] Guid id, [FromRoute] Guid tenantId, [FromBody] UpdateAcademicPeriodRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
 
-        try
-        {
-            var response = await _updateAcademicPeriodUseCase.ExecuteAsync(id, request, correlationId, cancellationToken);
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        var response = await _updateAcademicPeriodUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
 
-            return Ok(response);
-        }
-        catch (InvalidOperationException exception) when (exception.Message.Contains("No existe"))
-        {
-            return NotFound(new { message = exception.Message, correlationId });
-        }
-        catch (InvalidOperationException exception)
-        {
-            return Conflict(new { message = exception.Message, correlationId });
-        }
-        catch (ArgumentException exception)
-        {
-            return BadRequest(new { message = exception.Message, correlationId });
-        }
+        return Ok(response);
     }
 
-    [HttpPatch("{id:guid}")]
+    [HttpPatch("{tenantId:guid}/{id:guid}")]
     [ProducesResponseType(typeof(PatchAcademicPeriodResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<PatchAcademicPeriodResponse>> PatchAsync(Guid id, [FromBody] PatchAcademicPeriodRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<PatchAcademicPeriodResponse>> PatchAsync([FromRoute] Guid id,[FromRoute] Guid tenantId, [FromBody] PatchAcademicPeriodRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
 
-        try
-        {
-            var response = await _patchAcademicPeriodUseCase.ExecuteAsync(id, request, correlationId, cancellationToken);
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        var response = await _patchAcademicPeriodUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
 
-            return Ok(response);
-        }
-        catch (InvalidOperationException exception) when (exception.Message.Contains("No existe"))
-        {
-            return NotFound(new { message = exception.Message, correlationId });
-        }
-        catch (InvalidOperationException exception)
-        {
-            return Conflict(new { message = exception.Message, correlationId });
-        }
-        catch (ArgumentException exception)
-        {
-            return BadRequest(new { message = exception.Message, correlationId });
-        }
+        return Ok(response);
     }
 
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{tenantId:guid}/{id:guid}")]
     [ProducesResponseType(typeof(DeactivateAcademicPeriodResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DeactivateAcademicPeriodResponse>> DeactivateAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<DeactivateAcademicPeriodResponse>> DeactivateAsync([FromRoute] Guid id,[FromRoute] Guid tenantId, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
 
-        try
-        {
-            var response = await _deactivateAcademicPeriodUseCase.ExecuteAsync(id, correlationId, cancellationToken);
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        await _deactivateAcademicPeriodUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
-            return Ok(response);
-        }
-        catch (InvalidOperationException exception)
-        {
-            return NotFound(new { message = exception.Message, correlationId });
-        }
+        return NoContent();
     }
 
-    [HttpPatch("{id:guid}/restore")]
+    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
     [ProducesResponseType(typeof(ActivateAcademicPeriodResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ActivateAcademicPeriodResponse>> ActivateAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ActivateAcademicPeriodResponse>> ActivateAsync([FromRoute] Guid id,[FromRoute] Guid tenantId,CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
 
-        try
-        {
-            var response = await _activateAcademicPeriodUseCase.ExecuteAsync(id, correlationId, cancellationToken);
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        var respuesta = await _activateAcademicPeriodUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
-            return Ok(response);
-        }
-        catch (InvalidOperationException exception)
-        {
-            return NotFound(new { message = exception.Message, correlationId });
-        }
+        return Ok(respuesta);
     }
 
-    [HttpGet]
+    [HttpGet("Filter")]
     [ProducesResponseType(typeof(IReadOnlyCollection<AcademicPeriodDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<AcademicPeriodDto>>> SearchAsync(
-    [FromQuery] Guid tenantId,
-    [FromQuery] string? code,
-    [FromQuery] string? name,
-    [FromQuery] bool? status,
-    [FromQuery] int page,
-    [FromQuery] int pageSize,
-    CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyCollection<AcademicPeriodDto>>> SearchAsync([FromQuery] AcademicPeriodFilter filter,CancellationToken cancellationToken)
     {
-        var filter = new AcademicPeriodFilter
-        {
-            TenantId = tenantId,
-            Code = code,
-            Name = name,
-            Status = status,
-            Page = page <= 0 ? 1 : page,
-            PageSize = pageSize <= 0 ? 10 : pageSize
-        };
-
         var response = await _searchAcademicPeriodsUseCase.ExecuteAsync(filter, cancellationToken);
 
         return Ok(response);
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{tenantId:guid}/{id:guid}")]
     [ProducesResponseType(typeof(AcademicPeriodDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<AcademicPeriodDto>> GetByIdAsync(Guid id, [FromQuery] Guid tenantId, CancellationToken cancellationToken)
+    public async Task<ActionResult<AcademicPeriodDto>> GetByIdAsync([FromRoute] Guid id,[FromRoute] Guid tenantId, CancellationToken cancellationToken)
     {
-        try
-        {
-            var response = await _getAcademicPeriodByIdUseCase.ExecuteAsync(tenantId, id, cancellationToken);
+        var response = await _getAcademicPeriodByIdUseCase.ExecuteAsync(tenantId, id, cancellationToken);
 
-            return Ok(response);
-        }
-        catch (InvalidOperationException exception)
-        {
-            return NotFound(new { message = exception.Message });
-        }
+        return Ok(response);
     }
 
     private Guid ResolveCorrelationId()
