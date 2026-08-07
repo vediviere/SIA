@@ -1,5 +1,6 @@
-﻿using SIA.AcademicService.Application.Interfaces.DataStores;
-using SIA.AcademicService.Contracts.IntegrationEvents;
+﻿using SIA.AcademicService.Application.Common.Exceptions;
+using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlans;
 using SIA.AcademicService.Contracts.Requests.StudyPlans;
 using SIA.AcademicService.Contracts.Responses.StudyPlans;
 using SIA.AcademicService.Domain.Entities;
@@ -22,7 +23,7 @@ public sealed class CreateStudyPlanUseCase
         var codeExists = await _dataStore.StudyPlanCodeExistsAsync(request.TenantId, normalizedCode, cancellationToken);
         if (codeExists)
         {
-            throw new InvalidOperationException($"Ya existe un plan de estudios con el código {normalizedCode}.");
+            throw new DuplicateStudyPlanCodeException(normalizedCode);
         }
 
         var studyPlan = new StudyPlan(request.TenantId, request.EducationalProgramId, normalizedCode, request.Name, request.Version, request.EffectiveFrom);

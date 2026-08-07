@@ -1,4 +1,6 @@
-﻿using SIA.AcademicService.Application.Interfaces.DataStores;
+﻿using SIA.AcademicService.Application.Common.Exceptions;
+using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
 using SIA.AcademicService.Contracts.Requests.EducationalProgramsRequest;
 using SIA.AcademicService.Contracts.Responses.EducationalProgramsResponse;
 
@@ -13,18 +15,33 @@ public sealed class UpdateEducationalProgramsUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<UpdateEducationalProgramsResponse> ExecuteAsync(Guid id, UpdateEducationalProgramsRequest request, CancellationToken cancellationToken)
+    public async Task<UpdateEducationalProgramsResponse> ExecuteAsync(
+        Guid tenantId, Guid id, UpdateEducationalProgramsRequest request, Guid correlationId, CancellationToken cancellationToken)
     {
-        var entity = await _dataStore.GetByIdAsync(id, cancellationToken);
+        var entity = await _dataStore.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (entity is null)
         {
-            throw new InvalidOperationException($"No se encontró un programa educativo con el id {id}.");
+            throw new EducationalProgramNotFoundException(id);
         }
 
         entity.UpdateDetails(request.Code, request.Name, request.Level);
 
-        await _dataStore.UpdateAsync(entity, cancellationToken);
+        var integrationEvent = new EducationalProgramUpdatedIntegrationEvent
+        {
+            EventId = Guid.NewGuid(),
+            CorrelationId = correlationId,
+            OccurredAtUtc = entity.UpdatedAtUtc ?? DateTime.UtcNow,
+            TenantId = entity.TenantId,
+            EducationalProgramId = entity.Id,
+            Code = entity.Code,
+            Name = entity.Name,
+            Level = entity.Level,
+            Status = entity.Status,
+            Version = 1
+        };
+
+        await _dataStore.UpdateEducationalProgramWithOutboxAsync(entity, integrationEvent, cancellationToken);
 
         return new UpdateEducationalProgramsResponse
         {

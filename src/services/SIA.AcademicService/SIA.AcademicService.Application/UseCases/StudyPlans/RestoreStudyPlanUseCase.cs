@@ -1,4 +1,6 @@
-﻿using SIA.AcademicService.Application.Interfaces.DataStores;
+﻿using SIA.AcademicService.Application.Common.Exceptions;
+using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlans;
 
 namespace SIA.AcademicService.Application.UseCases.StudyPlans;
 public sealed class RestoreStudyPlanUseCase
@@ -10,15 +12,26 @@ public sealed class RestoreStudyPlanUseCase
         _dataStore = dataStore;
     }
 
-    public async Task ExecuteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(Guid tenantId, Guid id, Guid correlationId, CancellationToken cancellationToken)
     {
-        var entity = await _dataStore.GetByIdAsync(id, cancellationToken);
+        var entity = await _dataStore.GetByIdAsync(tenantId, id, cancellationToken);
         if (entity is null)
         {
-            throw new InvalidOperationException($"No se encontró un plan de estudios con el id {id}.");
+            throw new StudyPlanNotFoundException(id);
         }
 
         entity.Activate();
-        await _dataStore.UpdateAsync(entity, cancellationToken);
+
+        var integrationEvent = new StudyPlanRestoredIntegrationEvent
+        {
+            EventId = Guid.NewGuid(),
+            CorrelationId = correlationId,
+            OccurredAtUtc = entity.UpdatedAtUtc ?? DateTime.UtcNow,
+            TenantId = entity.TenantId,
+            StudyPlanId = entity.Id,
+            ContractVersion = 1
+        };
+
+        await _dataStore.RestoreStudyPlanWithOutboxAsync(entity, integrationEvent, cancellationToken);
     }
 }

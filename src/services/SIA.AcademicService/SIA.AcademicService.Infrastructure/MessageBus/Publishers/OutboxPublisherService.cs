@@ -4,10 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SIA.AcademicService.Contracts.IntegrationEvents;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Contracts.IntegrationEvents.AcademicPeriods;
 using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
+using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
+using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlans;
 
 namespace SIA.AcademicService.Infrastructure.MessageBus.Publishers
 {
