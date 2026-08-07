@@ -40,23 +40,9 @@ public sealed class EducationalProgramsController : ControllerBase
     public async Task<ActionResult<CreateEducationalProgramsResponse>> CreateAsync([FromBody] CreateEducationalProgramsRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
-        try
-        {
-            var response = await _createEducationalProgramsUseCase.ExecuteAsync(request, correlationId, cancellationToken);
-
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
-
-            return StatusCode(StatusCodes.Status201Created, response);
-        }
-        catch (InvalidOperationException exception)
-        {
-            return Conflict(new { message = exception.Message, correlationId });
-        }
-        catch (ArgumentException exception)
-        {
-            return BadRequest(new { message = exception.Message, correlationId });
-        }
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        var response = await _createEducationalProgramsUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, response);
     }
 
     [HttpGet("Filter")]
@@ -92,37 +78,49 @@ public sealed class EducationalProgramsController : ControllerBase
         return result is null ? NotFound() : Ok(result);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<UpdateEducationalProgramsResponse>> UpdateAsync(Guid id, [FromBody] UpdateEducationalProgramsRequest request, CancellationToken cancellationToken)
+    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [ProducesResponseType(typeof(UpdateEducationalProgramsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<UpdateEducationalProgramsResponse>> UpdateAsync(
+        [FromRoute] Guid tenantId,
+        [FromRoute] Guid id,
+        [FromBody] UpdateEducationalProgramsRequest request,
+        CancellationToken cancellationToken)
     {
-        try
-        {
-            return Ok(await _updateUseCase.ExecuteAsync(id, request, cancellationToken));
-        }
-        catch (InvalidOperationException ex) { return NotFound(new { message = ex.Message }); }
-        catch (ArgumentException ex) { return BadRequest(new { message = ex.Message }); }
+        var correlationId = ResolveCorrelationId();
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        var response = await _updateUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
+        return Ok(response);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeactivateAsync(Guid id, CancellationToken cancellationToken)
+    [HttpDelete("{tenantId:guid}/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeactivateAsync(
+        [FromRoute] Guid tenantId,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
     {
-        try
-        {
-            await _deactivateUseCase.ExecuteAsync(id, cancellationToken);
-            return NoContent();
-        }
-        catch (InvalidOperationException ex) { return NotFound(new { message = ex.Message }); }
+        var correlationId = ResolveCorrelationId();
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        await _deactivateUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+        return NoContent();
     }
 
-    [HttpPatch("{id:guid}/restore")]
-    public async Task<IActionResult> RestoreAsync(Guid id, CancellationToken cancellationToken)
+    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RestoreAsync(
+        [FromRoute] Guid tenantId,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
     {
-        try
-        {
-            await _restoreUseCase.ExecuteAsync(id, cancellationToken);
-            return NoContent();
-        }
-        catch (InvalidOperationException ex) { return NotFound(new { message = ex.Message }); }
+        var correlationId = ResolveCorrelationId();
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        await _restoreUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+        return NoContent();
     }
 
 

@@ -1,5 +1,6 @@
-﻿using SIA.AcademicService.Application.Interfaces.DataStores;
-using SIA.AcademicService.Contracts.IntegrationEvents;
+﻿using SIA.AcademicService.Application.Common.Exceptions;
+using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
 using SIA.AcademicService.Contracts.Requests.EducationalProgramsRequest;
 using SIA.AcademicService.Contracts.Responses.EducationalProgramsResponse;
 using SIA.AcademicService.Domain.Entities;
@@ -23,7 +24,7 @@ public sealed class CreateEducationalProgramsUseCase
 
         if (codeExists)
         {
-            throw new InvalidOperationException($"Ya existe un Programa Educativo con este codigo{normalizedCode}.");
+            throw new DuplicateEducationalProgramCodeException(normalizedCode);
         }
 
         var educationalPrograms = new EducationalProgram(request.TenantId, normalizedCode, request.Name, request.Level);

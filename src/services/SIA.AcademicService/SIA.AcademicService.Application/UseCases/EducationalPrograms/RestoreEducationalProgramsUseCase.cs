@@ -1,7 +1,8 @@
-﻿using SIA.AcademicService.Application.Interfaces.DataStores;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SIA.AcademicService.Application.Common.Exceptions;
+using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
+
+namespace SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
 
 public sealed class RestoreEducationalProgramsUseCase
 {
@@ -12,17 +13,27 @@ public sealed class RestoreEducationalProgramsUseCase
         _dataStore = dataStore;
     }
 
-    public async Task ExecuteAsync(Guid id, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(Guid tenantId, Guid id, Guid correlationId, CancellationToken cancellationToken)
     {
-        var entity = await _dataStore.GetByIdAsync(id, cancellationToken);
+        var entity = await _dataStore.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (entity is null)
         {
-            throw new InvalidOperationException($"No se encontró un programa educativo con el id {id}.");
+            throw new EducationalProgramNotFoundException(id);
         }
 
         entity.Activate();
 
-        await _dataStore.UpdateAsync(entity, cancellationToken);
+        var integrationEvent = new EducationalProgramRestoredIntegrationEvent
+        {
+            EventId = Guid.NewGuid(),
+            CorrelationId = correlationId,
+            OccurredAtUtc = entity.UpdatedAtUtc ?? DateTime.UtcNow,
+            TenantId = entity.TenantId,
+            EducationalProgramId = entity.Id,
+            Version = 1
+        };
+
+        await _dataStore.RestoreEducationalProgramWithOutboxAsync(entity, integrationEvent, cancellationToken);
     }
 }

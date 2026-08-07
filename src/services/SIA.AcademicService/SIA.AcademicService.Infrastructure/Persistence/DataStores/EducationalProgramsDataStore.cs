@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Application.Interfaces.DataStores;
-using SIA.AcademicService.Contracts.IntegrationEvents;
+using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
 using SIA.AcademicService.Domain.Entities;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.Entities;
@@ -51,13 +51,76 @@ public sealed class EducationalProgramsDataStore : IEducationalProgramDataStore
         }
     }
 
-    public async Task<EducationalProgram?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<EducationalProgram?> GetByIdAsync(Guid tenantId, Guid educationalProgramId, CancellationToken cancellationToken)
     {
-        return await _dbContext.EducationalPrograms.FirstOrDefaultAsync(educationalProgram => educationalProgram.Id == id, cancellationToken);
+        return await _dbContext.EducationalPrograms.FirstOrDefaultAsync(
+            educationalProgram => educationalProgram.TenantId == tenantId && educationalProgram.Id == educationalProgramId,
+            cancellationToken);
     }
 
-    public async Task UpdateAsync(EducationalProgram educationalPrograms, CancellationToken cancellationToken)
+    public async Task UpdateEducationalProgramWithOutboxAsync(EducationalProgram educationalProgram, EducationalProgramUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        var payload = JsonSerializer.Serialize(integrationEvent);
+        var eventType = $"{nameof(EducationalProgramUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            _dbContext.EducationalPrograms.Update(educationalProgram);
+            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
+    public async Task DeactivateEducationalProgramWithOutboxAsync(EducationalProgram educationalProgram, EducationalProgramDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    {
+        var payload = JsonSerializer.Serialize(integrationEvent);
+        var eventType = $"{nameof(EducationalProgramDeactivatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            _dbContext.EducationalPrograms.Update(educationalProgram);
+            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
+    public async Task RestoreEducationalProgramWithOutboxAsync(EducationalProgram educationalProgram, EducationalProgramRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    {
+        var payload = JsonSerializer.Serialize(integrationEvent);
+        var eventType = $"{nameof(EducationalProgramRestoredIntegrationEvent)}.v{integrationEvent.Version}";
+        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            _dbContext.EducationalPrograms.Update(educationalProgram);
+            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }
