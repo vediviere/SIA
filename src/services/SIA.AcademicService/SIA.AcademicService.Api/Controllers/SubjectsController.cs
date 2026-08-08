@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Application.Common.Exceptions;
 using SIA.AcademicService.Application.DTOs.Subjects;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.Subjects;
@@ -57,7 +58,7 @@ public sealed class SubjectsController : ControllerBase
 
     if (subject == null)
     {
-      return NotFound(new { message = $"No se encontró la materia con Id {id}." });
+            throw new SubjectNotFoundException(id);
     }
 
     return Ok(subject);
