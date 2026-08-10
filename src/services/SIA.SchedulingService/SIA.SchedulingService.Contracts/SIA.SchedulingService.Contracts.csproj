@@ -4,12 +4,6 @@
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Contracts\SIA.BuildingBlocks.Contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="IntegrationEvents\" />
-    <Folder Include="Responses\" />
-    <Folder Include="Requests\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

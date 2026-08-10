@@ -8,10 +8,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Exceptions\" />
     <Folder Include="DTOs\" />
     <Folder Include="Interfaces\Queries\" />
-    <Folder Include="UseCases\" />
   </ItemGroup>
 
   <PropertyGroup>

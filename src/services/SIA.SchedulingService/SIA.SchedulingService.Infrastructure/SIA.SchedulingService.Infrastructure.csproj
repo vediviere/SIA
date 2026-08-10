@@ -10,8 +10,6 @@
 
   <ItemGroup>
     <Folder Include="MessageBus\Publishers\" />
-    <Folder Include="Persistence\DataStores\" />
-    <Folder Include="Persistence\Entities\" />
     <Folder Include="Persistence\Migrations\" />
     <Folder Include="Persistence\Queries\" />
   </ItemGroup>
