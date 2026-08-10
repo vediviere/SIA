@@ -8,6 +8,14 @@
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MessageBus\Publishers\" />
+    <Folder Include="Persistence\DataStores\" />
+    <Folder Include="Persistence\Entities\" />
+    <Folder Include="Persistence\Migrations\" />
+    <Folder Include="Persistence\Queries\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
