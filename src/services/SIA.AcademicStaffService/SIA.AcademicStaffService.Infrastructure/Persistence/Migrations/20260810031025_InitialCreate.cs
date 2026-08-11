@@ -12,24 +12,21 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Docente",
+                name: "DivisionManagers",
                 columns: table => new
                 {
-                    DocenteId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DivisionManagerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PersonaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GradoAcademico = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    PerfilProfesional = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    TipoContrato = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    HorasContrato = table.Column<int>(type: "int", nullable: false),
+                    ProgramId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AcademicDegree = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Docente", x => x.DocenteId);
-                    table.CheckConstraint("CK_Docente_HorasContrato_Positive", "[HorasContrato] > 0");
+                    table.PrimaryKey("PK_DivisionManagers", x => x.DivisionManagerId);
                 });
 
             migrationBuilder.CreateTable(
@@ -51,27 +48,30 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ResponsableDivision",
+                name: "Professors",
                 columns: table => new
                 {
-                    DivisionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProfessorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProgramaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PersonaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GradoAcademico = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AcademicDegree = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ProfessionalProfile = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ContractType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ContractHours = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ResponsableDivision", x => x.DivisionId);
+                    table.PrimaryKey("PK_Professors", x => x.ProfessorId);
+                    table.CheckConstraint("CK_Professors_ContractHours_Positive", "[ContractHours] > 0");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Docente_TenantId_PersonaId",
-                table: "Docente",
-                columns: new[] { "TenantId", "PersonaId" },
+                name: "IX_DivisionManagers_TenantId_ProgramId_PersonId",
+                table: "DivisionManagers",
+                columns: new[] { "TenantId", "ProgramId", "PersonId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -85,9 +85,9 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                 column: "ProcessedAtUtc");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ResponsableDivision_TenantId_ProgramaId_PersonaId",
-                table: "ResponsableDivision",
-                columns: new[] { "TenantId", "ProgramaId", "PersonaId" },
+                name: "IX_Professors_TenantId_PersonId",
+                table: "Professors",
+                columns: new[] { "TenantId", "PersonId" },
                 unique: true);
         }
 
@@ -95,13 +95,13 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Docente");
+                name: "DivisionManagers");
 
             migrationBuilder.DropTable(
                 name: "OutboxMessages");
 
             migrationBuilder.DropTable(
-                name: "ResponsableDivision");
+                name: "Professors");
         }
     }
 }

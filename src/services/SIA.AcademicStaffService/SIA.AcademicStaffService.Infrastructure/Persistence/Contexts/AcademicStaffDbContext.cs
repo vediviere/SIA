@@ -12,9 +12,9 @@ public sealed class AcademicStaffDbContext : DbContext
     {
     }
 
-    public DbSet<Docente> Docentes => Set<Docente>();
+    public DbSet<Professor> Professors => Set<Professor>();
 
-    public DbSet<ResponsableDivision> ResponsablesDivision => Set<ResponsableDivision>();
+    public DbSet<DivisionManager> DivisionManagers => Set<DivisionManager>();
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 

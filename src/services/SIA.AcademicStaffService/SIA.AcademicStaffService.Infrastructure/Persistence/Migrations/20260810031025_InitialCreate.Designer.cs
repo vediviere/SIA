@@ -12,7 +12,7 @@ using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AcademicStaffDbContext))]
-    [Migration("20260809222433_InitialCreate")]
+    [Migration("20260810031025_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,29 +25,24 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.Docente", b =>
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.DivisionManager", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DocenteId");
+                        .HasColumnName("DivisionManagerId");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("GradoAcademico")
+                    b.Property<string>("AcademicDegree")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("HorasContrato")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("PerfilProfesional")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PersonaId")
+                    b.Property<Guid>("ProgramId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Status")
@@ -56,44 +51,46 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("TipoContrato")
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "ProgramId", "PersonId")
+                        .IsUnique();
+
+                    b.ToTable("DivisionManagers", (string)null);
+                });
+
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.Professor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ProfessorId");
+
+                    b.Property<string>("AcademicDegree")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ContractHours")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContractType")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId", "PersonaId")
-                        .IsUnique();
-
-                    b.ToTable("Docente", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Docente_HorasContrato_Positive", "[HorasContrato] > 0");
-                        });
-                });
-
-            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.ResponsableDivision", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DivisionId");
-
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GradoAcademico")
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProfessionalProfile")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid>("PersonaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProgramaId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
@@ -106,10 +103,13 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId", "ProgramaId", "PersonaId")
+                    b.HasIndex("TenantId", "PersonId")
                         .IsUnique();
 
-                    b.ToTable("ResponsableDivision", (string)null);
+                    b.ToTable("Professors", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Professors_ContractHours_Positive", "[ContractHours] > 0");
+                        });
                 });
 
             modelBuilder.Entity("SIA.AcademicStaffService.Infrastructure.Persistence.Entities.OutboxMessage", b =>

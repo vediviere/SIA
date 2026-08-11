@@ -1,5 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SIA.AcademicStaffService.Application.Interfaces.DataStores;
+using SIA.AcademicStaffService.Application.Interfaces.Queries;
+using SIA.AcademicStaffService.Application.UseCases.Professors;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
+using SIA.AcademicStaffService.Infrastructure.Persistence.DataStores;
+using SIA.AcademicStaffService.Infrastructure.Persistence.Queries;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +23,13 @@ builder.Services.AddDbContext<AcademicStaffDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+builder.Services.AddScoped<IProfessorDataStore, ProfessorDataStore>();
+builder.Services.AddScoped<IProfessorQueries, ProfessorQueries>();
+
+builder.Services.AddScoped<CreateProfessorUseCase>();
+builder.Services.AddScoped<UpdateProfessorUseCase>();
+builder.Services.AddScoped<ActivateProfessorUseCase>();
+builder.Services.AddScoped<DeactivateProfessorUseCase>();
 
 builder.Services.AddSiaExceptionHandling();
 
