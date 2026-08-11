@@ -1,7 +1,7 @@
 ﻿
 namespace SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
 
-internal class ClassroomCreatedIntegrationEvent
+public sealed class ClassroomCreatedIntegrationEvent
 {
     public Guid EventId { get; init; }
     public Guid CorrelationId { get; init; }
