@@ -27,13 +27,21 @@ public sealed class OutboxMessage
         CorrelationId = correlationId;
         RetryCount = 0;
     }
+
     public Guid Id { get; private set; }
+
     public string EventType { get; private set; } = string.Empty;
+
     public string Payload { get; private set; } = string.Empty;
+
     public DateTime OccurredAtUtc { get; private set; }
+
     public DateTime? ProcessedAtUtc { get; private set; }
+
     public int RetryCount { get; private set; }
+
     public string? Error { get; private set; }
+
     public Guid CorrelationId { get; private set; }
 
     public void MarkAsProcessed()
