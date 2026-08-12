@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.Professors;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionManagers;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 
 namespace SIA.AcademicStaffService.Infrastructure.MessageBus.Publishers
@@ -50,7 +51,7 @@ namespace SIA.AcademicStaffService.Infrastructure.MessageBus.Publishers
                 scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 
             var pendingMessages =
-                await dbContext.OutboxMessages
+                await dbContext.OutboxMessage
                     .Where(message =>
                         message.ProcessedAtUtc == null &&
                         message.RetryCount < 5)
@@ -90,9 +91,9 @@ namespace SIA.AcademicStaffService.Infrastructure.MessageBus.Publishers
 
         private static async Task PublishMessageAsync(string eventType, string payload, IPublishEndpoint publishEndpoint, CancellationToken cancellationToken)
         {
-            if (eventType == $"{nameof(ProfessorCreatedIntegrationEvent)}.v1")
+            if (eventType == $"{nameof(TeacherCreatedIntegrationEvent)}.v1")
             {
-                var integrationEvent = JsonSerializer.Deserialize<ProfessorCreatedIntegrationEvent>(payload);
+                var integrationEvent = JsonSerializer.Deserialize<TeacherCreatedIntegrationEvent>(payload);
                 if (integrationEvent is null)
                 {
                     throw new InvalidOperationException("No fue posible deserializar el evento de profesor creado.");
@@ -101,9 +102,9 @@ namespace SIA.AcademicStaffService.Infrastructure.MessageBus.Publishers
                 return;
             }
 
-            if (eventType == $"{nameof(ProfessorUpdatedIntegrationEvent)}.v1")
+            if (eventType == $"{nameof(TeacherUpdatedIntegrationEvent)}.v1")
             {
-                var integrationEvent = JsonSerializer.Deserialize<ProfessorUpdatedIntegrationEvent>(payload);
+                var integrationEvent = JsonSerializer.Deserialize<TeacherUpdatedIntegrationEvent>(payload);
                 if (integrationEvent is null)
                 {
                     throw new InvalidOperationException("No fue posible deserializar el evento de profesor actualizado.");
@@ -112,9 +113,9 @@ namespace SIA.AcademicStaffService.Infrastructure.MessageBus.Publishers
                 return;
             }
 
-            if (eventType == $"{nameof(ProfessorActivatedIntegrationEvent)}.v1")
+            if (eventType == $"{nameof(TeacherActivatedIntegrationEvent)}.v1")
             {
-                var integrationEvent = JsonSerializer.Deserialize<ProfessorActivatedIntegrationEvent>(payload);
+                var integrationEvent = JsonSerializer.Deserialize<TeacherActivatedIntegrationEvent>(payload);
                 if (integrationEvent is null)
                 {
                     throw new InvalidOperationException("No fue posible deserializar el evento de profesor activado.");
@@ -123,12 +124,56 @@ namespace SIA.AcademicStaffService.Infrastructure.MessageBus.Publishers
                 return;
             }
 
-            if (eventType == $"{nameof(ProfessorDeactivatedIntegrationEvent)}.v1")
+            if (eventType == $"{nameof(TeacherDeactivatedIntegrationEvent)}.v1")
             {
-                var integrationEvent = JsonSerializer.Deserialize<ProfessorDeactivatedIntegrationEvent>(payload);
+                var integrationEvent = JsonSerializer.Deserialize<TeacherDeactivatedIntegrationEvent>(payload);
                 if (integrationEvent is null)
                 {
                     throw new InvalidOperationException("No fue posible deserializar el evento de profesor desactivado.");
+                }
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            if (eventType == $"{nameof(DivisionHeadCreatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<DivisionHeadCreatedIntegrationEvent>(payload);
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de responsable de división creado.");
+                }
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            if (eventType == $"{nameof(DivisionHeadUpdatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<DivisionHeadUpdatedIntegrationEvent>(payload);
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de responsable de división actualizado.");
+                }
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            if (eventType == $"{nameof(DivisionHeadActivatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<DivisionHeadActivatedIntegrationEvent>(payload);
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de responsable de división activado.");
+                }
+                await publishEndpoint.Publish(integrationEvent, cancellationToken);
+                return;
+            }
+
+            if (eventType == $"{nameof(DivisionHeadDeactivatedIntegrationEvent)}.v1")
+            {
+                var integrationEvent = JsonSerializer.Deserialize<DivisionHeadDeactivatedIntegrationEvent>(payload);
+                if (integrationEvent is null)
+                {
+                    throw new InvalidOperationException("No fue posible deserializar el evento de responsable de división desactivado.");
                 }
                 await publishEndpoint.Publish(integrationEvent, cancellationToken);
                 return;

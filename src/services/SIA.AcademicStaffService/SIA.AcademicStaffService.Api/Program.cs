@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
+using SIA.AcademicStaffService.Application.UseCases.DivisionManagers;
 using SIA.AcademicStaffService.Application.UseCases.Professors;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicStaffService.Infrastructure.Persistence.DataStores;
@@ -23,13 +24,21 @@ builder.Services.AddDbContext<AcademicStaffDbContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
-builder.Services.AddScoped<IProfessorDataStore, ProfessorDataStore>();
-builder.Services.AddScoped<IProfessorQueries, ProfessorQueries>();
+builder.Services.AddScoped<ITeacherDataStore, TeacherDataStore>();
+builder.Services.AddScoped<ITeacherQueries, TeacherQueries>();
 
-builder.Services.AddScoped<CreateProfessorUseCase>();
-builder.Services.AddScoped<UpdateProfessorUseCase>();
-builder.Services.AddScoped<ActivateProfessorUseCase>();
-builder.Services.AddScoped<DeactivateProfessorUseCase>();
+builder.Services.AddScoped<CreateTeacherUseCase>();
+builder.Services.AddScoped<UpdateTeacherUseCase>();
+builder.Services.AddScoped<ActivateTeacherUseCase>();
+builder.Services.AddScoped<DeactivateTeacherUseCase>();
+
+builder.Services.AddScoped<IDivisionHeadDataStore, DivisionHeadDataStore>();
+builder.Services.AddScoped<IDivisionHeadQueries, DivisionHeadQueries>();
+
+builder.Services.AddScoped<CreateDivisionHeadUseCase>();
+builder.Services.AddScoped<UpdateDivisionHeadUseCase>();
+builder.Services.AddScoped<ActivateDivisionHeadUseCase>();
+builder.Services.AddScoped<DeactivateDivisionHeadUseCase>();
 
 builder.Services.AddSiaExceptionHandling();
 

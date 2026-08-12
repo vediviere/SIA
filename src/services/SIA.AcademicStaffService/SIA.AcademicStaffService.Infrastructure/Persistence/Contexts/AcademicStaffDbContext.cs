@@ -12,11 +12,11 @@ public sealed class AcademicStaffDbContext : DbContext
     {
     }
 
-    public DbSet<Professor> Professors => Set<Professor>();
+    public DbSet<Teacher> Teacher => Set<Teacher>();
 
-    public DbSet<DivisionManager> DivisionManagers => Set<DivisionManager>();
+    public DbSet<DivisionHead> DivisionHead => Set<DivisionHead>();
 
-    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<OutboxMessage> OutboxMessage => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
