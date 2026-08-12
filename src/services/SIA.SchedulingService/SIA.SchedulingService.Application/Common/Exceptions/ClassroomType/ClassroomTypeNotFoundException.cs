@@ -1,6 +1,6 @@
 ﻿using SIA.BuildingBlocks.Application.Exceptions;
 
-namespace SIA.SchedulingService.Application.Common.Exceptions;
+namespace SIA.SchedulingService.Application.Common.Exceptions.ClassroomType;
 
 public sealed class ClassroomTypeNotFoundException : NotFoundException
 {

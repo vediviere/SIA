@@ -8,41 +8,40 @@ using SIA.SchedulingService.Infrastructure.Persistence.Entities;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 
-public sealed class ClassroomDataStore : IClassroomDataStore
+public sealed class ClassroomLabDataStore : IClassroomLabDataStore
 {
-
     private readonly SchedulingDbContext _dbContext;
 
-    public ClassroomDataStore(SchedulingDbContext dbContext)
+    public ClassroomLabDataStore(SchedulingDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public Task<bool> ClassroomCodeExistsAsync(Guid tenantId, string code, CancellationToken cancellationToken)
+    public Task<bool> ClassroomLabCodeExistsAsync(Guid tenantId, string code, CancellationToken cancellationToken)
     {
-        return _dbContext.Classrooms.AnyAsync(
-            classroom => classroom.TenantId == tenantId && classroom.Code == code,
+        return _dbContext.ClassroomLabs.AnyAsync(
+            classroomLab => classroomLab.TenantId == tenantId && classroomLab.Code == code,
             cancellationToken);
     }
 
-    public Task<Classroom?> GetClassroomByIdAsync(Guid tenantId, Guid classroomId, CancellationToken cancellationToken)
+    public Task<ClassroomLab?> GetClassroomLabByIdAsync(Guid tenantId, Guid classroomLabId, CancellationToken cancellationToken)
     {
-        return _dbContext.Classrooms
-            .Include(classroom => classroom.ClassroomType)
-            .FirstOrDefaultAsync(classroom => classroom.TenantId == tenantId && classroom.Id == classroomId, cancellationToken);
+        return _dbContext.ClassroomLabs
+            .Include(classroomLab => classroomLab.ClassroomType)
+            .FirstOrDefaultAsync(classroomLab => classroomLab.TenantId == tenantId && classroomLab.Id == classroomLabId, cancellationToken);
     }
 
-    public async Task AddClassroomWithOutboxAsync(Classroom classroom, ClassroomCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task AddClassroomLabWithOutboxAsync(ClassroomLab classroomLab, ClassroomLabCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(ClassroomCreatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = $"{nameof(ClassroomLabCreatedIntegrationEvent)}.v{integrationEvent.Version}";
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            await _dbContext.Classrooms.AddAsync(classroom, cancellationToken);
+            await _dbContext.ClassroomLabs.AddAsync(classroomLab, cancellationToken);
             await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -55,17 +54,17 @@ public sealed class ClassroomDataStore : IClassroomDataStore
         }
     }
 
-    public async Task UpdateClassroomWithOutboxAsync(Classroom classroom, ClassroomUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task UpdateClassroomLabWithOutboxAsync(ClassroomLab classroomLab, ClassroomLabUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(ClassroomUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = $"{nameof(ClassroomLabUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            _dbContext.Classrooms.Update(classroom);
+            _dbContext.ClassroomLabs.Update(classroomLab);
             await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -78,17 +77,17 @@ public sealed class ClassroomDataStore : IClassroomDataStore
         }
     }
 
-    public async Task SoftDeleteClassroomWithOutboxAsync(Classroom classroom, ClassroomDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task SoftDeleteClassroomLabWithOutboxAsync(ClassroomLab classroomLab, ClassroomLabDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(ClassroomDeletedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = $"{nameof(ClassroomLabDeletedIntegrationEvent)}.v{integrationEvent.Version}";
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            _dbContext.Classrooms.Update(classroom);
+            _dbContext.ClassroomLabs.Update(classroomLab);
             await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -101,17 +100,17 @@ public sealed class ClassroomDataStore : IClassroomDataStore
         }
     }
 
-    public async Task RestoreClassroomWithOutboxAsync(Classroom classroom, ClassroomRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task RestoreClassroomLabWithOutboxAsync(ClassroomLab classroomLab, ClassroomLabRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(ClassroomRestoredIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = $"{nameof(ClassroomLabRestoredIntegrationEvent)}.v{integrationEvent.Version}";
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            _dbContext.Classrooms.Update(classroom);
+            _dbContext.ClassroomLabs.Update(classroomLab);
             await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);

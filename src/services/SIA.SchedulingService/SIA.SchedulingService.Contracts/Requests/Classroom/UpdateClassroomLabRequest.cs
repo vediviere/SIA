@@ -1,6 +1,6 @@
 ﻿namespace SIA.SchedulingService.Contracts.Requests.Classroom;
 
-public sealed class UpdateClassroomRequest
+public sealed class UpdateClassroomLabRequest
 {
     public Guid BuildingId { get; init; }
     public Guid ClassroomTypeId { get; init; }

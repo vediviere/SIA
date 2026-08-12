@@ -5,14 +5,14 @@ public sealed class OutboxMessage
     private OutboxMessage() { }
 
     public OutboxMessage(
-        string evntType,
+        string eventType,
         string payload,
         Guid correlationId)
 
     {
-        if (string.IsNullOrWhiteSpace(evntType))
+        if (string.IsNullOrWhiteSpace(eventType))
         {
-            throw new ArgumentException("El tipo de evento es obligatorio.", nameof(evntType));
+            throw new ArgumentException("El tipo de evento es obligatorio.", nameof(eventType));
         }
 
         if (string.IsNullOrWhiteSpace(payload))

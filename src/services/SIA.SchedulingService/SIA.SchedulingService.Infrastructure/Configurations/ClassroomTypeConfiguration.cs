@@ -6,7 +6,7 @@ namespace SIA.SchedulingService.Infrastructure.Configurations;
 
 public sealed class ClassroomTypeConfiguration : IEntityTypeConfiguration<ClassroomType>
 {
-  public void Configure(EntityTypeBuilder<ClassroomType> builder)
+    public void Configure(EntityTypeBuilder<ClassroomType> builder)
     {
         builder.ToTable("ClassroomTypes");
 
@@ -19,9 +19,16 @@ public sealed class ClassroomTypeConfiguration : IEntityTypeConfiguration<Classr
         builder.Property(classroomType => classroomType.TenantId)
             .IsRequired();
 
+        builder.Property(classroomType => classroomType.Code)
+            .HasMaxLength(30)
+            .IsRequired();
+
         builder.Property(classroomType => classroomType.Name)
             .HasMaxLength(100)
             .IsRequired();
+
+        builder.Property(classroomType => classroomType.Description)
+            .HasMaxLength(500);
 
         builder.Property(classroomType => classroomType.Status)
             .IsRequired();

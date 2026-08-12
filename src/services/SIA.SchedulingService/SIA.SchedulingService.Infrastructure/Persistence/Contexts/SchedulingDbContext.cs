@@ -2,6 +2,7 @@
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Entities;
 
+
 namespace SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 
 public sealed class SchedulingDbContext : DbContext
@@ -11,8 +12,8 @@ public sealed class SchedulingDbContext : DbContext
         : base(options)
     {
     }
+    public DbSet<ClassroomLab> ClassroomLabs => Set<ClassroomLab>();
 
-    public DbSet<Classroom> Classrooms => Set<Classroom>();
     public DbSet<ClassroomType> ClassroomTypes => Set<ClassroomType>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 

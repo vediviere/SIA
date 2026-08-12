@@ -121,32 +121,31 @@ public sealed class OutboxPublisherService : BackgroundService
             return;
         }
 
-
-        if (eventType == $"{nameof(ClassroomCreatedIntegrationEvent)}.v1")
+        if (eventType == $"{nameof(ClassroomLabCreatedIntegrationEvent)}.v1")
         {
-            var integrationEvent = JsonSerializer.Deserialize<ClassroomCreatedIntegrationEvent>(payload);
-            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de aula creada.");
+            var integrationEvent = JsonSerializer.Deserialize<ClassroomLabCreatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de laboratorio creado.");
             await publishEndpoint.Publish(integrationEvent, cancellationToken);
             return;
         }
-        if (eventType == $"{nameof(ClassroomUpdatedIntegrationEvent)}.v1")
+        if (eventType == $"{nameof(ClassroomLabUpdatedIntegrationEvent)}.v1")
         {
-            var integrationEvent = JsonSerializer.Deserialize<ClassroomUpdatedIntegrationEvent>(payload);
-            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de aula actualizada.");
+            var integrationEvent = JsonSerializer.Deserialize<ClassroomLabUpdatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de laboratorio actualizado.");
             await publishEndpoint.Publish(integrationEvent, cancellationToken);
             return;
         }
-        if (eventType == $"{nameof(ClassroomDeletedIntegrationEvent)}.v1")
+        if (eventType == $"{nameof(ClassroomLabDeletedIntegrationEvent)}.v1")
         {
-            var integrationEvent = JsonSerializer.Deserialize<ClassroomDeletedIntegrationEvent>(payload);
-            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de aula eliminada.");
+            var integrationEvent = JsonSerializer.Deserialize<ClassroomLabDeletedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de laboratorio eliminado.");
             await publishEndpoint.Publish(integrationEvent, cancellationToken);
             return;
         }
-        if (eventType == $"{nameof(ClassroomRestoredIntegrationEvent)}.v1")
+        if (eventType == $"{nameof(ClassroomLabRestoredIntegrationEvent)}.v1")
         {
-            var integrationEvent = JsonSerializer.Deserialize<ClassroomRestoredIntegrationEvent>(payload);
-            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de aula restaurada.");
+            var integrationEvent = JsonSerializer.Deserialize<ClassroomLabRestoredIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de laboratorio restaurado.");
             await publishEndpoint.Publish(integrationEvent, cancellationToken);
             return;
         }

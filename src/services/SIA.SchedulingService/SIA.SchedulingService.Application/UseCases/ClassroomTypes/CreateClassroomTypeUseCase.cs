@@ -36,7 +36,9 @@ public sealed class CreateClassroomTypeUseCase
 
         var classroomType = new ClassroomType(
             request.TenantId,
-            normalizedName);
+            request.Code,
+            normalizedName,
+            request.Description);
 
         var integrationEvent = new ClassroomTypeCreatedIntegrationEvent
         {
@@ -45,7 +47,9 @@ public sealed class CreateClassroomTypeUseCase
             OccurredAtUtc = classroomType.CreatedAtUtc,
             TenantId = classroomType.TenantId,
             ClassroomTypeId = classroomType.Id,
+            Code = classroomType.Code,
             Name = classroomType.Name,
+            Description = classroomType.Description,
             Status = classroomType.Status,
             Version = 1
         };
@@ -56,7 +60,9 @@ public sealed class CreateClassroomTypeUseCase
         {
             Id = classroomType.Id,
             TenantId = classroomType.TenantId,
+            Code = classroomType.Code,
             Name = classroomType.Name,
+            Description = classroomType.Description,
             Status = classroomType.Status,
             CreatedAtUtc = classroomType.CreatedAtUtc,
             CorrelationId = correlationId

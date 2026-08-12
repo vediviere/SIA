@@ -34,6 +34,16 @@ public sealed class ClassroomTypeQueries : IClassroomTypeQueries
             query = query.Where(x => x.Name.Contains(filter.Name));
         }
 
+        if (!string.IsNullOrWhiteSpace(filter.Code))
+        {
+            query = query.Where(x => x.Code.Contains(filter.Code));
+        }
+
+        if (!string.IsNullOrWhiteSpace(filter.Description))
+        {
+            query = query.Where(x => x.Description.Contains(filter.Description));
+        }
+
         if (filter.Status.HasValue)
         {
             query = query.Where(x => x.Status == filter.Status.Value);

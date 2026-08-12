@@ -1,6 +1,6 @@
 ﻿namespace SIA.SchedulingService.Application.DTOs.Classrooms;
 
-public sealed class ClassroomFilter
+public sealed class ClassroomLabFilter
 {
     public Guid TenantId { get; set; }
     public Guid? BuildingId { get; set; }

@@ -17,7 +17,7 @@ public sealed class ClassroomTypeDataStore : IClassroomTypeDataStore
         _dbContext = dbContext;
     }
 
-    public  Task<bool> ClassroomTypeNameExistsAsync(Guid tenantId, string name, CancellationToken cancellationToken)
+    public Task<bool> ClassroomTypeNameExistsAsync(Guid tenantId, string name, CancellationToken cancellationToken)
     {
         return _dbContext.ClassroomTypes.AnyAsync(
             classroomType => classroomType.TenantId == tenantId && classroomType.Name == name,

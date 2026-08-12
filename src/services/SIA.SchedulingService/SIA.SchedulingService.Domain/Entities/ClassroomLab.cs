@@ -1,13 +1,13 @@
 ﻿
 namespace SIA.SchedulingService.Domain.Entities;
 
-public sealed class Classroom
+public sealed class ClassroomLab
 {
-    private Classroom()
+    private ClassroomLab()
     {
     }
 
-    public Classroom(
+    public ClassroomLab(
         Guid tenantId,
         Guid buildingId,
         Guid classroomTypeId,
@@ -56,7 +56,7 @@ public sealed class Classroom
     public Guid Id { get; private set; }
     public Guid TenantId { get; private set; }
     public Guid BuildingId { get; private set; }
-    public Guid ClassroomTypeId { get; private set; } 
+    public Guid ClassroomTypeId { get; private set; }
     public string Code { get; private set; } = string.Empty;
     public string Name { get; private set; } = string.Empty;
     public int Capacity { get; private set; }

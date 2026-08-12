@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Application\SIA.SchedulingService.Application.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Infrastructure\SIA.SchedulingService.Infrastructure.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Contracts\SIA.SchedulingService.Contracts.csproj" />

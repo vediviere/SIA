@@ -11,34 +11,34 @@ using SIA.SchedulingService.Domain.Entities;
 namespace SIA.SchedulingService.Api.Controllers;
 
 [ApiController]
-[Route("api/classrooms")]
-public sealed class ClassroomsController : ControllerBase
+[Route("api/classroom-labs")]
+public sealed class ClassroomLabsController : ControllerBase
 {
-    private readonly CreateClassroomUseCase _createClassroomUseCase;
-    private readonly UpdateClassroomUseCase _updateClassroomUseCase;
-    private readonly SoftDeleteClassroomUseCase _softDeleteClassroomUseCase;
-    private readonly RestoreClassroomUseCase _restoreClassroomUseCase;
-    private readonly IClassroomQueries _classroomQueries;
+    private readonly CreateClassroomLabUseCase _createClassroomLabUseCase;
+    private readonly UpdateClassroomLabUseCase _updateClassroomLabUseCase;
+    private readonly SoftDeleteClassroomLabUseCase _softDeleteClassroomLabUseCase;
+    private readonly RestoreClassroomLabUseCase _restoreClassroomLabUseCase;
+    private readonly IClassroomLabQueries _classroomLabQueries;
 
-    public ClassroomsController(
-        CreateClassroomUseCase createClassroomUseCase,
-        UpdateClassroomUseCase updateClassroomUseCase,
-        SoftDeleteClassroomUseCase softDeleteClassroomUseCase,
-        RestoreClassroomUseCase restoreClassroomUseCase,
-        IClassroomQueries classroomQueries)
+    public ClassroomLabsController(
+        CreateClassroomLabUseCase createClassroomLabUseCase,
+        UpdateClassroomLabUseCase updateClassroomLabUseCase,
+        SoftDeleteClassroomLabUseCase softDeleteClassroomLabUseCase,
+        RestoreClassroomLabUseCase restoreClassroomLabUseCase,
+        IClassroomLabQueries classroomLabQueries)
     {
-        _createClassroomUseCase = createClassroomUseCase;
-        _updateClassroomUseCase = updateClassroomUseCase;
-        _softDeleteClassroomUseCase = softDeleteClassroomUseCase;
-        _restoreClassroomUseCase = restoreClassroomUseCase;
-        _classroomQueries = classroomQueries;
+        _createClassroomLabUseCase = createClassroomLabUseCase;
+        _updateClassroomLabUseCase = updateClassroomLabUseCase;
+        _softDeleteClassroomLabUseCase = softDeleteClassroomLabUseCase;
+        _restoreClassroomLabUseCase = restoreClassroomLabUseCase;
+        _classroomLabQueries = classroomLabQueries;
     }
 
     [HttpGet("Filter")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<Classroom>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<Classroom>>> SearchAsync([FromQuery] ClassroomFilter filter, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyCollection<ClassroomLab>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<ClassroomLab>>> SearchAsync([FromQuery] ClassroomLabFilter filter, CancellationToken cancellationToken)
     {
-        var secureFilter = new ClassroomFilter
+        var secureFilter = new ClassroomLabFilter
         {
             TenantId = filter.TenantId,
             BuildingId = filter.BuildingId,
@@ -50,52 +50,52 @@ public sealed class ClassroomsController : ControllerBase
             PageSize = filter.PageSize
         };
 
-        var classrooms = await _classroomQueries.SearchAsync(secureFilter, cancellationToken);
-        return Ok(classrooms);
+        var classroomLabs = await _classroomLabQueries.SearchAsync(secureFilter, cancellationToken);
+        return Ok(classroomLabs);
     }
 
     [HttpGet("{tenantId:guid}/{id:guid}")]
-    [ProducesResponseType(typeof(Classroom), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ClassroomLab), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Classroom>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ClassroomLab>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var classroom = await _classroomQueries.GetByIdAsync(tenantId, id, cancellationToken);
+        var classroomLab = await _classroomLabQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
-        if (classroom == null)
+        if (classroomLab == null)
         {
-            throw new ClassroomNotFoundException(id);
+            throw new ClassroomLabNotFoundException(id);
         }
 
-        return Ok(classroom);
+        return Ok(classroomLab);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(CreateClassroomResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(CreateClassroomLabResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<CreateClassroomResponse>> CreateAsync([FromBody] CreateClassroomRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<CreateClassroomLabResponse>> CreateAsync([FromBody] CreateClassroomLabRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createClassroomUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var response = await _createClassroomLabUseCase.ExecuteAsync(request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
     [HttpPut("{tenantId:guid}/{id:guid}")]
-    [ProducesResponseType(typeof(UpdateClassroomResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UpdateClassroomLabResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateClassroomResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateClassroomRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateClassroomLabResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateClassroomLabRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _updateClassroomUseCase.ExecuteAsync(
+        var response = await _updateClassroomLabUseCase.ExecuteAsync(
             tenantId,
             id,
             request,
@@ -114,7 +114,7 @@ public sealed class ClassroomsController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        await _softDeleteClassroomUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+        await _softDeleteClassroomLabUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
         return NoContent();
     }
@@ -128,7 +128,7 @@ public sealed class ClassroomsController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        await _restoreClassroomUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+        await _restoreClassroomLabUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
         return NoContent();
     }

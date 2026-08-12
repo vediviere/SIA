@@ -7,26 +7,26 @@ using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.Queries;
 
-public sealed class ClassroomQueries : IClassroomQueries
+public sealed class ClassroomLabQueries : IClassroomLabQueries
 {
     private readonly SchedulingDbContext _dbContext;
 
-    public ClassroomQueries(SchedulingDbContext dbContext)
+    public ClassroomLabQueries(SchedulingDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<Classroom?> GetByIdAsync(Guid tenantId, Guid classroomId, CancellationToken cancellationToken)
+    public async Task<ClassroomLab?> GetByIdAsync(Guid tenantId, Guid classroomLabId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Classrooms
+        return await _dbContext.ClassroomLabs 
             .Include(x => x.ClassroomType)
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.TenantId == tenantId && x.Id == classroomId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.TenantId == tenantId && x.Id == classroomLabId, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Classroom>> SearchAsync(ClassroomFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<ClassroomLab>> SearchAsync(ClassroomLabFilter filter, CancellationToken cancellationToken)
     {
-        IQueryable<Classroom> query = _dbContext.Classrooms
+        IQueryable<ClassroomLab> query = _dbContext.ClassroomLabs 
             .Include(x => x.ClassroomType)
             .AsNoTracking()
             .Where(x => x.TenantId == filter.TenantId);

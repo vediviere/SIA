@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIA.SchedulingService.Contracts.Responses.Classrooms;
 
-public sealed class RestoreClassroomResponse
+public sealed class RestoreClassroomLabResponse
 {
     public Guid Id { get; init; }
     public bool Status { get; init; }

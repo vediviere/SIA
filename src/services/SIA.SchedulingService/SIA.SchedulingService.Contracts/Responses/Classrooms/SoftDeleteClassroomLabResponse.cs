@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SIA.SchedulingService.Contracts.Responses.Classrooms;
 
-public sealed class SoftDeleteClassroomResponse
+public sealed class SoftDeleteClassroomLabResponse
 {
     public Guid Id { get; init; }
     public bool Status { get; init; }

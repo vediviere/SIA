@@ -43,7 +43,7 @@ public sealed class UpdateClassroomTypeUseCase
             }
         }
 
-        classroomType.Update(normalizedName);
+        classroomType.Update(request.Code, normalizedName, request.Description);
 
         var integrationEvent = new ClassroomTypeUpdatedIntegrationEvent
         {
@@ -52,7 +52,9 @@ public sealed class UpdateClassroomTypeUseCase
             OccurredAtUtc = classroomType.UpdatedAtUtc ?? DateTime.UtcNow,
             TenantId = classroomType.TenantId,
             ClassroomTypeId = classroomType.Id,
+            Code = classroomType.Code,
             Name = classroomType.Name,
+            Description = classroomType.Description,
             Status = classroomType.Status,
             Version = 1
         };
@@ -63,7 +65,9 @@ public sealed class UpdateClassroomTypeUseCase
         {
             Id = classroomType.Id,
             TenantId = classroomType.TenantId,
+            Code = classroomType.Code,
             Name = classroomType.Name,
+            Description = classroomType.Description,
             Status = classroomType.Status,
             UpdatedAtUtc = classroomType.UpdatedAtUtc,
             CorrelationId = correlationId

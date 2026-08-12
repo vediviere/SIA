@@ -1,6 +1,6 @@
 ﻿namespace SIA.SchedulingService.Contracts.Responses.Classrooms;
 
-public sealed class CreateClassroomResponse
+public sealed class UpdateClassroomLabResponse
 {
     public Guid Id { get; init; }
     public Guid TenantId { get; init; }
@@ -11,6 +11,6 @@ public sealed class CreateClassroomResponse
     public int Capacity { get; init; }
     public string Description { get; init; } = string.Empty;
     public bool Status { get; init; }
-    public DateTime CreatedAtUtc { get; init; }
+    public DateTime? UpdatedAtUtc { get; init; }
     public Guid CorrelationId { get; init; }
 }
