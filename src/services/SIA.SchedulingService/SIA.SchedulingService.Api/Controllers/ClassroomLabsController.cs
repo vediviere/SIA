@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SIA.SchedulingService.Application.Common.Exceptions;
+using SIA.SchedulingService.Application.Common.Exceptions.ClassroomLab;
 using SIA.SchedulingService.Application.DTOs.Classrooms;
 using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.UseCases.Classrooms;

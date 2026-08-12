@@ -1,4 +1,4 @@
-﻿using SIA.SchedulingService.Application.Common.Exceptions;
+﻿using SIA.SchedulingService.Application.Common.Exceptions.ClassroomLab;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
 using SIA.SchedulingService.Contracts.Responses.Classrooms;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SIA.SchedulingService.Application.Common.Exceptions;
+using SIA.SchedulingService.Application.Common.Exceptions.ClassroomType;
 using SIA.SchedulingService.Application.DTOs.ClassroomTypes;
 using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.UseCases.ClassroomTypes;
