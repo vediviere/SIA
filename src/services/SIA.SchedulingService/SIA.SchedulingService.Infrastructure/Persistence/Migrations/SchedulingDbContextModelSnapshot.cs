@@ -63,6 +63,104 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                     b.ToTable("Buildings", (string)null);
                 });
 
+            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.ClassroomLab", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ClassroomLabId");
+
+                    b.Property<Guid>("BuildingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ClassroomTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuildingId");
+
+                    b.HasIndex("ClassroomTypeId");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("ClassroomLabs", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Classrooms_Capacity_Positive", "[Capacity] > 0");
+                        });
+                });
+
+            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.ClassroomType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ClassroomTypeId");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ClassroomTypes", (string)null);
+                });
+
             modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.Group", b =>
                 {
                     b.Property<Guid>("Id")
@@ -108,7 +206,6 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
             modelBuilder.Entity("SIA.SchedulingService.Infrastructure.Persistence.Entities.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CorrelationId")
@@ -119,7 +216,8 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
 
                     b.Property<string>("EventType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("OccurredAtUtc")
                         .HasColumnType("datetime2");
@@ -136,7 +234,22 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OutboxMessages");
+                    b.HasIndex("CorrelationId");
+
+                    b.HasIndex("ProcessedAtUtc");
+
+                    b.ToTable("OutboxMessages", (string)null);
+                });
+
+            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.ClassroomLab", b =>
+                {
+                    b.HasOne("SIA.SchedulingService.Domain.Entities.ClassroomType", "ClassroomType")
+                        .WithMany()
+                        .HasForeignKey("ClassroomTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ClassroomType");
                 });
 #pragma warning restore 612, 618
         }

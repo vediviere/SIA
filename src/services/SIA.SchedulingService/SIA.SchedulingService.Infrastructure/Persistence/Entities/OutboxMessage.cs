@@ -2,27 +2,22 @@
 
 public sealed class OutboxMessage
 {
-    private OutboxMessage()
-    {
-    }
+    private OutboxMessage() { }
 
     public OutboxMessage(
         string eventType,
         string payload,
         Guid correlationId)
+
     {
         if (string.IsNullOrWhiteSpace(eventType))
         {
-            throw new ArgumentException(
-                "El tipo de evento es obligatorio.",
-                nameof(eventType));
+            throw new ArgumentException("El tipo de evento es obligatorio.", nameof(eventType));
         }
 
         if (string.IsNullOrWhiteSpace(payload))
         {
-            throw new ArgumentException(
-                "El contenido del evento es obligatorio.",
-                nameof(payload));
+            throw new ArgumentException("El contenido del evento es obligatorio.", nameof(payload));
         }
 
         Id = Guid.NewGuid();

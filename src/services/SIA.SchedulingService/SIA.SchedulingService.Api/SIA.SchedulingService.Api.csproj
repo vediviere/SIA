@@ -1,26 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>7dc45a13-c445-4b92-8fb4-3d6f5f06c3f1</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>7dc45a13-c445-4b92-8fb4-3d6f5f06c3f1</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SIA.SchedulingService.Application\SIA.SchedulingService.Application.csproj" />
-    <ProjectReference Include="..\SIA.SchedulingService.Infrastructure\SIA.SchedulingService.Infrastructure.csproj" />
-    <ProjectReference Include="..\SIA.SchedulingService.Contracts\SIA.SchedulingService.Contracts.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
+		<ProjectReference Include="..\SIA.SchedulingService.Application\SIA.SchedulingService.Application.csproj" />
+		<ProjectReference Include="..\SIA.SchedulingService.Infrastructure\SIA.SchedulingService.Infrastructure.csproj" />
+		<ProjectReference Include="..\SIA.SchedulingService.Contracts\SIA.SchedulingService.Contracts.csproj" />
+	</ItemGroup>
 
 </Project>
