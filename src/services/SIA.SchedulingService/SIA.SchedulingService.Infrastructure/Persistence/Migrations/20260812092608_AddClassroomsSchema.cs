@@ -6,11 +6,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SIA.SchedulingService.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSchedulingSchema : Migration
+    public partial class AddClassroomsSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "EventType",
+                table: "OutboxMessages",
+                type: "nvarchar(200)",
+                maxLength: 200,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
+
             migrationBuilder.CreateTable(
                 name: "ClassroomTypes",
                 columns: table => new
@@ -27,24 +36,6 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClassroomTypes", x => x.ClassroomTypeId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OutboxMessages",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EventType = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Payload = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OccurredAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProcessedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RetryCount = table.Column<int>(type: "int", nullable: false),
-                    Error = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CorrelationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -76,6 +67,16 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessages_CorrelationId",
+                table: "OutboxMessages",
+                column: "CorrelationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessages_ProcessedAtUtc",
+                table: "OutboxMessages",
+                column: "ProcessedAtUtc");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ClassroomLabs_BuildingId",
                 table: "ClassroomLabs",
                 column: "BuildingId");
@@ -96,16 +97,6 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                 table: "ClassroomTypes",
                 columns: new[] { "TenantId", "Name" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OutboxMessages_CorrelationId",
-                table: "OutboxMessages",
-                column: "CorrelationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OutboxMessages_ProcessedAtUtc",
-                table: "OutboxMessages",
-                column: "ProcessedAtUtc");
         }
 
         /// <inheritdoc />
@@ -115,10 +106,24 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                 name: "ClassroomLabs");
 
             migrationBuilder.DropTable(
-                name: "OutboxMessages");
-
-            migrationBuilder.DropTable(
                 name: "ClassroomTypes");
+
+            migrationBuilder.DropIndex(
+                name: "IX_OutboxMessages_CorrelationId",
+                table: "OutboxMessages");
+
+            migrationBuilder.DropIndex(
+                name: "IX_OutboxMessages_ProcessedAtUtc",
+                table: "OutboxMessages");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "EventType",
+                table: "OutboxMessages",
+                type: "nvarchar(max)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(200)",
+                oldMaxLength: 200);
         }
     }
 }
