@@ -47,8 +47,13 @@ public sealed class ClassroomLabConfiguration : IEntityTypeConfiguration<Classro
         builder.Property(classroomLab => classroomLab.UpdatedAtUtc);
 
         builder.HasOne(classroomLab => classroomLab.ClassroomType)
+                    .WithMany()
+                    .HasForeignKey(classroomLab => classroomLab.ClassroomTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(classroomLab => classroomLab.Building)
             .WithMany()
-            .HasForeignKey(classroomLab => classroomLab.ClassroomTypeId)
+            .HasForeignKey(classroomLab => classroomLab.BuildingId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(classroomLab => new

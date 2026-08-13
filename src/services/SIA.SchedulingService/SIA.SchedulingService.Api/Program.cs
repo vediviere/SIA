@@ -12,6 +12,8 @@ using SIA.SchedulingService.Infrastructure.MessageBus.Publishers;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
+using SIA.SchedulingService.Application.UseCases.SupportSchedules;
+using SIA.SchedulingService.Application.UseCases.ClassSchedules;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,14 +81,20 @@ builder.Services.AddScoped<IClassroomLabQueries, ClassroomLabQueries>();
 builder.Services.AddScoped<IClassroomTypeDataStore, ClassroomTypeDataStore>();
 builder.Services.AddScoped<IClassroomTypeQueries, ClassroomTypeQueries>();
 
-// UseCases Buildings
+builder.Services.AddScoped<ISupportScheduleDataStore, SupportScheduleDataStore>();
+builder.Services.AddScoped<ISupportScheduleQueries, SupportScheduleQueries>();
+
+builder.Services.AddScoped<IClassScheduleDataStore, ClassScheduleDataStore>();
+builder.Services.AddScoped<IClassScheduleQueries, ClassScheduleQueries>();
+
+// UseCases: Buildings
 builder.Services.AddScoped<CreateBuildingUseCase>();
 builder.Services.AddScoped<UpdateBuildingUseCase>();
 builder.Services.AddScoped<DeactivateBuildingUseCase>();
 builder.Services.AddScoped<ActivateBuildingUseCase>();
 builder.Services.AddScoped<GetBuildingByIdUseCase>();
 
-// UseCases Groups
+// UseCases: Groups
 builder.Services.AddScoped<CreateGroupUseCase>();
 builder.Services.AddScoped<UpdateGroupUseCase>();
 builder.Services.AddScoped<DeactivateGroupUseCase>();
@@ -104,6 +112,18 @@ builder.Services.AddScoped<CreateClassroomLabUseCase>();
 builder.Services.AddScoped<UpdateClassroomLabUseCase>();
 builder.Services.AddScoped<SoftDeleteClassroomLabUseCase>();
 builder.Services.AddScoped<RestoreClassroomLabUseCase>();
+
+// UseCases: SupportSchedules
+builder.Services.AddScoped<CreateSupportScheduleUseCase>();
+builder.Services.AddScoped<UpdateSupportScheduleUseCase>();
+builder.Services.AddScoped<SoftDeleteSupportScheduleUseCase>();
+builder.Services.AddScoped<RestoreSupportScheduleUseCase>();
+
+// UseCases: ClassSchedules
+builder.Services.AddScoped<CreateClassScheduleUseCase>();
+builder.Services.AddScoped<UpdateClassScheduleUseCase>();
+builder.Services.AddScoped<SoftDeleteClassScheduleUseCase>();
+builder.Services.AddScoped<RestoreClassScheduleUseCase>();
 
 var app = builder.Build();
 
