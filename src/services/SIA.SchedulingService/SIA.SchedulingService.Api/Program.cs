@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Application.Interfaces.Queries;
+using SIA.SchedulingService.Application.UseCases.AcademicLoads;
+using SIA.SchedulingService.Application.UseCases.AcademicOfferings;
 using SIA.SchedulingService.Application.UseCases.Buildings;
 using SIA.SchedulingService.Application.UseCases.Classrooms;
 using SIA.SchedulingService.Application.UseCases.ClassroomTypes;
@@ -75,6 +77,12 @@ builder.Services.AddScoped<IBuildingQueries, BuildingQueries>();
 builder.Services.AddScoped<IGroupDataStore, GroupDataStore>();
 builder.Services.AddScoped<IGroupQueries, GroupQueries>();
 
+builder.Services.AddScoped<IAcademicLoadDataStore, AcademicLoadDataStore>();
+builder.Services.AddScoped<IAcademicLoadQueries, AcademicLoadQueries>();
+
+builder.Services.AddScoped<IAcademicOfferingDataStore, AcademicOfferingDataStore>();
+builder.Services.AddScoped<IAcademicOfferingQueries, AcademicOfferingQueries>();
+
 builder.Services.AddScoped<IClassroomLabDataStore, ClassroomLabDataStore>();
 builder.Services.AddScoped<IClassroomLabQueries, ClassroomLabQueries>();
 
@@ -100,6 +108,20 @@ builder.Services.AddScoped<UpdateGroupUseCase>();
 builder.Services.AddScoped<DeactivateGroupUseCase>();
 builder.Services.AddScoped<ActivateGroupUseCase>();
 builder.Services.AddScoped<GetGroupByIdUseCase>();
+
+//UseCases: AcademicOffering
+builder.Services.AddScoped<CreateAcademicOfferingUseCase>();
+builder.Services.AddScoped<UpdateAcademicOfferingUseCase>();
+builder.Services.AddScoped<DeactivateAcademicOfferingUseCase>();
+builder.Services.AddScoped<ActivateAcademicOfferingUseCase>();
+builder.Services.AddScoped<GetAcademicOfferingByIdUseCase>();
+
+// UseCases: AcademicLoad
+builder.Services.AddScoped<CreateAcademicLoadUseCase>();
+builder.Services.AddScoped<UpdateAcademicLoadUseCase>();
+builder.Services.AddScoped<DeactivateAcademicLoadUseCase>();
+builder.Services.AddScoped<ActivateAcademicLoadUseCase>();
+builder.Services.AddScoped<GetAcademicLoadByIdUseCase>();
 
 // UseCases: ClassroomTypes
 builder.Services.AddScoped<CreateClassroomTypeUseCase>();

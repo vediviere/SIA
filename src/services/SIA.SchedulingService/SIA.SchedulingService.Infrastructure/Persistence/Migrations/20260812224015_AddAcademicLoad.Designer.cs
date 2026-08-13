@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 namespace SIA.SchedulingService.Infrastructure.Migrations
 {
     [DbContext(typeof(SchedulingDbContext))]
-    partial class SchedulingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260812224015_AddAcademicLoad")]
+    partial class AddAcademicLoad
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,42 +74,6 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                     b.ToTable("AcademicLoad", (string)null);
                 });
 
-            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.AcademicOffering", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("OfferingId");
-
-                    b.Property<Guid>("AcademicLoadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AcademicLoadId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("AcademicOffering", (string)null);
-                });
-
             modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.Building", b =>
                 {
                     b.Property<Guid>("Id")
@@ -146,50 +113,6 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Buildings", (string)null);
-                });
-
-            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.ClassSchedule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("ClassScheduleId");
-
-                    b.Property<Guid>("AcademicPeriodId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClassroomLabId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Day")
-                        .IsRequired()
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<Guid>("OfferingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassroomLabId");
-
-                    b.ToTable("ClassSchedules", (string)null);
                 });
 
             modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.ClassroomLab", b =>
@@ -332,60 +255,6 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                     b.ToTable("Groups", (string)null);
                 });
 
-            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.SupportSchedule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("SupportScheduleId");
-
-                    b.Property<Guid>("AcademicPeriodId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ClassroomLabId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Day")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("SupportHourId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AcademicPeriodId");
-
-                    b.HasIndex("ClassroomLabId");
-
-                    b.HasIndex("SupportHourId");
-
-                    b.HasIndex("TenantId", "ClassroomLabId", "Day", "StartTime");
-
-                    b.ToTable("SupportSchedules", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_SupportSchedules_TimeRange_Valid", "[StartTime] < [EndTime]");
-                        });
-                });
-
             modelBuilder.Entity("SIA.SchedulingService.Infrastructure.Persistence.Entities.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -423,61 +292,16 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
 
                     b.ToTable("OutboxMessages", (string)null);
                 });
-                
-           modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.AcademicOffering", b =>
-               {
-                  b.HasOne("SIA.SchedulingService.Domain.Entities.AcademicLoad", null)
-                      .WithMany()
-                      .HasForeignKey("AcademicLoadId")
-                      .OnDelete(DeleteBehavior.Restrict)
-                      .IsRequired();
-
-                  b.HasOne("SIA.SchedulingService.Domain.Entities.Group", null)
-                      .WithMany()
-                      .HasForeignKey("GroupId")
-                      .OnDelete(DeleteBehavior.Restrict)
-                      .IsRequired();
-                });
-
-            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.ClassSchedule", b =>
-                {
-                    b.HasOne("SIA.SchedulingService.Domain.Entities.ClassroomLab", "ClassroomLab")
-                        .WithMany()
-                        .HasForeignKey("ClassroomLabId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ClassroomLab");
-                });
 
             modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.ClassroomLab", b =>
                 {
-                    b.HasOne("SIA.SchedulingService.Domain.Entities.Building", "Building")
-                        .WithMany()
-                        .HasForeignKey("BuildingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("SIA.SchedulingService.Domain.Entities.ClassroomType", "ClassroomType")
                         .WithMany()
                         .HasForeignKey("ClassroomTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Building");
-
                     b.Navigation("ClassroomType");
-                });
-
-            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.SupportSchedule", b =>
-                {
-                    b.HasOne("SIA.SchedulingService.Domain.Entities.ClassroomLab", "ClassroomLab")
-                        .WithMany()
-                        .HasForeignKey("ClassroomLabId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ClassroomLab");
                 });
 #pragma warning restore 612, 618
         }

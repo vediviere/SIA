@@ -16,6 +16,8 @@ public sealed class SchedulingDbContext : DbContext
     public DbSet<ClassroomLab> ClassroomLabs => Set<ClassroomLab>();
 
     public DbSet<Building> Buildings => Set<Building>();
+    public DbSet<AcademicLoad> AcademicLoad => Set<AcademicLoad>();
+    public DbSet<AcademicOffering> AcademicOfferings => Set<AcademicOffering>();
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<ClassroomType> ClassroomTypes => Set<ClassroomType>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
