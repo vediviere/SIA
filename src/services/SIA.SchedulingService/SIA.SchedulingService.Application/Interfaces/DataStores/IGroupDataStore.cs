@@ -1,5 +1,4 @@
-﻿using SIA.SchedulingService.Contracts.IntegrationEvents.Building;
-using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
+﻿using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
 using SIA.SchedulingService.Domain.Entities;
 
 namespace SIA.SchedulingService.Application.Interfaces.DataStores;

@@ -66,17 +66,10 @@ public sealed class ClassroomLab
     public DateTime? UpdatedAtUtc { get; private set; }
 
     public ClassroomType? ClassroomType { get; private set; }
+    public Building? Building { get; private set; }
 
-    public void Update(Guid buildingId, Guid classroomTypeId, string code, string name, int capacity, string description)
+    public void Update( string code, string name, int capacity, string description)
     {
-        if (buildingId == Guid.Empty)
-        {
-            throw new ArgumentException("El edificio es obligatorio.", nameof(buildingId));
-        }
-        if (classroomTypeId == Guid.Empty)
-        {
-            throw new ArgumentException("El tipo de aula es obligatorio.", nameof(classroomTypeId));
-        }
         if (string.IsNullOrWhiteSpace(code))
         {
             throw new ArgumentException("La clave es obligatoria.", nameof(code));
@@ -90,8 +83,7 @@ public sealed class ClassroomLab
             throw new ArgumentOutOfRangeException(nameof(capacity), "La capacidad debe ser mayor a cero.");
         }
 
-        BuildingId = buildingId;
-        ClassroomTypeId = classroomTypeId;
+
         Code = code.Trim().ToUpperInvariant();
         Name = name.Trim();
         Capacity = capacity;

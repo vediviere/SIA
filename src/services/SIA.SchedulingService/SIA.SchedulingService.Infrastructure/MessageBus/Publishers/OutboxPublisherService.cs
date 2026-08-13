@@ -1,14 +1,16 @@
-﻿using System.Text.Json;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Building;
-using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
 using SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
+using SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
+using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
+using SIA.SchedulingService.Contracts.IntegrationEvents.SupportSchedules;
+using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
+using System.Text.Json;
 
 namespace SIA.SchedulingService.Infrastructure.MessageBus.Publishers;
 
@@ -209,6 +211,66 @@ public sealed class OutboxPublisherService : BackgroundService
         {
             var integrationEvent = JsonSerializer.Deserialize<ClassroomLabRestoredIntegrationEvent>(payload);
             if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de laboratorio restaurado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+
+        // Eventos de SupportSchedule 
+        if (eventType == $"{nameof(SupportScheduleCreatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<SupportScheduleCreatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario creado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(SupportScheduleUpdatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<SupportScheduleUpdatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario actualizado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(SupportScheduleDeletedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<SupportScheduleDeletedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario eliminado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(SupportScheduleRestoredIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<SupportScheduleRestoredIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario restaurado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+
+        // Eventos de ClassSchedule 
+        if (eventType == $"{nameof(ClassScheduleCreatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<ClassScheduleCreatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario de clase creado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(ClassScheduleUpdatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<ClassScheduleUpdatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario de clase actualizado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(ClassScheduleDeletedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<ClassScheduleDeletedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario de clase eliminado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(ClassScheduleRestoredIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<ClassScheduleRestoredIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario de clase restaurado.");
             await publishEndpoint.Publish(integrationEvent, cancellationToken);
             return;
         }
