@@ -23,6 +23,11 @@ public sealed class SchedulingDbContext : DbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
 
+
+
+    public DbSet<SupportSchedule> SupportSchedules { get; set; }
+    public DbSet<ClassSchedule> ClassSchedules { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SIA.SchedulingService.Application.DTOs.Building;
 using SIA.SchedulingService.Application.DTOs.Group;
 using SIA.SchedulingService.Application.UseCases.Groups;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
-using SIA.SchedulingService.Contracts.Requests.Building;
 using SIA.SchedulingService.Contracts.Requests.Group;
-using SIA.SchedulingService.Contracts.Responses.Building;
 using SIA.SchedulingService.Contracts.Responses.Group;
 
 namespace SIA.SchedulingService.Api.Controllers;

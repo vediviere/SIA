@@ -77,7 +77,7 @@ public sealed class StudyPlan
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
 
-    public void Deactivate()
+    public void Desactivate()
     {
         Status = false;
         UpdatedAtUtc = DateTime.UtcNow;

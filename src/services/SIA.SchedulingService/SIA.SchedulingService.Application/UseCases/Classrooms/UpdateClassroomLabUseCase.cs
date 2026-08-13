@@ -41,14 +41,14 @@ public sealed class UpdateClassroomLabUseCase
             }
         }
 
+        // Se eliminaron las asignaciones de BuildingId y ClassroomTypeId[cite: 7]
         classroomLab.Update(
-            request.BuildingId,
-            request.ClassroomTypeId,
             normalizedCode,
             request.Name,
             request.Capacity,
             request.Description);
 
+        // Se eliminaron los IDs foráneos del evento para reflejar la inmutabilidad de la relación[cite: 7]
         var integrationEvent = new ClassroomLabUpdatedIntegrationEvent
         {
             EventId = Guid.NewGuid(),
@@ -56,8 +56,6 @@ public sealed class UpdateClassroomLabUseCase
             OccurredAtUtc = classroomLab.UpdatedAtUtc ?? DateTime.UtcNow,
             TenantId = classroomLab.TenantId,
             ClassroomLabId = classroomLab.Id,
-            BuildingId = classroomLab.BuildingId,
-            ClassroomTypeId = classroomLab.ClassroomTypeId,
             Code = classroomLab.Code,
             Name = classroomLab.Name,
             Capacity = classroomLab.Capacity,
