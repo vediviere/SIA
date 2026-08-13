@@ -9,6 +9,9 @@ using SIA.SchedulingService.Contracts.IntegrationEvents.Building;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
 using SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
+using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
+using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
+using SIA.SchedulingService.Contracts.IntegrationEvents;
 
 namespace SIA.SchedulingService.Infrastructure.MessageBus.Publishers;
 
@@ -149,6 +152,68 @@ public sealed class OutboxPublisherService : BackgroundService
         {
             var integrationEvent = JsonSerializer.Deserialize<GroupDeactivatedIntegrationEvent>(payload);
             if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de grupo desactivado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+
+
+        //Eventos AcademicLoad
+        if (eventType == $"{nameof(AcademicLoadCreatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<AcademicLoadCreatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de edificio creado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(AcademicLoadUpdatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<AcademicLoadUpdatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de edificio actualizado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(AcademicLoadActivatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<AcademicLoadActivatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de edificio activado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(AcademicLoadDeactivatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<AcademicLoadDeactivatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de edificio desactivado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+
+
+        //Eventos AcademicOffering
+        if (eventType == $"{nameof(AcademicOfferingCreatedIntegrationEvet)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<AcademicOfferingCreatedIntegrationEvet>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de edificio creado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(AcademicOfferingUpdatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<AcademicOfferingUpdatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de edificio actualizado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(AcademicOfferingActivatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<AcademicOfferingActivatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de edificio activado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(AcademicOfferingDeactivatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<AcademicOfferingDeactivatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de edificio desactivado.");
             await publishEndpoint.Publish(integrationEvent, cancellationToken);
             return;
         }

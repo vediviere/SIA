@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 namespace SIA.SchedulingService.Infrastructure.Migrations
 {
     [DbContext(typeof(SchedulingDbContext))]
-    partial class SchedulingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260812224015_AddAcademicLoad")]
+    partial class AddAcademicLoad
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,42 +72,6 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AcademicLoad", (string)null);
-                });
-
-            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.AcademicOffering", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("OfferingId");
-
-                    b.Property<Guid>("AcademicLoadId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AcademicLoadId");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("AcademicOffering", (string)null);
                 });
 
             modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.Building", b =>
@@ -324,21 +291,6 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                     b.HasIndex("ProcessedAtUtc");
 
                     b.ToTable("OutboxMessages", (string)null);
-                });
-
-            modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.AcademicOffering", b =>
-                {
-                    b.HasOne("SIA.SchedulingService.Domain.Entities.AcademicLoad", null)
-                        .WithMany()
-                        .HasForeignKey("AcademicLoadId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SIA.SchedulingService.Domain.Entities.Group", null)
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.ClassroomLab", b =>
