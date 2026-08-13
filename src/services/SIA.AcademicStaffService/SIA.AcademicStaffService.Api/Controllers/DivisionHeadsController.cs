@@ -10,7 +10,7 @@ namespace SIA.AcademicStaffService.Api.Controllers;
 
 [ApiController]
 [Route("api/division-heads")]
-public sealed class DivisionHeadController : ControllerBase
+public sealed class DivisionHeadsController : ControllerBase
 {
     private readonly CreateDivisionHeadUseCase _createDivisionManagerUseCase;
     private readonly UpdateDivisionHeadUseCase _updateDivisionManagerUseCase;
@@ -18,7 +18,7 @@ public sealed class DivisionHeadController : ControllerBase
     private readonly DeactivateDivisionHeadUseCase _deactivateDivisionManagerUseCase;
     private readonly IDivisionHeadQueries _divisionManagerQueries;
 
-    public DivisionHeadController(
+    public DivisionHeadsController(
         CreateDivisionHeadUseCase createDivisionManagerUseCase,
         UpdateDivisionHeadUseCase updateDivisionManagerUseCase,
         ActivateDivisionHeadUseCase activateDivisionManagerUseCase,
@@ -117,7 +117,7 @@ public sealed class DivisionHeadController : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/deactivate")]
+    [HttpDelete("{tenantId:guid}/{id:guid}/deactivate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeactivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)

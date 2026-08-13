@@ -10,7 +10,7 @@ public sealed class TeacherConfiguration
     public void Configure(
         EntityTypeBuilder<Teacher> builder)
     {
-        builder.ToTable("Teacher");
+        builder.ToTable("Teachers");
 
         builder.HasKey(teacher => teacher.Id);
 
@@ -60,5 +60,10 @@ public sealed class TeacherConfiguration
                 "CK_Teacher_ContractHours_Positive",
                 "[ContractHours] > 0");
         });
+
+        builder.HasOne<Person>()
+            .WithMany()
+            .HasForeignKey(teacher => teacher.PersonId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

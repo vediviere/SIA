@@ -1,50 +1,47 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
-using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionManagers;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.Coordinators;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Entities;
 
 namespace SIA.AcademicStaffService.Infrastructure.Persistence.DataStores;
 
-public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
+public sealed class CoordinatorDataStore : ICoordinatorDataStore
 {
     private readonly AcademicStaffDbContext _dbContext;
 
-    public DivisionHeadDataStore(AcademicStaffDbContext dbContext)
+    public CoordinatorDataStore(AcademicStaffDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public Task<bool> PersonAlreadyManagesProgramAsync(Guid tenantId, Guid programId, Guid personId, CancellationToken cancellationToken)
+    public Task<bool> PersonAlreadyCoordinatorAsync(Guid tenantId, Guid personId, CancellationToken cancellationToken)
     {
-        return _dbContext.DivisionHeads.AnyAsync(
-            divisionHead =>
-                divisionHead.TenantId == tenantId &&
-                divisionHead.ProgramId == programId &&
-                divisionHead.PersonId == personId,
+        return _dbContext.Coordinators.AnyAsync(
+            coordinator => coordinator.TenantId == tenantId && coordinator.PersonId == personId,
             cancellationToken);
     }
 
-    public Task<DivisionHead?> GetDivisionManagerByIdAsync(Guid tenantId, Guid divisionManagerId, CancellationToken cancellationToken)
+    public Task<Coordinator?> GetCoordinatorByIdAsync(Guid tenantId, Guid coordinatorId, CancellationToken cancellationToken)
     {
-        return _dbContext.DivisionHeads.FirstOrDefaultAsync(
-            divisionHead => divisionHead.TenantId == tenantId && divisionHead.Id == divisionManagerId,
+        return _dbContext.Coordinators.FirstOrDefaultAsync(
+            coordinator => coordinator.TenantId == tenantId && coordinator.Id == coordinatorId,
             cancellationToken);
     }
 
-    public async Task AddDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task AddCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(DivisionHeadCreatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = $"{nameof(CoordinatorCreatedIntegrationEvent)}.v{integrationEvent.Version}";
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            await _dbContext.DivisionHeads.AddAsync(divisionHead, cancellationToken);
+            await _dbContext.Coordinators.AddAsync(coordinator, cancellationToken);
             await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
@@ -56,17 +53,17 @@ public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
         }
     }
 
-    public async Task UpdateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task UpdateCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(DivisionHeadUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = $"{nameof(CoordinatorUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            _dbContext.DivisionHeads.Update(divisionHead);
+            _dbContext.Coordinators.Update(coordinator);
             await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
@@ -78,17 +75,17 @@ public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
         }
     }
 
-    public async Task ActivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task ActivateCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(DivisionHeadActivatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = $"{nameof(CoordinatorActivatedIntegrationEvent)}.v{integrationEvent.Version}";
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            _dbContext.DivisionHeads.Update(divisionHead);
+            _dbContext.Coordinators.Update(coordinator);
             await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
@@ -100,17 +97,17 @@ public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
         }
     }
 
-    public async Task DeactivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task DeactivateCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(DivisionHeadDeactivatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = $"{nameof(CoordinatorDeactivatedIntegrationEvent)}.v{integrationEvent.Version}";
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            _dbContext.DivisionHeads.Update(divisionHead);
+            _dbContext.Coordinators.Update(coordinator);
             await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);

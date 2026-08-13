@@ -17,7 +17,7 @@ public sealed class TeacherQueries : ITeacherQueries
 
     public async Task<Teacher?> GetByIdAsync(Guid tenantId, Guid professorId, CancellationToken cancellationToken)
     {
-        return await _dbContext.Teacher
+        return await _dbContext.Teachers
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 x => x.TenantId == tenantId && x.Id == professorId,
@@ -26,7 +26,7 @@ public sealed class TeacherQueries : ITeacherQueries
 
     public async Task<IReadOnlyCollection<Teacher>> SearchAsync(TeacherFilter filter, CancellationToken cancellationToken)
     {
-        IQueryable<Teacher> query = _dbContext.Teacher
+        IQueryable<Teacher> query = _dbContext.Teachers
             .AsNoTracking()
             .Where(x => x.TenantId == filter.TenantId);
 

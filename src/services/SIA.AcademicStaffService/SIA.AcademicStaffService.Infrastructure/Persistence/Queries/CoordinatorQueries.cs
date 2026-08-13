@@ -1,39 +1,34 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SIA.AcademicStaffService.Application.DTOs.DivisionManagers;
+using SIA.AcademicStaffService.Application.DTOs.Coordinators;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 
 namespace SIA.AcademicStaffService.Infrastructure.Persistence.Queries;
 
-public sealed class DivisionHeadQueries : IDivisionHeadQueries
+public sealed class CoordinatorQueries : ICoordinatorQueries
 {
     private readonly AcademicStaffDbContext _dbContext;
 
-    public DivisionHeadQueries(AcademicStaffDbContext dbContext)
+    public CoordinatorQueries(AcademicStaffDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<DivisionHead?> GetByIdAsync(Guid tenantId, Guid divisionManagerId, CancellationToken cancellationToken)
+    public async Task<Coordinator?> GetByIdAsync(Guid tenantId, Guid coordinatorId, CancellationToken cancellationToken)
     {
-        return await _dbContext.DivisionHeads
+        return await _dbContext.Coordinators
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                x => x.TenantId == tenantId && x.Id == divisionManagerId,
+                x => x.TenantId == tenantId && x.Id == coordinatorId,
                 cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<DivisionHead>> SearchAsync(DivisionHeadFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Coordinator>> SearchAsync(CoordinatorFilter filter, CancellationToken cancellationToken)
     {
-        IQueryable<DivisionHead> query = _dbContext.DivisionHeads
+        IQueryable<Coordinator> query = _dbContext.Coordinators
             .AsNoTracking()
             .Where(x => x.TenantId == filter.TenantId);
-
-        if (filter.ProgramId.HasValue)
-        {
-            query = query.Where(x => x.ProgramId == filter.ProgramId.Value);
-        }
 
         if (filter.PersonId.HasValue)
         {
@@ -48,8 +43,7 @@ public sealed class DivisionHeadQueries : IDivisionHeadQueries
         query = query.Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize);
 
-        return await query.OrderBy(x => x.ProgramId)
-            .ThenBy(x => x.AcademicDegree)
+        return await query.OrderBy(x => x.AcademicDegree)
             .ToListAsync(cancellationToken);
     }
 }

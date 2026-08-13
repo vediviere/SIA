@@ -12,7 +12,7 @@ using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AcademicStaffDbContext))]
-    [Migration("20260812021238_InitialCreate")]
+    [Migration("20260813051322_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -24,6 +24,42 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.Coordinator", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CoordinadorId");
+
+                    b.Property<string>("AcademicDegree")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("PersonId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PersonId");
+
+                    b.HasIndex("TenantId", "PersonId")
+                        .IsUnique();
+
+                    b.ToTable("Coordinators", (string)null);
+                });
 
             modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.DivisionHead", b =>
                 {
@@ -57,10 +93,68 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PersonId");
+
                     b.HasIndex("TenantId", "ProgramId", "PersonId")
                         .IsUnique();
 
-                    b.ToTable("DivisionHead", (string)null);
+                    b.ToTable("DivisionHeads", (string)null);
+                });
+
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.Person", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("PersonId");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EmployeeNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MaternalLastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PaternalLastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeNumber")
+                        .IsUnique();
+
+                    b.ToTable("Persons", (string)null);
                 });
 
             modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.Teacher", b =>
@@ -104,10 +198,12 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PersonId");
+
                     b.HasIndex("TenantId", "PersonId")
                         .IsUnique();
 
-                    b.ToTable("Teacher", null, t =>
+                    b.ToTable("Teachers", null, t =>
                         {
                             t.HasCheckConstraint("CK_Teacher_ContractHours_Positive", "[ContractHours] > 0");
                         });
@@ -148,7 +244,34 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProcessedAtUtc");
 
-                    b.ToTable("OutboxMessage", (string)null);
+                    b.ToTable("OutboxMessages", (string)null);
+                });
+
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.Coordinator", b =>
+                {
+                    b.HasOne("SIA.AcademicStaffService.Domain.Entities.Person", null)
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.DivisionHead", b =>
+                {
+                    b.HasOne("SIA.AcademicStaffService.Domain.Entities.Person", null)
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.Teacher", b =>
+                {
+                    b.HasOne("SIA.AcademicStaffService.Domain.Entities.Person", null)
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

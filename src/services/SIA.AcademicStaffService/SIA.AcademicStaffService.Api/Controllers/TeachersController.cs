@@ -10,7 +10,7 @@ namespace SIA.AcademicStaffService.Api.Controllers;
 
 [ApiController]
 [Route("api/teachers")]
-public sealed class TeacherController : ControllerBase
+public sealed class TeachersController : ControllerBase
 {
     private readonly CreateTeacherUseCase _createProfessorUseCase;
     private readonly UpdateTeacherUseCase _updateProfessorUseCase;
@@ -18,7 +18,7 @@ public sealed class TeacherController : ControllerBase
     private readonly DeactivateTeacherUseCase _deactivateProfessorUseCase;
     private readonly ITeacherQueries _professorQueries;
 
-    public TeacherController(
+    public TeachersController(
         CreateTeacherUseCase createProfessorUseCase,
         UpdateTeacherUseCase updateProfessorUseCase,
         ActivateTeacherUseCase activateProfessorUseCase,
@@ -117,7 +117,7 @@ public sealed class TeacherController : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/deactivate")]
+    [HttpDelete("{tenantId:guid}/{id:guid}/deactivate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeactivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)

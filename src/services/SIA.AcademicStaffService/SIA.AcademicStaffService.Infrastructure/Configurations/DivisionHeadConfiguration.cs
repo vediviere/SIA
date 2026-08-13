@@ -10,7 +10,7 @@ public sealed class DivisionHeadConfiguration
     public void Configure(
         EntityTypeBuilder<DivisionHead> builder)
     {
-        builder.ToTable("DivisionHead");
+        builder.ToTable("DivisionHeads");
 
         builder.HasKey(divisionHead => divisionHead.Id);
 
@@ -47,5 +47,11 @@ public sealed class DivisionHeadConfiguration
             divisionHead.PersonId
         })
             .IsUnique();
+
+        builder.HasOne<Person>()
+            .WithMany()
+            .HasForeignKey(divisionHead => divisionHead.PersonId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
+
 }
