@@ -20,7 +20,7 @@ public sealed class DeactivateStudyPlanUseCase
             throw new StudyPlanNotFoundException(id);
         }
 
-        entity.Deactivate();
+        entity.Desactivate();
 
         var integrationEvent = new StudyPlanDeactivatedIntegrationEvent
         {

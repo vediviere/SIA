@@ -22,7 +22,7 @@ public sealed class DeactivateEducationalProgramsUseCase
             throw new EducationalProgramNotFoundException(id);
         }
 
-        entity.Deactivate();
+        entity.Desactivate();
 
         var integrationEvent = new EducationalProgramDeactivatedIntegrationEvent
         {
