@@ -4,6 +4,7 @@
     <ProjectReference Include="..\SIA.IdentityService.Application\SIA.IdentityService.Application.csproj" />
     <ProjectReference Include="..\SIA.IdentityService.Domain\SIA.IdentityService.Domain.csproj" />
     <ProjectReference Include="..\SIA.IdentityService.Contracts\SIA.IdentityService.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +22,10 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.10" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.19.1" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MessageBus\Publishers\" />
   </ItemGroup>
 
   <PropertyGroup>

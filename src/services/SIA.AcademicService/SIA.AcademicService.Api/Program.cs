@@ -7,11 +7,16 @@ using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
 using SIA.AcademicService.Application.UseCases.StudyPlans;
 //using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
 using SIA.AcademicService.Application.UseCases.Subjects;
-using SIA.AcademicService.Infrastructure.MessageBus.Publishers;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.DataStores;
 using SIA.AcademicService.Infrastructure.Persistence.Queries;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
+using SIA.BuildingBlocks.Messaging.Outbox;
+using SIA.AcademicService.Contracts.IntegrationEvents;
+using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
+using SIA.AcademicService.Contracts.IntegrationEvents.AcademicPeriods;
+using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
+using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlans;
 
 
 
@@ -28,7 +33,11 @@ builder.Services.AddDbContext<AcademicDbContext>(options =>
   var connectionString = builder.Configuration
       .GetConnectionString("AcademicDatabase");
 
-  options.UseSqlServer(connectionString);
+  options.UseSqlServer(connectionString, sqlOptions =>
+  {
+    sqlOptions.EnableRetryOnFailure();
+  });
+
 });
 
 builder.Services.AddMassTransit(configurator =>
@@ -62,6 +71,28 @@ builder.Services.AddMassTransit(configurator =>
   });
 });
 
+builder.Services.AddSingleton(new OutboxOptions());
+
+builder.Services.AddSingleton(new OutboxEventRegistry()
+  .Register<SubjectCreatedIntegrationEvent>(AcademicIntegrationEventTypes.SubjectCreatedV1)
+  .Register<SubjectUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.SubjectUpdatedV1)
+  .Register<SubjectDeletedIntegrationEvent>(AcademicIntegrationEventTypes.SubjectDeletedV1)
+  .Register<SubjectRestoredIntegrationEvent>(AcademicIntegrationEventTypes.SubjectRestoredV1)
+  .Register<AcademicPeriodCreatedIntegrationEvent>(AcademicIntegrationEventTypes.AcademicPeriodCreatedV1)
+  .Register<AcademicPeriodUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.AcademicPeriodUpdatedV1)
+  .Register<AcademicPeriodDeactivatedIntegrationEvent>(AcademicIntegrationEventTypes.AcademicPeriodDeactivatedV1)
+  .Register<AcademicPeriodActivatedIntegrationEvent>(AcademicIntegrationEventTypes.AcademicPeriodActivatedV1)
+  .Register<EducationalProgramCreatedIntegrationEvent>(AcademicIntegrationEventTypes.EducationalProgramCreatedV1)
+  .Register<EducationalProgramUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.EducationalProgramUpdatedV1)
+  .Register<EducationalProgramDeactivatedIntegrationEvent>(AcademicIntegrationEventTypes.EducationalProgramDeactivatedV1)
+  .Register<EducationalProgramRestoredIntegrationEvent>(AcademicIntegrationEventTypes.EducationalProgramRestoredV1)
+  .Register<StudyPlanCreatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanCreatedV1)
+  .Register<StudyPlanUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanUpdatedV1)
+  .Register<StudyPlanDeactivatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanDeactivatedV1)
+  .Register<StudyPlanRestoredIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanRestoredV1));
+
+builder.Services.AddScoped<IOutboxStore, OutboxStore>();
+builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
 builder.Services.AddHostedService<OutboxPublisherService>();
 
 builder.Services.AddScoped<ISubjectDataStore, SubjectDataStore>();

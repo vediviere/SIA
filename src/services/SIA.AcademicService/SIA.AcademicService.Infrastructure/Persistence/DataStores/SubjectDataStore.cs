@@ -1,120 +1,78 @@
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Application.Interfaces.DataStores;
+using SIA.AcademicService.Contracts.IntegrationEvents;
 using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 using SIA.AcademicService.Domain.Entities;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
-using SIA.AcademicService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
+using System.Text.Json;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.DataStores;
 
 public sealed class SubjectDataStore : ISubjectDataStore
 {
-    private readonly AcademicDbContext _dbContext;
+  private readonly AcademicDbContext _dbContext;
 
-    public SubjectDataStore(AcademicDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+  public SubjectDataStore(AcademicDbContext dbContext)
+  {
+    _dbContext = dbContext;
+  }
 
-    public Task<bool> SubjectCodeExistsAsync(Guid tenantId, string code, CancellationToken cancellationToken)
-    {
-        return _dbContext.Subjects.AnyAsync(
-            subject => subject.TenantId == tenantId && subject.Code == code,
-            cancellationToken);
-    }
+  public Task<bool> SubjectCodeExistsAsync(Guid tenantId, string code, CancellationToken cancellationToken)
+  {
+    return _dbContext.Subjects.AnyAsync(
+        subject => subject.TenantId == tenantId && subject.Code == code,
+        cancellationToken);
+  }
 
-    public Task<Subject?> GetSubjectByIdAsync(Guid tenantId, Guid subjectId, CancellationToken cancellationToken)
-    {
-        return _dbContext.Subjects.FirstOrDefaultAsync(subject => subject.TenantId == tenantId && subject.Id == subjectId, cancellationToken);
-    }
+  public Task<Subject?> GetSubjectByIdAsync(Guid tenantId, Guid subjectId, CancellationToken cancellationToken)
+  {
+    return _dbContext.Subjects.FirstOrDefaultAsync(subject => subject.TenantId == tenantId && subject.Id == subjectId, cancellationToken);
+  }
 
-    public async Task AddSubjectWithOutboxAsync(Subject subject, SubjectCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
-    {
-        var payload = JsonSerializer.Serialize(integrationEvent);
+  public async Task AddSubjectWithOutboxAsync(Subject subject, SubjectCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  {
+    var payload = JsonSerializer.Serialize(integrationEvent);
+    var eventType = AcademicIntegrationEventTypes.SubjectCreatedV1;
+    var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        var eventType = $"{nameof(SubjectCreatedIntegrationEvent)}.v{integrationEvent.Version}";
+    await _dbContext.Subjects.AddAsync(subject, cancellationToken);
+    await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+    await _dbContext.SaveChangesAsync(cancellationToken);
+  }
 
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+  public async Task UpdateSubjectWithOutboxAsync(Subject subject, SubjectUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  {
+    var payload = JsonSerializer.Serialize(integrationEvent);
+    var eventType = AcademicIntegrationEventTypes.SubjectUpdatedV1;
+    var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+    _dbContext.Subjects.Update(subject);
+    await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+    await _dbContext.SaveChangesAsync(cancellationToken);
+  }
 
-        try
-        {
-            await _dbContext.Subjects.AddAsync(subject, cancellationToken);
+  public async Task SoftDeleteSubjectWithOutboxAsync(Subject subject, SubjectDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  {
+    var payload = JsonSerializer.Serialize(integrationEvent);
+    var eventType = AcademicIntegrationEventTypes.SubjectDeletedV1;
+    var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+    _dbContext.Subjects.Update(subject);
+    await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+    await _dbContext.SaveChangesAsync(cancellationToken);
+  }
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+  public async Task RestoreSubjectWithOutboxAsync(Subject subject, SubjectRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  {
+    var payload = JsonSerializer.Serialize(integrationEvent);
+    var eventType = AcademicIntegrationEventTypes.SubjectRestoredV1;
+    var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
-    }
-
-    public async Task UpdateSubjectWithOutboxAsync(Subject subject, SubjectUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
-    {
-        var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(SubjectUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            _dbContext.Subjects.Update(subject);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
-    }
-
-    public async Task SoftDeleteSubjectWithOutboxAsync(Subject subject, SubjectDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
-    {
-        var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(SubjectDeletedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            _dbContext.Subjects.Update(subject);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
-    }
-
-    public async Task RestoreSubjectWithOutboxAsync(Subject subject, SubjectRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
-    {
-        var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(SubjectRestoredIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            _dbContext.Subjects.Update(subject);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
-    }
+    _dbContext.Subjects.Update(subject);
+    await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+    await _dbContext.SaveChangesAsync(cancellationToken);
+  }
 }
 
 

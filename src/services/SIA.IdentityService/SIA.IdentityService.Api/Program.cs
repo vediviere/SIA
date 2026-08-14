@@ -2,12 +2,13 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 using SIA.IdentityService.Api.OpenApi;
 using SIA.IdentityService.Application.Interfaces.DataStores;
 using SIA.IdentityService.Application.Interfaces.Security;
 using SIA.IdentityService.Application.UseCases.Users;
-using SIA.IdentityService.Infrastructure.MessageBus.Publishers;
+using SIA.IdentityService.Contracts.IntegrationEvents.Users;
 using SIA.IdentityService.Infrastructure.Persistence.Contexts;
 using SIA.IdentityService.Infrastructure.Persistence.DataStores;
 using SIA.IdentityService.Infrastructure.Security;
@@ -137,6 +138,16 @@ builder.Services.AddMassTransit(configurator =>
   });
 });
 
+builder.Services.AddSingleton(new OutboxOptions());
+
+builder.Services.AddSingleton(new OutboxEventRegistry()
+  .Register<UserCreatedIntegrationEvent>(UserIntegrationEventTypes.UserCreatedV1)
+  .Register<UserRoleAssignedIntegrationEvent>(UserIntegrationEventTypes.UserRoleAssignedV1)
+  .Register<UserRoleRevokedIntegrationEvent>(UserIntegrationEventTypes.UserRoleRevokedV1)
+  .Register<PasswordChangedIntegrationEvent>(UserIntegrationEventTypes.PasswordChangedV1));
+
+builder.Services.AddScoped<IOutboxStore, OutboxStore>();
+builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
 builder.Services.AddHostedService<OutboxPublisherService>();
 
 var app = builder.Build();

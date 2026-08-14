@@ -1,16 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Remove="Events\**" />
+    <Compile Remove="Mappings\**" />
+    <Compile Remove="Validators\**" />
+    <EmbeddedResource Remove="Events\**" />
+    <EmbeddedResource Remove="Mappings\**" />
+    <EmbeddedResource Remove="Validators\**" />
+    <None Remove="Events\**" />
+    <None Remove="Mappings\**" />
+    <None Remove="Validators\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SIA.AcademicService.Domain\SIA.AcademicService.Domain.csproj" />
     <ProjectReference Include="..\SIA.AcademicService.Contracts\SIA.AcademicService.Contracts.csproj" />
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Application\SIA.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Domain\SIA.BuildingBlocks.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Events\" />
-    <Folder Include="Mappings\" />
-    <Folder Include="Validators\" />
   </ItemGroup>
 
   <PropertyGroup>

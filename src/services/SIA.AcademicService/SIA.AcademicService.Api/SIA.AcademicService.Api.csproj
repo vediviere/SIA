@@ -12,6 +12,7 @@
     <ProjectReference Include="..\SIA.AcademicService.Application\SIA.AcademicService.Application.csproj" />
     <ProjectReference Include="..\SIA.AcademicService.Infrastructure\SIA.AcademicService.Infrastructure.csproj" />
     <ProjectReference Include="..\SIA.AcademicService.Contracts\SIA.AcademicService.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
