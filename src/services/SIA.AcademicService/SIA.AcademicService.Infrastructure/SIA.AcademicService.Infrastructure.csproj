@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <Folder Include="ExternalServices\" />
+    <Folder Include="MessageBus\Publishers\" />
+    <Folder Include="Persistence\Entities\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
 

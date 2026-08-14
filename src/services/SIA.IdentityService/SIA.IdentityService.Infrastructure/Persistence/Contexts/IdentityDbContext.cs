@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SIA.IdentityService.Domain.Entities;
 using SIA.IdentityService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.IdentityService.Infrastructure.Persistence.Contexts;
 

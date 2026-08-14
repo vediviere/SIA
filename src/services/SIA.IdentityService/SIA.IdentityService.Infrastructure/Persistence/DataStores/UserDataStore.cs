@@ -6,6 +6,7 @@ using SIA.IdentityService.Domain.Entities;
 using SIA.IdentityService.Domain.Enums;
 using SIA.IdentityService.Infrastructure.Persistence.Contexts;
 using SIA.IdentityService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.IdentityService.Infrastructure.Persistence.DataStores;
 

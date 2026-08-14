@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicService.Domain.Entities;
-using SIA.AcademicService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Contexts;
 

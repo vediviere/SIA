@@ -1,4 +1,4 @@
-using SIA.IdentityService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.IdentityService.Tests.Infrastructure.Persistence;
 
@@ -39,7 +39,8 @@ public sealed class OutboxMessageTests
   {
     var message = new OutboxMessage("UserCreatedIntegrationEvent.v1", "{}", Guid.NewGuid());
 
-    message.MarkAsFailed("Error de prueba");
+    var nextAttemptAtUtc = DateTime.UtcNow.AddSeconds(5);
+    message.MarkAsFailed("Error de prueba", nextAttemptAtUtc);
 
     message.MarkAsProcessed();
 
@@ -52,7 +53,8 @@ public sealed class OutboxMessageTests
   {
     var message = new OutboxMessage("UserCreatedIntegrationEvent.v1", "{}", Guid.NewGuid());
 
-    message.MarkAsFailed("Error de prueba");
+    var nextAttemptAtUtc = DateTime.UtcNow.AddSeconds(5);
+    message.MarkAsFailed("Error de prueba", nextAttemptAtUtc);
 
     Assert.Equal(1, message.RetryCount);
     Assert.Equal("Error de prueba", message.Error);

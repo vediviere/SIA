@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SIA.IdentityService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.IdentityService.Infrastructure.Persistence.Configurations;
 
@@ -26,7 +26,11 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
     builder.Property(message => message.OccurredAtUtc)
       .IsRequired();
 
-    builder.Property(message => message.ProcessedAtUtc);
+    builder.HasIndex(message => new { message.ProcessedAtUtc, message.DeadLetteredAtUtc, message.NextAttemptAtUtc });
+
+    builder.Property(message => message.LastAttemptAtUtc);
+    builder.Property(message => message.NextAttemptAtUtc);
+    builder.Property(message => message.DeadLetteredAtUtc);
 
     builder.Property(message => message.RetryCount)
       .IsRequired();
@@ -37,7 +41,6 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
     builder.Property(message => message.CorrelationId)
       .IsRequired();
 
-    builder.HasIndex(message => message.ProcessedAtUtc);
     builder.HasIndex(message => message.CorrelationId);
   }
 }
