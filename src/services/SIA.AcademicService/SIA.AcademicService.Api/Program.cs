@@ -71,7 +71,9 @@ builder.Services.AddMassTransit(configurator =>
   });
 });
 
-builder.Services.AddSingleton(new OutboxOptions());
+var outboxOptions = new OutboxOptions();
+builder.Configuration.GetSection("Outbox").Bind(outboxOptions);
+builder.Services.AddSingleton(outboxOptions);
 
 builder.Services.AddSingleton(new OutboxEventRegistry()
   .Register<SubjectCreatedIntegrationEvent>(AcademicIntegrationEventTypes.SubjectCreatedV1)
@@ -179,11 +181,11 @@ app.MapControllers();
 
 app.MapGet("/health", () =>
 {
-    return Results.Ok(new
-    {
-        service = "SIA.AcademicService.Api",
-        status = "Healthy"
-    });
+  return Results.Ok(new
+  {
+    service = "SIA.AcademicService.Api",
+    status = "Healthy"
+  });
 });
 
 app.UseSiaExceptionHandling();

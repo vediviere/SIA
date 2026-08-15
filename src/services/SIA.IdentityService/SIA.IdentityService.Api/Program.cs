@@ -138,7 +138,9 @@ builder.Services.AddMassTransit(configurator =>
   });
 });
 
-builder.Services.AddSingleton(new OutboxOptions());
+var outboxOptions = new OutboxOptions();
+builder.Configuration.GetSection("Outbox").Bind(outboxOptions);
+builder.Services.AddSingleton(outboxOptions);
 
 builder.Services.AddSingleton(new OutboxEventRegistry()
   .Register<UserCreatedIntegrationEvent>(UserIntegrationEventTypes.UserCreatedV1)
