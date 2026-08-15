@@ -39,6 +39,7 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PaternalLastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     MaternalLastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    AcademicDegree = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
@@ -57,7 +58,6 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     CoordinadorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AcademicDegree = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -81,7 +81,6 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EducationalProgramId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AcademicDegree = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -104,7 +103,6 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     TeacherId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AcademicDegree = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     ProfessionalProfile = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     ContractType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ContractHours = table.Column<int>(type: "int", nullable: false),

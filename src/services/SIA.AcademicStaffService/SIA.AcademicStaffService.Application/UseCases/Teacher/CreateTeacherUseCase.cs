@@ -34,7 +34,6 @@ public sealed class CreateTeacherUseCase
         var professor = new Teacher(
             request.TenantId,
             request.PersonId,
-            request.AcademicDegree,
             request.ProfessionalProfile,
             request.ContractType,
             request.ContractHours);
@@ -47,7 +46,6 @@ public sealed class CreateTeacherUseCase
             TenantId = professor.TenantId,
             ProfessorId = professor.Id,
             PersonId = professor.PersonId,
-            AcademicDegree = professor.AcademicDegree,
             ProfessionalProfile = professor.ProfessionalProfile,
             ContractType = professor.ContractType,
             ContractHours = professor.ContractHours,
@@ -62,7 +60,6 @@ public sealed class CreateTeacherUseCase
             Id = professor.Id,
             TenantId = professor.TenantId,
             PersonId = professor.PersonId,
-            AcademicDegree = professor.AcademicDegree,
             ProfessionalProfile = professor.ProfessionalProfile,
             ContractType = professor.ContractType,
             ContractHours = professor.ContractHours,

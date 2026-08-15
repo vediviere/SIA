@@ -12,7 +12,7 @@ using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AcademicStaffDbContext))]
-    [Migration("20260813051322_InitialCreate")]
+    [Migration("20260815032856_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -30,11 +30,6 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CoordinadorId");
-
-                    b.Property<string>("AcademicDegree")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
@@ -66,11 +61,6 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("DivisionId");
-
-                    b.Property<string>("AcademicDegree")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
@@ -106,6 +96,11 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("PersonId");
+
+                    b.Property<string>("AcademicDegree")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
@@ -162,11 +157,6 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TeacherId");
-
-                    b.Property<string>("AcademicDegree")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("ContractHours")
                         .HasColumnType("int");

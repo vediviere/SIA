@@ -49,7 +49,6 @@ public sealed class TeacherQueries : ITeacherQueries
             .Take(filter.PageSize);
 
         return await query.OrderBy(x => x.ContractType)
-            .ThenBy(x => x.AcademicDegree)
             .ToListAsync(cancellationToken);
     }
 }

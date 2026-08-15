@@ -9,7 +9,6 @@ public sealed class Teacher
     public Teacher(
         Guid tenantId,
         Guid personId,
-        string academicDegree,
         string professionalProfile,
         string contractType,
         int contractHours)
@@ -22,11 +21,6 @@ public sealed class Teacher
         if (personId == Guid.Empty)
         {
             throw new ArgumentException("El personId es obligatorio.", nameof(personId));
-        }
-
-        if (string.IsNullOrWhiteSpace(academicDegree))
-        {
-            throw new ArgumentException("El grado academico es obligatorio.", nameof(academicDegree));
         }
 
         if (string.IsNullOrWhiteSpace(professionalProfile))
@@ -47,7 +41,6 @@ public sealed class Teacher
         Id = Guid.NewGuid();
         TenantId = tenantId;
         PersonId = personId;
-        AcademicDegree = academicDegree.Trim();
         ProfessionalProfile = professionalProfile.Trim();
         ContractType = contractType.Trim();
         ContractHours = contractHours;
@@ -58,7 +51,6 @@ public sealed class Teacher
     public Guid Id { get; private set; }
     public Guid TenantId { get; private set; }
     public Guid PersonId { get; private set; }
-    public string AcademicDegree { get; private set; } = string.Empty;
     public string ProfessionalProfile { get; private set; } = string.Empty;
     public string ContractType { get; private set; } = string.Empty;
     public int ContractHours { get; private set; }
@@ -79,15 +71,10 @@ public sealed class Teacher
     }
 
     public void Update(
-        string academicDegree,
         string professionalProfile,
         string contractType,
         int contractHours)
     {
-        if (string.IsNullOrWhiteSpace(academicDegree))
-        {
-            throw new ArgumentException("El grado academico es obligatorio.", nameof(academicDegree));
-        }
 
         if (string.IsNullOrWhiteSpace(professionalProfile))
         {
@@ -104,7 +91,6 @@ public sealed class Teacher
             throw new ArgumentOutOfRangeException(nameof(contractHours), "Las horas de contrato deben ser mayor a cero.");
         }
 
-        AcademicDegree = academicDegree.Trim();
         ProfessionalProfile = professionalProfile.Trim();
         ContractType = contractType.Trim();
         ContractHours = contractHours;

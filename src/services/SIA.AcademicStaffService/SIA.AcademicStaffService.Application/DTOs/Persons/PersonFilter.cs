@@ -10,6 +10,8 @@ public sealed class PersonFilter
 
     public string? PaternalLastName { get; init; }
 
+    public string? AcademicDegree { get; init; }
+
     public bool? Status { get; init; }
 
     public int Page { get; init; } = 1;

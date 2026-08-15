@@ -49,7 +49,6 @@ public sealed class DivisionHeadQueries : IDivisionHeadQueries
             .Take(filter.PageSize);
 
         return await query.OrderBy(x => x.ProgramId)
-            .ThenBy(x => x.AcademicDegree)
             .ToListAsync(cancellationToken);
     }
 }

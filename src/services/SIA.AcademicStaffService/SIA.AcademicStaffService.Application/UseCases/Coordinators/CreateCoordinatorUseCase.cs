@@ -33,8 +33,7 @@ public sealed class CreateCoordinatorUseCase
 
         var coordinator = new Coordinator(
             request.TenantId,
-            request.PersonId,
-            request.AcademicDegree);
+            request.PersonId);
 
         var integrationEvent = new CoordinatorCreatedIntegrationEvent
         {
@@ -44,7 +43,6 @@ public sealed class CreateCoordinatorUseCase
             TenantId = coordinator.TenantId,
             CoordinatorId = coordinator.Id,
             PersonId = coordinator.PersonId,
-            AcademicDegree = coordinator.AcademicDegree,
             Status = coordinator.Status,
             Version = 1
         };
@@ -56,7 +54,6 @@ public sealed class CreateCoordinatorUseCase
             Id = coordinator.Id,
             TenantId = coordinator.TenantId,
             PersonId = coordinator.PersonId,
-            AcademicDegree = coordinator.AcademicDegree,
             Status = coordinator.Status,
             CreatedAtUtc = coordinator.CreatedAtUtc,
             CorrelationId = correlationId

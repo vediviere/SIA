@@ -2,5 +2,4 @@
 
 public sealed record UpdateCoordinatorRequest
 {
-    public required string AcademicDegree { get; init; }
 }

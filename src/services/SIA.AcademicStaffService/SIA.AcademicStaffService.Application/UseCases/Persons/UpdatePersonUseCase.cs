@@ -33,6 +33,7 @@ public sealed class UpdatePersonUseCase
             request.FirstName,
             request.PaternalLastName,
             request.MaternalLastName,
+            request.AcademicDegree,
             request.Email,
             request.Phone);
 
@@ -47,6 +48,7 @@ public sealed class UpdatePersonUseCase
             FirstName = person.FirstName,
             PaternalLastName = person.PaternalLastName,
             MaternalLastName = person.MaternalLastName,
+            AcademicDegree = person.AcademicDegree,
             Email = person.Email,
             Phone = person.Phone,
             Status = person.Status,
@@ -63,6 +65,7 @@ public sealed class UpdatePersonUseCase
             FirstName = person.FirstName,
             PaternalLastName = person.PaternalLastName,
             MaternalLastName = person.MaternalLastName,
+            AcademicDegree = person.AcademicDegree,
             Email = person.Email,
             Phone = person.Phone,
             Status = person.Status,

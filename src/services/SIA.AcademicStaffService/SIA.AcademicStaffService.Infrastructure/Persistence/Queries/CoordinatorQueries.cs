@@ -43,7 +43,7 @@ public sealed class CoordinatorQueries : ICoordinatorQueries
         query = query.Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize);
 
-        return await query.OrderBy(x => x.AcademicDegree)
+        return await query.OrderBy(x => x.PersonId)
             .ToListAsync(cancellationToken);
     }
 }

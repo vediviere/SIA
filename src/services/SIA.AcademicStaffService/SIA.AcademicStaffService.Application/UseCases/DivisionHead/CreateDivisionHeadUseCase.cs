@@ -35,8 +35,7 @@ public sealed class CreateDivisionHeadUseCase
         var divisionManager = new DivisionHead(
             request.TenantId,
             request.ProgramId,
-            request.PersonId,
-            request.AcademicDegree);
+            request.PersonId);
 
         var integrationEvent = new DivisionHeadCreatedIntegrationEvent
         {
@@ -47,7 +46,6 @@ public sealed class CreateDivisionHeadUseCase
             DivisionManagerId = divisionManager.Id,
             ProgramId = divisionManager.ProgramId,
             PersonId = divisionManager.PersonId,
-            AcademicDegree = divisionManager.AcademicDegree,
             Status = divisionManager.Status,
             Version = 1
         };
@@ -60,7 +58,6 @@ public sealed class CreateDivisionHeadUseCase
             TenantId = divisionManager.TenantId,
             ProgramId = divisionManager.ProgramId,
             PersonId = divisionManager.PersonId,
-            AcademicDegree = divisionManager.AcademicDegree,
             Status = divisionManager.Status,
             CreatedAtUtc = divisionManager.CreatedAtUtc,
             CorrelationId = correlationId

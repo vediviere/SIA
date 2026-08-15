@@ -37,9 +37,10 @@ public sealed class CreatePersonUseCase
             normalizedEmployeeNumber,
             request.FirstName,
             request.PaternalLastName,
-            request.MaternalLastName ?? string.Empty,
+            request.MaternalLastName,
+            request.AcademicDegree,
             request.Email,
-            request.Phone ?? string.Empty);
+            request.Phone);
 
         var integrationEvent = new PersonCreatedIntegrationEvent
         {
@@ -52,6 +53,7 @@ public sealed class CreatePersonUseCase
             FirstName = person.FirstName,
             PaternalLastName = person.PaternalLastName,
             MaternalLastName = person.MaternalLastName,
+            AcademicDegree = person.AcademicDegree,
             Email = person.Email,
             Phone = person.Phone,
             Status = person.Status,
@@ -68,6 +70,7 @@ public sealed class CreatePersonUseCase
             FirstName = person.FirstName,
             PaternalLastName = person.PaternalLastName,
             MaternalLastName = person.MaternalLastName,
+            AcademicDegree = person.AcademicDegree,
             Email = person.Email,
             Phone = person.Phone,
             Status = person.Status,

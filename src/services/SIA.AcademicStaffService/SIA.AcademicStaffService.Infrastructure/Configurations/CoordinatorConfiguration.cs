@@ -24,10 +24,6 @@ public sealed class CoordinatorConfiguration
         builder.Property(coordinator => coordinator.PersonId)
             .IsRequired();
 
-        builder.Property(coordinator => coordinator.AcademicDegree)
-            .HasMaxLength(200)
-            .IsRequired();
-
         builder.Property(coordinator => coordinator.Status)
             .IsRequired();
 

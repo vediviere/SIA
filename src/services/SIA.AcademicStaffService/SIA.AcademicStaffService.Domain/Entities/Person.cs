@@ -12,6 +12,7 @@ public sealed class Person
         string firstName,
         string paternalLastName,
         string maternalLastName,
+        string academicDegree,
         string email,
         string phone)
     {
@@ -40,6 +41,11 @@ public sealed class Person
             throw new ArgumentException("El apellido materno es obligatorio.", nameof(maternalLastName));
         }
 
+        if (string.IsNullOrWhiteSpace(academicDegree))
+        {
+            throw new ArgumentException("El grado academico es obligatorio.", nameof(academicDegree));
+        }
+
         if (string.IsNullOrWhiteSpace(email))
         {
             throw new ArgumentException("El correo es obligatorio.", nameof(email));
@@ -56,6 +62,7 @@ public sealed class Person
         FirstName = firstName.Trim();
         PaternalLastName = paternalLastName.Trim();
         MaternalLastName = maternalLastName.Trim();
+        AcademicDegree = academicDegree.Trim();
         Email = email.Trim();
         Phone = phone.Trim();
         Status = true;
@@ -68,6 +75,7 @@ public sealed class Person
     public string FirstName { get; private set; } = string.Empty;
     public string PaternalLastName { get; private set; } = string.Empty;
     public string MaternalLastName { get; private set; } = string.Empty;
+    public string AcademicDegree { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
     public string Phone { get; private set; } = string.Empty;
     public bool Status { get; private set; }
@@ -78,6 +86,7 @@ public sealed class Person
         string firstName,
         string paternalLastName,
         string maternalLastName,
+        string academicDegree,
         string email,
         string phone)
     {
@@ -96,6 +105,11 @@ public sealed class Person
             throw new ArgumentException("El apellido materno es obligatorio.", nameof(maternalLastName));
         }
 
+        if (string.IsNullOrWhiteSpace(academicDegree))
+        {
+            throw new ArgumentException("El grado academico es obligatorio.", nameof(academicDegree));
+        }
+
         if (string.IsNullOrWhiteSpace(email))
         {
             throw new ArgumentException("El correo es obligatorio.", nameof(email));
@@ -109,6 +123,7 @@ public sealed class Person
         FirstName = firstName.Trim();
         PaternalLastName = paternalLastName.Trim();
         MaternalLastName = maternalLastName.Trim();
+        AcademicDegree = academicDegree.Trim();
         Email = email.Trim();
         Phone = phone.Trim();
         UpdatedAtUtc = DateTime.UtcNow;
