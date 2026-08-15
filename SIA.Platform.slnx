@@ -110,5 +110,7 @@
     <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Infrastructure/SIA.WorkflowService.Infrastructure.csproj" />
     <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Tests/SIA.WorkflowService.Tests.csproj" />
   </Folder>
-  <Folder Name="/test/" />
+  <Folder Name="/test/">
+    <Project Path="tests/building-blocks/SIA.BuildingBlocks.Messaging.Tests/SIA.BuildingBlocks.Messaging.Tests.csproj" Id="ab8e1d54-b58a-442c-89b8-03af91c504dc" />
+  </Folder>
 </Solution>
