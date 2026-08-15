@@ -2,5 +2,4 @@
 
 public sealed record UpdateDivisionHeadRequest
 {
-    public required string AcademicDegree { get; init; }
 }

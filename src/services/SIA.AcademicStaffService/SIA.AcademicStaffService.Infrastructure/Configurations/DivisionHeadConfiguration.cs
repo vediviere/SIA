@@ -28,10 +28,6 @@ public sealed class DivisionHeadConfiguration
         builder.Property(divisionHead => divisionHead.PersonId)
             .IsRequired();
 
-        builder.Property(divisionHead => divisionHead.AcademicDegree)
-            .HasMaxLength(200)
-            .IsRequired();
-
         builder.Property(divisionHead => divisionHead.Status)
             .IsRequired();
 

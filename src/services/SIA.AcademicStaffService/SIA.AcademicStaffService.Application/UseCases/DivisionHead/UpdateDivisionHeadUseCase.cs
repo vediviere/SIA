@@ -29,8 +29,6 @@ public sealed class UpdateDivisionHeadUseCase
             throw new DivisionHeadNotFoundException(divisionManagerId);
         }
 
-        divisionManager.Update(request.AcademicDegree);
-
         var integrationEvent = new DivisionHeadUpdatedIntegrationEvent
         {
             EventId = Guid.NewGuid(),
@@ -40,7 +38,6 @@ public sealed class UpdateDivisionHeadUseCase
             DivisionManagerId = divisionManager.Id,
             ProgramId = divisionManager.ProgramId,
             PersonId = divisionManager.PersonId,
-            AcademicDegree = divisionManager.AcademicDegree,
             Status = divisionManager.Status,
             Version = 1
         };
@@ -53,7 +50,6 @@ public sealed class UpdateDivisionHeadUseCase
             TenantId = divisionManager.TenantId,
             ProgramId = divisionManager.ProgramId,
             PersonId = divisionManager.PersonId,
-            AcademicDegree = divisionManager.AcademicDegree,
             Status = divisionManager.Status,
             UpdatedAtUtc = divisionManager.UpdatedAtUtc,
             CorrelationId = correlationId

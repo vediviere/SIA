@@ -14,6 +14,8 @@ public sealed record UpdatePersonResponse
 
     public required string MaternalLastName { get; init; }
 
+    public required string AcademicDegree { get; init; }
+
     public required string Email { get; init; }
 
     public required string Phone { get; init; }

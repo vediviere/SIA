@@ -10,8 +10,6 @@ public sealed record UpdateDivisionHeadResponse
 
     public required Guid PersonId { get; init; }
 
-    public required string AcademicDegree { get; init; }
-
     public required bool Status { get; init; }
 
     public required DateTime? UpdatedAtUtc { get; init; }

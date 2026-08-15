@@ -37,6 +37,10 @@ public sealed class PersonConfiguration
             .HasMaxLength(100)
             .IsRequired();
 
+        builder.Property(person => person.AcademicDegree)
+            .HasMaxLength(200)
+            .IsRequired();
+
         builder.Property(person => person.Email)
             .HasMaxLength(200)
             .IsRequired();

@@ -24,10 +24,6 @@ public sealed class TeacherConfiguration
         builder.Property(teacher => teacher.PersonId)
             .IsRequired();
 
-        builder.Property(teacher => teacher.AcademicDegree)
-            .HasMaxLength(200)
-            .IsRequired();
-
         builder.Property(teacher => teacher.ProfessionalProfile)
             .HasMaxLength(500)
             .IsRequired();

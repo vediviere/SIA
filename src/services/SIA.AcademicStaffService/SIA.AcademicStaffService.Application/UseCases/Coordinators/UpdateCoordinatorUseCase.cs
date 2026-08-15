@@ -29,8 +29,6 @@ public sealed class UpdateCoordinatorUseCase
             throw new CoordinatorNotFoundException(coordinatorId);
         }
 
-        coordinator.Update(request.AcademicDegree);
-
         var integrationEvent = new CoordinatorUpdatedIntegrationEvent
         {
             EventId = Guid.NewGuid(),
@@ -39,7 +37,6 @@ public sealed class UpdateCoordinatorUseCase
             TenantId = coordinator.TenantId,
             CoordinatorId = coordinator.Id,
             PersonId = coordinator.PersonId,
-            AcademicDegree = coordinator.AcademicDegree,
             Status = coordinator.Status,
             Version = 1
         };
@@ -51,7 +48,6 @@ public sealed class UpdateCoordinatorUseCase
             Id = coordinator.Id,
             TenantId = coordinator.TenantId,
             PersonId = coordinator.PersonId,
-            AcademicDegree = coordinator.AcademicDegree,
             Status = coordinator.Status,
             UpdatedAtUtc = coordinator.UpdatedAtUtc,
             CorrelationId = correlationId

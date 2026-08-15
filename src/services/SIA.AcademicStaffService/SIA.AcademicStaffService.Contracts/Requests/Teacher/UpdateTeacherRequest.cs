@@ -2,7 +2,6 @@
 
 public sealed record UpdateTeacherRequest
 {
-    public required string AcademicDegree { get; init; }
 
     public required string ProfessionalProfile { get; init; }
 

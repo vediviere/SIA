@@ -8,8 +8,7 @@ public sealed class Coordinator
 
     public Coordinator(
         Guid tenantId,
-        Guid personId,
-        string academicDegree)
+        Guid personId)
     {
         if (tenantId == Guid.Empty)
         {
@@ -21,15 +20,10 @@ public sealed class Coordinator
             throw new ArgumentException("La persona es obligatoria.", nameof(personId));
         }
 
-        if (string.IsNullOrWhiteSpace(academicDegree))
-        {
-            throw new ArgumentException("El grado academico es obligatorio.", nameof(academicDegree));
-        }
 
         Id = Guid.NewGuid();
         TenantId = tenantId;
         PersonId = personId;
-        AcademicDegree = academicDegree.Trim();
         Status = true;
         CreatedAtUtc = DateTime.UtcNow;
     }
@@ -37,7 +31,6 @@ public sealed class Coordinator
     public Guid Id { get; private set; }
     public Guid TenantId { get; private set; }
     public Guid PersonId { get; private set; }
-    public string AcademicDegree { get; private set; } = string.Empty;
     public bool Status { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
@@ -49,7 +42,6 @@ public sealed class Coordinator
             throw new ArgumentException("El grado academico es obligatorio.", nameof(academicDegree));
         }
 
-        AcademicDegree = academicDegree.Trim();
         UpdatedAtUtc = DateTime.UtcNow;
     }
 

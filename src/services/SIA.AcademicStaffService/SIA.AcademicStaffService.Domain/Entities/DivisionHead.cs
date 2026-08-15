@@ -9,8 +9,7 @@ public sealed class DivisionHead
     public DivisionHead(
         Guid tenantId,
         Guid programId,
-        Guid personId,
-        string academicDegree)
+        Guid personId)
     {
         if (tenantId == Guid.Empty)
         {
@@ -27,16 +26,10 @@ public sealed class DivisionHead
             throw new ArgumentException("La persona es obligatoria.", nameof(personId));
         }
 
-        if (string.IsNullOrWhiteSpace(academicDegree))
-        {
-            throw new ArgumentException("El grado academico es obligatorio.", nameof(academicDegree));
-        }
-
         Id = Guid.NewGuid();
         TenantId = tenantId;
         ProgramId = programId;
         PersonId = personId;
-        AcademicDegree = academicDegree.Trim();
         Status = true;
         CreatedAtUtc = DateTime.UtcNow;
     }
@@ -45,7 +38,6 @@ public sealed class DivisionHead
     public Guid TenantId { get; private set; }
     public Guid ProgramId { get; private set; }
     public Guid PersonId { get; private set; }
-    public string AcademicDegree { get; private set; } = string.Empty;
     public bool Status { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
@@ -69,7 +61,6 @@ public sealed class DivisionHead
             throw new ArgumentException("El grado academico es obligatorio.", nameof(academicDegree));
         }
 
-        AcademicDegree = academicDegree.Trim();
         UpdatedAtUtc = DateTime.UtcNow;
     }
 }

@@ -30,7 +30,6 @@ public sealed class UpdateTeacherUseCase
         }
 
         professor.Update(
-            request.AcademicDegree,
             request.ProfessionalProfile,
             request.ContractType,
             request.ContractHours);
@@ -43,7 +42,6 @@ public sealed class UpdateTeacherUseCase
             TenantId = professor.TenantId,
             ProfessorId = professor.Id,
             PersonId = professor.PersonId,
-            AcademicDegree = professor.AcademicDegree,
             ProfessionalProfile = professor.ProfessionalProfile,
             ContractType = professor.ContractType,
             ContractHours = professor.ContractHours,
@@ -58,7 +56,6 @@ public sealed class UpdateTeacherUseCase
             Id = professor.Id,
             TenantId = professor.TenantId,
             PersonId = professor.PersonId,
-            AcademicDegree = professor.AcademicDegree,
             ProfessionalProfile = professor.ProfessionalProfile,
             ContractType = professor.ContractType,
             ContractHours = professor.ContractHours,
