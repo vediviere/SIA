@@ -30,6 +30,7 @@ public sealed class GetAcademicOfferingByIdUseCase
             GroupId = academicOffering.GroupId,
             SubjectId = academicOffering.SubjectId,
             AcademicLoadId = academicOffering.AcademicLoadId,
+            OfferingStatus = academicOffering.OfferingStatus,
             Status = academicOffering.Status,
             CreatedAtUtc = academicOffering.CreatedAtUtc,
             UpdatedAtUtc = academicOffering.UpdatedAtUtc

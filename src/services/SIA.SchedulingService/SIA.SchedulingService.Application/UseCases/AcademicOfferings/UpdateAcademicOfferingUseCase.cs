@@ -25,17 +25,7 @@ public sealed class UpdateAcademicOfferingUseCase
             throw new AcademicOfferingNotFoundException(id);
         }
 
-        if (request.GroupId != academicOffering.GroupId || request.SubjectId != academicOffering.SubjectId)
-        {
-            var offeringExists = await _dataStore.ExistsByGroupAndSubjectAsync(request.GroupId, request.SubjectId, cancellationToken);
-
-            if (offeringExists)
-            {
-                throw new AcademicOfferingAlreadyExistsException(request.GroupId, request.SubjectId);
-            }
-        }
-
-        academicOffering.Update(request.GroupId, request.SubjectId, request.AcademicLoadId);
+        academicOffering.Update(request.OfferingStatus);
 
         var integrationEvent = new AcademicOfferingUpdatedIntegrationEvent
         {
@@ -44,9 +34,7 @@ public sealed class UpdateAcademicOfferingUseCase
             OccurredAtUtc = academicOffering.UpdatedAtUtc!.Value,
             TenantId = academicOffering.TenantId,
             OfferingId = academicOffering.Id,
-            GroupId = academicOffering.GroupId,
-            SubjectId = academicOffering.SubjectId,
-            AcademicLoadId = academicOffering.AcademicLoadId,
+            OfferingStatus = academicOffering.OfferingStatus,
             Status = academicOffering.Status,
             Version = 1
         };
@@ -60,6 +48,7 @@ public sealed class UpdateAcademicOfferingUseCase
             GroupId = academicOffering.GroupId,
             SubjectId = academicOffering.SubjectId,
             AcademicLoadId = academicOffering.AcademicLoadId,
+            OfferingStatus = academicOffering.OfferingStatus,
             Status = academicOffering.Status,
             CreatedAtUtc = academicOffering.CreatedAtUtc,
             UpdatedAtUtc = academicOffering.UpdatedAtUtc,

@@ -1,7 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
-
-namespace SIA.SchedulingService.Domain.Entities;
+﻿namespace SIA.SchedulingService.Domain.Entities;
 
 public sealed class AcademicOffering
 {
@@ -13,26 +10,28 @@ public sealed class AcademicOffering
         Guid tenantId,
         Guid groupId,
         Guid subjectId,
-        Guid academicLoadId)
+        Guid academicLoadId,
+        string offeringStatus)
     {
         if(tenantId == Guid.Empty)
         {
             throw new ArgumentException("El tenantId es obligatorio.", nameof(tenantId));
         }
-
         if(groupId == Guid.Empty)
         {
             throw new ArgumentException("El grupo es obligatorio.", nameof (groupId));
         }
-
         if(subjectId == Guid.Empty)
         {
             throw new ArgumentException("La materia es obligatoria.", nameof(subjectId));
         }
-
         if (academicLoadId == Guid.Empty)
         {
             throw new ArgumentException("La carga academica es obligatoria.", nameof(academicLoadId));
+        }
+        if (string.IsNullOrWhiteSpace(offeringStatus))
+        {
+            throw new ArgumentException("El estado de la oferta es obligatorio.", nameof(offeringStatus));
         }
 
         Id = Guid.NewGuid();
@@ -40,46 +39,29 @@ public sealed class AcademicOffering
         GroupId = groupId;
         SubjectId = subjectId;
         AcademicLoadId = academicLoadId;
+        OfferingStatus = offeringStatus.Trim();
         Status = true;
         CreatedAtUtc = DateTime.UtcNow;
     }
 
     public Guid Id { get; private set; }
-
     public Guid TenantId { get; private set; }
-
     public Guid GroupId { get; private set; }
-
     public Guid SubjectId { get; private set; }
-
     public Guid AcademicLoadId { get; private set; }
-
+    public string OfferingStatus { get; private set; } = string.Empty;
     public bool Status { get; private set; }
-
     public DateTime CreatedAtUtc { get; private set; }
-
     public DateTime? UpdatedAtUtc { get; private set; }
 
-    public void Update(Guid groupId, Guid subjectId, Guid academicLoadId)
+    public void Update(string offeringStatus)
     {
-        if (groupId == Guid.Empty)
+        if (string.IsNullOrWhiteSpace(offeringStatus))
         {
-            throw new ArgumentException("El grupo es obligatorio.", nameof(groupId));
+            throw new ArgumentException("El estado de la oferta es obligatorio.", nameof(offeringStatus));
         }
 
-        if (subjectId == Guid.Empty)
-        {
-            throw new ArgumentException("La materia es obligatoria.", nameof(subjectId));
-        }
-
-        if (academicLoadId == Guid.Empty)
-        {
-            throw new ArgumentException("La carga académica es obligatoria.", nameof(academicLoadId));
-        }
-
-        GroupId = groupId;
-        SubjectId = subjectId;
-        AcademicLoadId = academicLoadId;
+        OfferingStatus = offeringStatus.Trim();
         UpdatedAtUtc = DateTime.UtcNow;
     }
 

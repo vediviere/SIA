@@ -18,6 +18,7 @@ public sealed class AcademicOfferingConfiguration : IEntityTypeConfiguration<Aca
         builder.Property(offering => offering.GroupId).IsRequired();
         builder.Property(offering => offering.SubjectId).IsRequired();
         builder.Property(offering => offering.AcademicLoadId).IsRequired();
+        builder.Property(offering => offering.OfferingStatus).HasMaxLength(20).IsRequired();
         builder.Property(offering => offering.Status).IsRequired();
         builder.Property(offering => offering.CreatedAtUtc).IsRequired();
         builder.Property(offering => offering.UpdatedAtUtc);
