@@ -24,4 +24,8 @@
 		<ProjectReference Include="..\SIA.SchedulingService.Contracts\SIA.SchedulingService.Contracts.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Docs\" />
+	</ItemGroup>
+
 </Project>
