@@ -30,7 +30,8 @@ public sealed class CreateAcademicOfferingUseCase
             request.TenantId,
             request.GroupId,
             request.SubjectId,
-            request.AcademicLoadId);
+            request.AcademicLoadId,
+            request.OfferingStatus);
 
         var integrationEvent = new AcademicOfferingCreatedIntegrationEvet
         {
@@ -42,6 +43,7 @@ public sealed class CreateAcademicOfferingUseCase
             GroupId = academicOffering.GroupId,
             SubjectId = academicOffering.SubjectId,
             AcademicLoadId = academicOffering.AcademicLoadId,
+            OfferingStatus = academicOffering.OfferingStatus,
             Status = academicOffering.Status,
             Version = 1
         };
@@ -55,6 +57,7 @@ public sealed class CreateAcademicOfferingUseCase
             GroupId = academicOffering.GroupId,
             SubjectId = academicOffering.SubjectId,
             AcademicLoadId = academicOffering.AcademicLoadId,
+            OfferingStatus = academicOffering.OfferingStatus,
             Status = academicOffering.Status,
             CreatedAtUtc = academicOffering.CreatedAtUtc,
             CorrelationId = correlationId

@@ -7,9 +7,7 @@ public sealed record AcademicOfferingUpdatedIntegrationEvent
     public required DateTime OccurredAtUtc { get; init; }
     public required Guid TenantId { get; init; }
     public required Guid OfferingId { get; init; }
-    public required Guid GroupId { get; init; }
-    public required Guid SubjectId { get; init; }
-    public required Guid AcademicLoadId { get; init; }
+    public required string OfferingStatus { get; init; }
     public required bool Status { get; init; }
     public int Version { get; init; } = 1;
 }

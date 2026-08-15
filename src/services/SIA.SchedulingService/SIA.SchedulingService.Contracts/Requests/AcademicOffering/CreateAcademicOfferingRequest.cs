@@ -7,4 +7,6 @@ public sealed record CreateAcademicOfferingRequest
     public required Guid GroupId { get; init; }
     public required Guid SubjectId { get; init; }
     public required Guid AcademicLoadId { get; init; }
+    public required string OfferingStatus { get; init; }
+
 }
