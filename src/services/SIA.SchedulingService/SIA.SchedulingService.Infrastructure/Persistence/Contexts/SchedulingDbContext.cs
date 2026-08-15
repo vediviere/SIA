@@ -24,7 +24,7 @@ public sealed class SchedulingDbContext : DbContext
 
 
 
-
+    public DbSet<SupportActivity> SupportActivities { get; set; }
     public DbSet<SupportSchedule> SupportSchedules { get; set; }
     public DbSet<ClassSchedule> ClassSchedules { get; set; }
 

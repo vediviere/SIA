@@ -13,6 +13,7 @@ using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
+using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
 using System.Text.Json;
 
 namespace SIA.SchedulingService.Infrastructure.MessageBus.Publishers;
@@ -336,6 +337,36 @@ public sealed class OutboxPublisherService : BackgroundService
         {
             var integrationEvent = JsonSerializer.Deserialize<ClassScheduleRestoredIntegrationEvent>(payload);
             if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de horario de clase restaurado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+
+        // Eventos de SupportActivity
+        if (eventType == $"{nameof(SupportActivityCreatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<SupportActivityCreatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de SupportActivity creado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(SupportActivityUpdatedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<SupportActivityUpdatedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de SupportActivity actualizado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(SupportActivityDeletedIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<SupportActivityDeletedIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de SupportActivity eliminado.");
+            await publishEndpoint.Publish(integrationEvent, cancellationToken);
+            return;
+        }
+        if (eventType == $"{nameof(SupportActivityRestoredIntegrationEvent)}.v1")
+        {
+            var integrationEvent = JsonSerializer.Deserialize<SupportActivityRestoredIntegrationEvent>(payload);
+            if (integrationEvent is null) throw new InvalidOperationException("No fue posible deserializar el evento de SupportActivity restaurado.");
             await publishEndpoint.Publish(integrationEvent, cancellationToken);
             return;
         }
