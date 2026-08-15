@@ -19,11 +19,13 @@ public sealed class SchedulingDbContext : DbContext
     public DbSet<AcademicLoad> AcademicLoad => Set<AcademicLoad>();
     public DbSet<AcademicOffering> AcademicOfferings => Set<AcademicOffering>();
     public DbSet<Group> Groups => Set<Group>();
-    public DbSet<ClassroomType> ClassroomTypes => Set<ClassroomType>();
+    public DbSet<TeachingSupportHour> TeachingSupportHours => Set<TeachingSupportHour>();
+    
+
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
 
-
+    public DbSet<ClassroomType> ClassroomTypes => Set<ClassroomType>();
     public DbSet<SupportActivity> SupportActivities { get; set; }
     public DbSet<SupportSchedule> SupportSchedules { get; set; }
     public DbSet<ClassSchedule> ClassSchedules { get; set; }

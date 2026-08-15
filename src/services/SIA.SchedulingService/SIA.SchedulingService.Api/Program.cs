@@ -17,6 +17,7 @@ using SIA.SchedulingService.Infrastructure.Persistence.Queries;
 using SIA.SchedulingService.Application.UseCases.SupportSchedules;
 using SIA.SchedulingService.Application.UseCases.ClassSchedules;
 using SIA.SchedulingService.Application.UseCases.SupportActivities;
+using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,6 +85,9 @@ builder.Services.AddScoped<IAcademicLoadQueries, AcademicLoadQueries>();
 builder.Services.AddScoped<IAcademicOfferingDataStore, AcademicOfferingDataStore>();
 builder.Services.AddScoped<IAcademicOfferingQueries, AcademicOfferingQueries>();
 
+builder.Services.AddScoped<ITeachingSupportHoursDataStore, TeachingSupportHoursDataStore>();
+builder.Services.AddScoped<ITeachingSupportHoursQueries, TeachingSupportHoursQueries>();
+
 builder.Services.AddScoped<IClassroomLabDataStore, ClassroomLabDataStore>();
 builder.Services.AddScoped<IClassroomLabQueries, ClassroomLabQueries>();
 
@@ -128,6 +132,13 @@ builder.Services.AddScoped<UpdateAcademicLoadUseCase>();
 builder.Services.AddScoped<DeactivateAcademicLoadUseCase>();
 builder.Services.AddScoped<ActivateAcademicLoadUseCase>();
 builder.Services.AddScoped<GetAcademicLoadByIdUseCase>();
+
+//TeachingSupportHours
+builder.Services.AddScoped<CreateTeachingSupportHoursUseCase>();
+builder.Services.AddScoped<UpdateTeachingSupportHoursUseCase>();
+builder.Services.AddScoped<DeactivateTeachingSupportHoursUseCase>();
+builder.Services.AddScoped<ActivateTeachingSupportHoursUseCase>();
+builder.Services.AddScoped<GetTeachingSupportHoursByIdUseCase>();
 
 // UseCases: ClassroomTypes
 builder.Services.AddScoped<CreateClassroomTypeUseCase>();

@@ -57,6 +57,8 @@ public sealed class ClassScheduleConfiguration : IEntityTypeConfiguration<ClassS
 
         builder.Property(x => x.UpdatedAtUtc); 
 
+
+
         builder.HasOne(x => x.ClassroomLab)
             .WithMany()
             .HasForeignKey(x => x.ClassroomLabId)
