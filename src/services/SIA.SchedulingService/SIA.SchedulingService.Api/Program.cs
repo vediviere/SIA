@@ -16,6 +16,7 @@ using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
 using SIA.SchedulingService.Application.UseCases.SupportSchedules;
 using SIA.SchedulingService.Application.UseCases.ClassSchedules;
+using SIA.SchedulingService.Application.UseCases.SupportActivities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +96,11 @@ builder.Services.AddScoped<ISupportScheduleQueries, SupportScheduleQueries>();
 builder.Services.AddScoped<IClassScheduleDataStore, ClassScheduleDataStore>();
 builder.Services.AddScoped<IClassScheduleQueries, ClassScheduleQueries>();
 
+builder.Services.AddScoped<ISupportActivityDataStore, SupportActivityDataStore>();
+builder.Services.AddScoped<ISupportActivityQueries, SupportActivityQueries>();
+
+
+
 // UseCases: Buildings
 builder.Services.AddScoped<CreateBuildingUseCase>();
 builder.Services.AddScoped<UpdateBuildingUseCase>();
@@ -146,6 +152,12 @@ builder.Services.AddScoped<CreateClassScheduleUseCase>();
 builder.Services.AddScoped<UpdateClassScheduleUseCase>();
 builder.Services.AddScoped<SoftDeleteClassScheduleUseCase>();
 builder.Services.AddScoped<RestoreClassScheduleUseCase>();
+
+// UseCases: SupportActivity
+builder.Services.AddScoped<CreateSupportActivityUseCase>();
+builder.Services.AddScoped<UpdateSupportActivityUseCase>();
+builder.Services.AddScoped<SoftDeleteSupportActivityUseCase>();
+builder.Services.AddScoped<RestoreSupportActivityUseCase>();
 
 var app = builder.Build();
 
