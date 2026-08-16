@@ -1,10 +1,11 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.Professors;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
-using SIA.AcademicStaffService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.AcademicStaffService.Infrastructure.Persistence.DataStores;
 
@@ -34,88 +35,40 @@ public sealed class TeacherDataStore : ITeacherDataStore
     public async Task AddProfessorWithOutboxAsync(Teacher teacher, TeacherCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(TeacherCreatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.TeacherCreatedV1, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            await _dbContext.Teachers.AddAsync(teacher, cancellationToken);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.Teachers.AddAsync(teacher, cancellationToken);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateProfessorWithOutboxAsync(Teacher teacher, TeacherUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(TeacherUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.TeacherUpdatedV1, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            _dbContext.Teachers.Update(teacher);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        _dbContext.Teachers.Update(teacher);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task ActivateProfessorWithOutboxAsync(Teacher teacher, TeacherActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(TeacherActivatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.TeacherActivatedV1, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            _dbContext.Teachers.Update(teacher);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        _dbContext.Teachers.Update(teacher);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeactivateProfessorWithOutboxAsync(Teacher teacher, TeacherDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(TeacherDeactivatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.TeacherDeactivatedV1, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            _dbContext.Teachers.Update(teacher);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        _dbContext.Teachers.Update(teacher);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

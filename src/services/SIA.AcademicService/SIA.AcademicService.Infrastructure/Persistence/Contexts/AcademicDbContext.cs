@@ -18,11 +18,11 @@ public sealed class AcademicDbContext : DbContext
 
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
-  public DbSet<AcademicPeriod> AcademicPeriods => Set<AcademicPeriod>();
+    public DbSet<AcademicPeriod> AcademicPeriods => Set<AcademicPeriod>();
 
-  public DbSet<EducationalProgram> EducationalPrograms => Set<EducationalProgram>();
+    public DbSet<EducationalProgram> EducationalPrograms => Set<EducationalProgram>();
 
-  public DbSet<StudyPlan> StudyPlans => Set<StudyPlan>();
+    public DbSet<StudyPlan> StudyPlans => Set<StudyPlan>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

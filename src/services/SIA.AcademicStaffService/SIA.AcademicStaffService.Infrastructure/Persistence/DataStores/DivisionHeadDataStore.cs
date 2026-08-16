@@ -1,10 +1,11 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionManagers;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
-using SIA.AcademicStaffService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.AcademicStaffService.Infrastructure.Persistence.DataStores;
 
@@ -37,88 +38,40 @@ public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
     public async Task AddDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(DivisionHeadCreatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.DivisionHeadCreatedV1, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            await _dbContext.DivisionHeads.AddAsync(divisionHead, cancellationToken);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.DivisionHeads.AddAsync(divisionHead, cancellationToken);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(DivisionHeadUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.DivisionHeadUpdatedV1, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            _dbContext.DivisionHeads.Update(divisionHead);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        _dbContext.DivisionHeads.Update(divisionHead);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task ActivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(DivisionHeadActivatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.DivisionHeadActivatedV1, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            _dbContext.DivisionHeads.Update(divisionHead);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        _dbContext.DivisionHeads.Update(divisionHead);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeactivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(DivisionHeadDeactivatedIntegrationEvent)}.v{integrationEvent.Version}";
-        var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.DivisionHeadDeactivatedV1, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            _dbContext.DivisionHeads.Update(divisionHead);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        _dbContext.DivisionHeads.Update(divisionHead);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }
