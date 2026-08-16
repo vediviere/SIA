@@ -8,7 +8,6 @@ public static class AcademicStaffIntegrationEventTypes
     public const string TeacherDeactivatedV1 = "TeacherDeactivatedIntegrationEvent.v1";
 
     public const string DivisionHeadCreatedV1 = "DivisionHeadCreatedIntegrationEvent.v1";
-    public const string DivisionHeadUpdatedV1 = "DivisionHeadUpdatedIntegrationEvent.v1";
     public const string DivisionHeadActivatedV1 = "DivisionHeadActivatedIntegrationEvent.v1";
     public const string DivisionHeadDeactivatedV1 = "DivisionHeadDeactivatedIntegrationEvent.v1";
 
