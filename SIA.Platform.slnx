@@ -2,6 +2,7 @@
   <Folder Name="/deploy/" />
   <Folder Name="/docs/" />
   <Folder Name="/docs/onboarding/">
+    <File Path="LOCAL_PORTS.md" />
     <File Path="TEAM_WORK_RULES.md" />
   </Folder>
   <Folder Name="/src/" />
