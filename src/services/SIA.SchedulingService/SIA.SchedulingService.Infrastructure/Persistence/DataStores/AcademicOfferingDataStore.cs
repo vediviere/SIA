@@ -2,10 +2,9 @@
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
-using SIA.SchedulingService.Domain;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
-using SIA.SchedulingService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 using System.Text.Json;
 
 
@@ -28,22 +27,12 @@ public sealed class AcademicOfferingDataStore : IAcademicOfferingDataStore
     public async Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering,AcademicOfferingCreatedIntegrationEvet integrationEvent,CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(AcademicOfferingCreatedIntegrationEvet)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.AcademicOfferingCreatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            await _dbContext.AcademicOfferings.AddAsync(academicOffering, cancellationToken);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        
+        await _dbContext.AcademicOfferings.AddAsync(academicOffering, cancellationToken);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public Task<AcademicOffering?> GetByIdAsync(Guid tenantId, Guid offeringId, CancellationToken cancellationToken)
@@ -54,59 +43,30 @@ public sealed class AcademicOfferingDataStore : IAcademicOfferingDataStore
     public async Task UpdateAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicOfferingUpdatedIntegrationEvent integrationEvent,CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(AcademicOfferingUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.AcademicOfferingStatusUpdatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
     public async Task DeactivateAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicOfferingDeactivatedIntegrationEvent integrationEvent,CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(AcademicOfferingDeactivatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.AcademicOfferingDeactivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task ActivateAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicOfferingActivatedIntegrationEvent integrationEvent,CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(AcademicOfferingActivatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.AcademicOfferingActivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        
     }
 }
