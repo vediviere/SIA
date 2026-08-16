@@ -4,6 +4,7 @@
   <Folder Name="/docs/onboarding/">
     <File Path="LOCAL_PORTS.md" />
     <File Path="TEAM_WORK_RULES.md" />
+    <File Path="TECHNICAL_ONBOARDING.md" />
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/bff/">
