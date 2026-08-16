@@ -45,15 +45,7 @@ public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
-    {
-        var payload = JsonSerializer.Serialize(integrationEvent);
-        var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.DivisionHeadUpdatedV1, payload, integrationEvent.CorrelationId);
 
-        _dbContext.DivisionHeads.Update(divisionHead);
-        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-    }
 
     public async Task ActivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {

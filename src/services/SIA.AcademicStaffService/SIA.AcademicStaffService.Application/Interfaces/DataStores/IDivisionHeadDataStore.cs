@@ -11,8 +11,6 @@ public interface IDivisionHeadDataStore
 
     Task<DivisionHead?> GetDivisionManagerByIdAsync(Guid tenantId, Guid divisionManagerId, CancellationToken cancellationToken);
 
-    Task UpdateDivisionManagerWithOutboxAsync(DivisionHead divisionManager, DivisionHeadUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
-
     Task ActivateDivisionManagerWithOutboxAsync(DivisionHead divisionManager, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 
     Task DeactivateDivisionManagerWithOutboxAsync(DivisionHead divisionManager, DivisionHeadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
