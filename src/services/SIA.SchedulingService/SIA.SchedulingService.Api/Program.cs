@@ -1,5 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Application.Interfaces.Queries;
@@ -8,16 +9,19 @@ using SIA.SchedulingService.Application.UseCases.AcademicOfferings;
 using SIA.SchedulingService.Application.UseCases.Buildings;
 using SIA.SchedulingService.Application.UseCases.Classrooms;
 using SIA.SchedulingService.Application.UseCases.ClassroomTypes;
+using SIA.SchedulingService.Application.UseCases.ClassSchedules;
 using SIA.SchedulingService.Application.UseCases.Groups;
+using SIA.SchedulingService.Application.UseCases.SupportActivities;
+using SIA.SchedulingService.Application.UseCases.SupportSchedules;
+using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
+using SIA.SchedulingService.Contracts.IntegrationEvents;
+using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
+using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
+using SIA.SchedulingService.Contracts.IntegrationEvents.Building;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
-using SIA.SchedulingService.Infrastructure.MessageBus.Publishers;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
-using SIA.SchedulingService.Application.UseCases.SupportSchedules;
-using SIA.SchedulingService.Application.UseCases.ClassSchedules;
-using SIA.SchedulingService.Application.UseCases.SupportActivities;
-using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +74,39 @@ builder.Services.AddMassTransit(configurator =>
     });
 });
 
+var outboxOptions = new OutboxOptions();
+builder.Configuration.GetSection("Outbox").Bind(outboxOptions);
+builder.Services.AddSingleton(outboxOptions);
+
+builder.Services.AddSingleton(new OutboxEventRegistry()
+    .Register<AcademicLoadCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadCreatedV1)
+    .Register<AcademicLoadUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadUpdatedV1)
+    .Register<AcademicLoadDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadDeactivatedV1)
+    .Register<AcademicLoadActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadActivatedV1)
+
+    .Register<AcademicOfferingCreatedIntegrationEvet>(SchedulingIntegrationEventTypes.AcademicOfferingCreatedV1)
+    .Register<AcademicOfferingUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicOfferingStatusUpdatedV1)
+    .Register<AcademicOfferingDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicOfferingDeactivatedV1)
+    .Register<AcademicOfferingActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicOfferingActivatedV1)
+
+    .Register<BuildingCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.BuildingCreatedV1)
+    .Register<BuildingUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.BuildingUpdatedV1)
+    .Register<BuildingDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.BuildingDeactivatedV1)
+    .Register<BuildingActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.BuildingActivatedV1)
+
+    .Register<GroupCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.GroupCreatedV1)
+    .Register<GroupUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.GroupUpdatedV1)
+    .Register<GroupDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.GroupDeactivatedV1)
+    .Register<GroupActivateIntegrationEvent>(SchedulingIntegrationEventTypes.GroupActivatedV1)
+
+    .Register<TeachingSupportHoursCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursCreatedV1)
+    .Register<TeachingSupportHoursUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursUpdatedV1)
+    .Register<TeachingSupportHoursDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursDeactivatedV1)
+    .Register<TeachingSupportHoursActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursActivatedV1)
+    );
+
+builder.Services.AddScoped<IOutboxStore, OutboxStore>();
+builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
 builder.Services.AddHostedService<OutboxPublisherService>();
 
 // DataStores y Queries
