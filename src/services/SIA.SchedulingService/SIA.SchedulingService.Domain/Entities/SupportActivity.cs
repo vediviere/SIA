@@ -19,7 +19,7 @@ public sealed class SupportActivity
         if (string.IsNullOrWhiteSpace(activity))
             throw new ArgumentException("La actividad es obligatoria.", nameof(activity));
 
-        Id = Guid.Empty;
+        Id = Guid.NewGuid();
         TenantId = tenantId;
         Activity = activity.Trim();
         Observation = observation.Trim() ?? string.Empty;

@@ -62,6 +62,7 @@ public sealed class ClassSchedule
     public DateTime? UpdatedAtUtc { get; private set; }
 
     public ClassroomLab? ClassroomLab { get; private set; }
+    public AcademicOffering? Offering { get; private set; }
 
     public void Update(
         string day,
