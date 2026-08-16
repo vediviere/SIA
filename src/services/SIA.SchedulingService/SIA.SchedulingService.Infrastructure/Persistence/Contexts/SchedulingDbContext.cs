@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIA.SchedulingService.Domain.Entities;
-using SIA.SchedulingService.Infrastructure.Persistence.Entities;
-using System.Reflection.Emit;
-
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 

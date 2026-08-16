@@ -2,7 +2,8 @@
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
-using SIA.SchedulingService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
+using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Domain.Entities;
 using System.Text.Json;
 
@@ -25,22 +26,12 @@ public sealed class GroupDataStore : IGroupDataStore
     public async Task AddGroupWithOutboxAsync(Group group, GroupCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(GroupCreatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.GroupCreatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            await _dbContext.Groups.AddAsync(group, cancellationToken);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+      
+        await _dbContext.Groups.AddAsync(group, cancellationToken);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken); 
     }
 
     public Task<Group?> GetByIdAsync(Guid tenantId, Guid groupId, CancellationToken cancellationToken)
@@ -51,60 +42,30 @@ public sealed class GroupDataStore : IGroupDataStore
     public async Task UpdateGroupWithOutboxAsync(Group group, GroupUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(GroupUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.GroupUpdatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeactivateGroupWithOutboxAsync(Group group, GroupDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(GroupDeactivatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.GroupDeactivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task ActivateGroupWithOutboxAsync(Group group, GroupActivateIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(GroupActivateIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.GroupDeactivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }
