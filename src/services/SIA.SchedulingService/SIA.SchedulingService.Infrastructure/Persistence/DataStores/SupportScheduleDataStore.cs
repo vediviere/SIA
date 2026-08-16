@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIA.SchedulingService.Contracts.IntegrationEvents.SupportSchedules;
+using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
-using SIA.SchedulingService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
+
 using System.Text.Json;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.DataStores;
@@ -27,92 +29,49 @@ public sealed class SupportScheduleDataStore : ISupportScheduleDataStore
     public async Task AddSupportScheduleWithOutboxAsync(SupportSchedule supportSchedule, SupportScheduleCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(SupportScheduleCreatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.SupportScheduleCreatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        await _dbContext.SupportSchedules.AddAsync(supportSchedule, cancellationToken);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
-        try
-        {
-            await _dbContext.SupportSchedules.AddAsync(supportSchedule, cancellationToken);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
     }
 
     public async Task UpdateSupportScheduleWithOutboxAsync(SupportSchedule supportSchedule, SupportScheduleUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(SupportScheduleUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.SupportScheduleUpdatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        _dbContext.SupportSchedules.Update(supportSchedule);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
-        try
-        {
-            _dbContext.SupportSchedules.Update(supportSchedule);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task SoftDeleteSupportScheduleWithOutboxAsync(SupportSchedule supportSchedule, SupportScheduleDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(SupportScheduleDeletedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.SupportScheduleDeletedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        _dbContext.SupportSchedules.Update(supportSchedule);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
-        try
-        {
-            _dbContext.SupportSchedules.Update(supportSchedule);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task RestoreSupportScheduleWithOutboxAsync(SupportSchedule supportSchedule, SupportScheduleRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(SupportScheduleRestoredIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.SupportScheduleRestoredV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        _dbContext.SupportSchedules.Update(supportSchedule);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
-        try
-        {
-            _dbContext.SupportSchedules.Update(supportSchedule);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -4,7 +4,9 @@ using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
-using SIA.SchedulingService.Infrastructure.Persistence.Entities;
+using SIA.SchedulingService.Contracts.IntegrationEvents;
+using SIA.BuildingBlocks.Messaging.Outbox;
+
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 
@@ -34,92 +36,48 @@ public sealed class ClassroomTypeDataStore : IClassroomTypeDataStore
     public async Task AddClassroomTypeWithOutboxAsync(ClassroomType classroomType, ClassroomTypeCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(ClassroomTypeCreatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.ClassroomTypeCreatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        await _dbContext.ClassroomTypes.AddAsync(classroomType, cancellationToken);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
-        try
-        {
-            await _dbContext.ClassroomTypes.AddAsync(classroomType, cancellationToken);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateClassroomTypeWithOutboxAsync(ClassroomType classroomType, ClassroomTypeUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(ClassroomTypeUpdatedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.ClassroomTypeUpdatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        _dbContext.ClassroomTypes.Update(classroomType);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
-        try
-        {
-            _dbContext.ClassroomTypes.Update(classroomType);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task SoftDeleteClassroomTypeWithOutboxAsync(ClassroomType classroomType, ClassroomTypeDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(ClassroomTypeDeletedIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.ClassroomTypeDeletedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        _dbContext.ClassroomTypes.Update(classroomType);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
-        try
-        {
-            _dbContext.ClassroomTypes.Update(classroomType);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task RestoreClassroomTypeWithOutboxAsync(ClassroomType classroomType, ClassroomTypeRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
-        var eventType = $"{nameof(ClassroomTypeRestoredIntegrationEvent)}.v{integrationEvent.Version}";
+        var eventType = SchedulingIntegrationEventTypes.ClassroomTypeRestoredV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        _dbContext.ClassroomTypes.Update(classroomType);
+        await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
 
-        try
-        {
-            _dbContext.ClassroomTypes.Update(classroomType);
-            await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
-        }
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

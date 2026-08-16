@@ -52,6 +52,11 @@ internal class SupportScheduleConfiguration : IEntityTypeConfiguration<SupportSc
             .HasForeignKey(supportSchedule => supportSchedule.ClassroomLabId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(x => x.SupportHour)
+            .WithMany()
+            .HasForeignKey(x => x.SupportHourId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(supportSchedule => supportSchedule.ClassroomLabId);
         builder.HasIndex(supportSchedule => supportSchedule.SupportHourId);
         builder.HasIndex(supportSchedule => supportSchedule.AcademicPeriodId);

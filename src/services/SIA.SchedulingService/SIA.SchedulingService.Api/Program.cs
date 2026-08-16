@@ -19,6 +19,11 @@ using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Building;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
+using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
+using SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
+using SIA.SchedulingService.Contracts.IntegrationEvents.SupportSchedules;
+using SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
+using SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
@@ -103,7 +108,37 @@ builder.Services.AddSingleton(new OutboxEventRegistry()
     .Register<TeachingSupportHoursUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursUpdatedV1)
     .Register<TeachingSupportHoursDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursDeactivatedV1)
     .Register<TeachingSupportHoursActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursActivatedV1)
-    );
+
+    // SupportActivity
+    .Register<SupportActivityCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportActivityCreatedV1)
+    .Register<SupportActivityUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportActivityUpdatedV1)
+    .Register<SupportActivityDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportActivityDeletedV1)
+    .Register<SupportActivityRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.SupportActivityRestoredV1)
+
+    // ClassSchedule
+    .Register<ClassScheduleCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassScheduleCreatedV1)
+    .Register<ClassScheduleUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassScheduleUpdatedV1)
+    .Register<ClassScheduleDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassScheduleDeletedV1)
+    .Register<ClassScheduleRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.ClassScheduleRestoredV1)
+
+    // SupportSchedule
+    .Register<SupportScheduleCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportScheduleCreatedV1)
+    .Register<SupportScheduleUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportScheduleUpdatedV1)
+    .Register<SupportScheduleDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportScheduleDeletedV1)
+    .Register<SupportScheduleRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.SupportScheduleRestoredV1)
+
+    // ClassroomLab
+    .Register<ClassroomLabCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomLabCreatedV1)
+    .Register<ClassroomLabUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomLabUpdatedV1)
+    .Register<ClassroomLabDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomLabDeletedV1)
+    .Register<ClassroomLabRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomLabRestoredV1)
+
+    // ClassroomType
+    .Register<ClassroomTypeCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeCreatedV1)
+    .Register<ClassroomTypeUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeUpdatedV1)
+    .Register<ClassroomTypeDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeDeletedV1)
+    .Register<ClassroomTypeRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeRestoredV1)
+);
 
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
 builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
@@ -236,6 +271,6 @@ app.MapGet("/health", () =>
     });
 });
 
-app.UseSiaExceptionHandling();
+//app.UseSiaExceptionHandling();
 
 app.Run();

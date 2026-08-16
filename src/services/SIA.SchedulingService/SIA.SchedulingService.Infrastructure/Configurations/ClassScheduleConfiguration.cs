@@ -55,8 +55,12 @@ public sealed class ClassScheduleConfiguration : IEntityTypeConfiguration<ClassS
         builder.Property(x => x.CreatedAtUtc)
             .IsRequired();
 
-        builder.Property(x => x.UpdatedAtUtc); 
+        builder.Property(x => x.UpdatedAtUtc);
 
+        builder.HasOne(x => x.Offering)
+            .WithMany()
+            .HasForeignKey(x => x.OfferingId)
+            .OnDelete(DeleteBehavior.Restrict);
 
 
         builder.HasOne(x => x.ClassroomLab)
