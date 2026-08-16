@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SIA.AcademicStaffService.Infrastructure.Persistence.Entities;
+using SIA.BuildingBlocks.Messaging.Outbox;
 
 namespace SIA.AcademicStaffService.Infrastructure.Persistence.Configurations;
 
@@ -30,6 +30,12 @@ public sealed class OutboxMessageConfiguration
 
         builder.Property(message => message.ProcessedAtUtc);
 
+        builder.Property(message => message.LastAttemptAtUtc);
+
+        builder.Property(message => message.NextAttemptAtUtc);
+
+        builder.Property(message => message.DeadLetteredAtUtc);
+
         builder.Property(message => message.RetryCount)
             .IsRequired();
 
@@ -39,7 +45,12 @@ public sealed class OutboxMessageConfiguration
         builder.Property(message => message.CorrelationId)
             .IsRequired();
 
-        builder.HasIndex(message => message.ProcessedAtUtc);
+        builder.HasIndex(message => new
+        {
+            message.ProcessedAtUtc,
+            message.DeadLetteredAtUtc,
+            message.NextAttemptAtUtc
+        });
 
         builder.HasIndex(message => message.CorrelationId);
     }

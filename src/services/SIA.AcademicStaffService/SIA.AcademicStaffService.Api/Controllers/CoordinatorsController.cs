@@ -13,20 +13,17 @@ namespace SIA.AcademicStaffService.Api.Controllers;
 public sealed class CoordinatorsController : ControllerBase
 {
     private readonly CreateCoordinatorUseCase _createCoordinatorUseCase;
-    private readonly UpdateCoordinatorUseCase _updateCoordinatorUseCase;
     private readonly ActivateCoordinatorUseCase _activateCoordinatorUseCase;
     private readonly DeactivateCoordinatorUseCase _deactivateCoordinatorUseCase;
     private readonly ICoordinatorQueries _coordinatorQueries;
 
     public CoordinatorsController(
         CreateCoordinatorUseCase createCoordinatorUseCase,
-        UpdateCoordinatorUseCase updateCoordinatorUseCase,
         ActivateCoordinatorUseCase activateCoordinatorUseCase,
         DeactivateCoordinatorUseCase deactivateCoordinatorUseCase,
         ICoordinatorQueries coordinatorQueries)
     {
         _createCoordinatorUseCase = createCoordinatorUseCase;
-        _updateCoordinatorUseCase = updateCoordinatorUseCase;
         _activateCoordinatorUseCase = activateCoordinatorUseCase;
         _deactivateCoordinatorUseCase = deactivateCoordinatorUseCase;
         _coordinatorQueries = coordinatorQueries;
@@ -79,26 +76,6 @@ public sealed class CoordinatorsController : ControllerBase
         var response = await _createCoordinatorUseCase.ExecuteAsync(request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
-    }
-
-    [HttpPut("{tenantId:guid}/{id:guid}")]
-    [ProducesResponseType(typeof(UpdateCoordinatorResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<UpdateCoordinatorResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateCoordinatorRequest request, CancellationToken cancellationToken)
-    {
-        var correlationId = ResolveCorrelationId();
-
-        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
-
-        var response = await _updateCoordinatorUseCase.ExecuteAsync(
-            tenantId,
-            id,
-            request,
-            correlationId,
-            cancellationToken);
-
-        return Ok(response);
     }
 
     [HttpPatch("{tenantId:guid}/{id:guid}/activate")]

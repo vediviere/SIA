@@ -11,8 +11,6 @@ public interface ICoordinatorDataStore
 
     Task<Coordinator?> GetCoordinatorByIdAsync(Guid tenantId, Guid coordinatorId, CancellationToken cancellationToken);
 
-    Task UpdateCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
-
     Task ActivateCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 
     Task DeactivateCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
