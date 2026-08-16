@@ -13,20 +13,17 @@ namespace SIA.AcademicStaffService.Api.Controllers;
 public sealed class DivisionHeadsController : ControllerBase
 {
     private readonly CreateDivisionHeadUseCase _createDivisionManagerUseCase;
-    private readonly UpdateDivisionHeadUseCase _updateDivisionManagerUseCase;
     private readonly ActivateDivisionHeadUseCase _activateDivisionManagerUseCase;
     private readonly DeactivateDivisionHeadUseCase _deactivateDivisionManagerUseCase;
     private readonly IDivisionHeadQueries _divisionManagerQueries;
 
     public DivisionHeadsController(
         CreateDivisionHeadUseCase createDivisionManagerUseCase,
-        UpdateDivisionHeadUseCase updateDivisionManagerUseCase,
         ActivateDivisionHeadUseCase activateDivisionManagerUseCase,
         DeactivateDivisionHeadUseCase deactivateDivisionManagerUseCase,
         IDivisionHeadQueries divisionManagerQueries)
     {
         _createDivisionManagerUseCase = createDivisionManagerUseCase;
-        _updateDivisionManagerUseCase = updateDivisionManagerUseCase;
         _activateDivisionManagerUseCase = activateDivisionManagerUseCase;
         _deactivateDivisionManagerUseCase = deactivateDivisionManagerUseCase;
         _divisionManagerQueries = divisionManagerQueries;
@@ -80,27 +77,6 @@ public sealed class DivisionHeadsController : ControllerBase
         var response = await _createDivisionManagerUseCase.ExecuteAsync(request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
-    }
-
-    [HttpPut("{tenantId:guid}/{id:guid}")]
-    [ProducesResponseType(typeof(UpdateDivisionHeadResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateDivisionHeadResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateDivisionHeadRequest request, CancellationToken cancellationToken)
-    {
-        var correlationId = ResolveCorrelationId();
-
-        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
-
-        var response = await _updateDivisionManagerUseCase.ExecuteAsync(
-            tenantId,
-            id,
-            request,
-            correlationId,
-            cancellationToken);
-
-        return Ok(response);
     }
 
     [HttpPatch("{tenantId:guid}/{id:guid}/activate")]
