@@ -42,7 +42,8 @@ public sealed class TeachingSupportHoursDataStore : ITeachingSupportHoursDataSto
         var payload = JsonSerializer.Serialize(integrationEvent);
         var eventType = SchedulingIntegrationEventTypes.TeachingSupportHoursUpdatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
-       
+
+        _dbContext.TeachingSupportHours.Update(teachingSupportHours);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -53,6 +54,7 @@ public sealed class TeachingSupportHoursDataStore : ITeachingSupportHoursDataSto
         var eventType = SchedulingIntegrationEventTypes.TeachingSupportHoursDeactivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.TeachingSupportHours.Update(teachingSupportHours);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -63,6 +65,7 @@ public sealed class TeachingSupportHoursDataStore : ITeachingSupportHoursDataSto
         var eventType = SchedulingIntegrationEventTypes.TeachingSupportHoursActivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.TeachingSupportHours.Update(teachingSupportHours);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
           

@@ -45,6 +45,7 @@ public sealed class BuildingDataStore : IBuildingDataStore
         var eventType = SchedulingIntegrationEventTypes.BuildingUpdatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.Buildings.Update(building);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);  
     }
@@ -55,6 +56,7 @@ public sealed class BuildingDataStore : IBuildingDataStore
         var eventType = SchedulingIntegrationEventTypes.BuildingDeactivatedV1;
         var outboxMessage = new OutboxMessage(eventType , payload, integrationEvent.CorrelationId);
 
+        _dbContext.Buildings.Update(building);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -65,6 +67,7 @@ public sealed class BuildingDataStore : IBuildingDataStore
         var eventType = SchedulingIntegrationEventTypes.BuildingActivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.Buildings.Update(building);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
        

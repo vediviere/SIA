@@ -45,6 +45,7 @@ public sealed class GroupDataStore : IGroupDataStore
         var eventType = SchedulingIntegrationEventTypes.GroupUpdatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.Groups.Update(group);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -55,6 +56,7 @@ public sealed class GroupDataStore : IGroupDataStore
         var eventType = SchedulingIntegrationEventTypes.GroupDeactivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.Groups.Update(group);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -65,6 +67,7 @@ public sealed class GroupDataStore : IGroupDataStore
         var eventType = SchedulingIntegrationEventTypes.GroupDeactivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.Groups.Update(group);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
