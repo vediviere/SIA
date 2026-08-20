@@ -61,7 +61,7 @@ public sealed class BuildingDataStore : IBuildingDataStore
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task ActivateBuildingWithOutboxAsync(Building building, BuildingDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task ActivateBuildingWithOutboxAsync(Building building, BuildingActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
         var eventType = SchedulingIntegrationEventTypes.BuildingActivatedV1;

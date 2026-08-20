@@ -11,5 +11,5 @@ public interface IBuildingDataStore
     Task<Building?> GetByIdAsync(Guid tenantId, Guid buildingId, CancellationToken cancellationToken);
     Task UpdateBuildingWithOutboxAsync(Building building, BuildingUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
     Task DeactivateBuildingWithOutboxAsync(Building building, BuildingDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
-    Task ActivateBuildingWithOutboxAsync(Building building, BuildingDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
+    Task ActivateBuildingWithOutboxAsync(Building building, BuildingActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 }
