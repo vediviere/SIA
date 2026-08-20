@@ -41,7 +41,7 @@ public sealed class SupportActivity
             throw new ArgumentException("La actividad es obligatoria.", nameof(activity));
 
         Activity = activity.Trim();
-        Observation = Observation.Trim() ?? string.Empty;
+        Observation = observation.Trim() ?? string.Empty;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 
