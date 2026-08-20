@@ -24,4 +24,9 @@
     <ProjectReference Include="..\SIA.AcademicStaffService.Infrastructure\SIA.AcademicStaffService.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\Persistence\" />
+    <Folder Include="Infrastructure\Security\" />
+  </ItemGroup>
+
 </Project>
