@@ -22,6 +22,7 @@
     <ProjectReference Include="..\SIA.TenancyService.Application\SIA.TenancyService.Application.csproj" />
     <ProjectReference Include="..\SIA.TenancyService.Domain\SIA.TenancyService.Domain.csproj" />
     <ProjectReference Include="..\SIA.TenancyService.Infrastructure\SIA.TenancyService.Infrastructure.csproj" />
+    <ProjectReference Include="..\SIA.TenancyService.Contracts\SIA.TenancyService.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

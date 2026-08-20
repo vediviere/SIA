@@ -21,8 +21,9 @@ public sealed class UsersController : ControllerBase
   private readonly AssignRoleUseCase _assignRoleUseCase;
   private readonly RevokeRoleUseCase _revokeRoleUseCase;
   private readonly ChangeUserStatusUseCase _changeUserStatusUseCase;
+  private readonly SelfRegisterUseCase _selfRegisterUseCase;
 
-  public UsersController(SetInitialPasswordUseCase setInitialPasswordUseCase, LoginUseCase loginUseCase, RefreshUseCase refreshUseCase, LogoutUseCase logoutUseCase, ChangePasswordUseCase changePasswordUseCase, CreateStaffUserUseCase createStaffUserUseCase, AssignRoleUseCase assignRoleUseCase, RevokeRoleUseCase revokeRoleUseCase, ChangeUserStatusUseCase changeUserStatusUseCase)
+  public UsersController(SetInitialPasswordUseCase setInitialPasswordUseCase, LoginUseCase loginUseCase, RefreshUseCase refreshUseCase, LogoutUseCase logoutUseCase, ChangePasswordUseCase changePasswordUseCase, CreateStaffUserUseCase createStaffUserUseCase, AssignRoleUseCase assignRoleUseCase, RevokeRoleUseCase revokeRoleUseCase, ChangeUserStatusUseCase changeUserStatusUseCase, SelfRegisterUseCase selfRegisterUseCase)
   {
     _setInitialPasswordUseCase = setInitialPasswordUseCase;
     _loginUseCase = loginUseCase;
@@ -33,7 +34,22 @@ public sealed class UsersController : ControllerBase
     _assignRoleUseCase = assignRoleUseCase;
     _revokeRoleUseCase = revokeRoleUseCase;
     _changeUserStatusUseCase = changeUserStatusUseCase;
+    _selfRegisterUseCase = selfRegisterUseCase;
   }
+
+  [AllowAnonymous]
+  [HttpPost("register")]
+  [ProducesResponseType(typeof(SelfRegisterResponse), StatusCodes.Status201Created)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  [ProducesResponseType(StatusCodes.Status409Conflict)]
+  public async Task<ActionResult<SelfRegisterResponse>> Register([FromBody] SelfRegisterRequest request, CancellationToken cancellationToken)
+  {
+    var response = await _selfRegisterUseCase.ExecuteAsync(request, Guid.NewGuid(), cancellationToken);
+
+    return StatusCode(StatusCodes.Status201Created, response);
+  }
+
 
   [AllowAnonymous]
   [HttpPost("initial-password")]

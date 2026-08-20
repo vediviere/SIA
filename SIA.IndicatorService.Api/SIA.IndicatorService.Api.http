@@ -1,0 +1,6 @@
+@SIA.IndicatorService.Api_HostAddress = http://localhost:5013
+
+GET {{SIA.IndicatorService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -12,6 +12,8 @@ using SIA.IdentityService.Contracts.IntegrationEvents.Users;
 using SIA.IdentityService.Infrastructure.Persistence.Contexts;
 using SIA.IdentityService.Infrastructure.Persistence.DataStores;
 using SIA.IdentityService.Infrastructure.Security;
+using SIA.IdentityService.Application.Interfaces.Tenancy;
+using SIA.IdentityService.Infrastructure.Tenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,14 @@ builder.Services.AddScoped<IRefreshTokenDataStore, RefreshTokenDataStore>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasherService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
+var tenancyBaseUrl = builder.Configuration["Services:TenancyService:BaseUrl"]
+  ?? throw new InvalidOperationException("No se configuró Services:TenancyService:BaseUrl.");
+
+builder.Services.AddHttpClient<ITenantResolver, TenantResolver>(client =>
+{
+  client.BaseAddress = new Uri(tenancyBaseUrl, UriKind.Absolute);
+});
+
 builder.Services.AddScoped<CreateStaffUserUseCase>();
 builder.Services.AddScoped<ProvisionInitialAdministratorUseCase>();
 builder.Services.AddScoped<SetInitialPasswordUseCase>();
@@ -51,6 +61,7 @@ builder.Services.AddScoped<AssignRoleUseCase>();
 builder.Services.AddScoped<RevokeRoleUseCase>();
 builder.Services.AddScoped<ChangeUserStatusUseCase>();
 builder.Services.AddScoped<ChangePasswordUseCase>();
+builder.Services.AddScoped<SelfRegisterUseCase>();
 
 var signingKey = builder.Configuration["Token:SigningKey"]
   ?? throw new InvalidOperationException("Token:SigningKey no está configurado.");

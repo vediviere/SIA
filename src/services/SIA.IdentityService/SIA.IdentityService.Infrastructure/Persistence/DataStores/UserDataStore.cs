@@ -38,13 +38,25 @@ public sealed class UserDataStore : IUserDataStore
     return _dbContext.Users.FirstOrDefaultAsync(user => user.Email == normalizedEmail, cancellationToken);
   }
 
+  public async Task AddUserAsync(User user, UserCreatedIntegrationEvent userCreatedEvent, string auditAction, CancellationToken cancellationToken)
+  {
+    var outboxMessage = new OutboxMessage(UserIntegrationEventTypes.UserCreatedV1, JsonSerializer.Serialize(userCreatedEvent), userCreatedEvent.CorrelationId);
+
+    var auditLog = new AuditLog(user.TenantId, auditAction, "User", user.Id.ToString(), userCreatedEvent.CorrelationId);
+
+    await _dbContext.Users.AddAsync(user, cancellationToken);
+    await _dbContext.AuditLogs.AddAsync(auditLog, cancellationToken);
+    await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+    await _dbContext.SaveChangesAsync(cancellationToken);
+  }
+
   public async Task AddUserWithRoleAsync(User user, UserRole userRole, UserCreatedIntegrationEvent userCreatedEvent, UserRoleAssignedIntegrationEvent roleAssignedEvent, string userAuditAction, Guid? actorUserId, CancellationToken cancellationToken)
   {
     var userCreatedOutbox = new OutboxMessage(UserIntegrationEventTypes.UserCreatedV1, JsonSerializer.Serialize(userCreatedEvent), userCreatedEvent.CorrelationId);
 
     var roleAssignedOutbox = new OutboxMessage(UserIntegrationEventTypes.UserRoleAssignedV1, JsonSerializer.Serialize(roleAssignedEvent), roleAssignedEvent.CorrelationId);
 
-    var userAuditLog = new AuditLog(user.TenantId, userAuditAction, "User", user.Id.ToString(), userCreatedEvent.CorrelationId, actorUserId);
+    var userAuditLog = new AuditLog(user.TenantId, userAuditAction, "User", user.Id.ToString(), userCreatedEvent.CorrelationId);
 
     var roleAuditLog = new AuditLog(user.TenantId, "RoleAssigned", "UserRole", userRole.Id.ToString(), roleAssignedEvent.CorrelationId, actorUserId, newValues: JsonSerializer.Serialize(new { userRole.UserId, userRole.RoleId }));
 

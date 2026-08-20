@@ -12,6 +12,7 @@ public interface IUserDataStore
   Task<bool> HasRoleAssignmentInTenantAsync(Guid tenantId, Guid roleId, CancellationToken cancellationToken);
   Task<bool> HasActiveRoleAsync(Guid userId, Guid roleId, CancellationToken cancellationToken);
   Task<UserRole?> GetActiveUserRoleAsync(Guid userId, Guid roleId, CancellationToken cancellationToken);
+  Task AddUserAsync(User user, UserCreatedIntegrationEvent userCreatedEvent, string auditAction, CancellationToken cancellationToken);
 
   Task AddUserWithRoleAsync(User user, UserRole userRole, UserCreatedIntegrationEvent userCreatedEvent, UserRoleAssignedIntegrationEvent roleAssignedEvent, string userAuditAction, Guid? actorUserId, CancellationToken cancellationToken);
   Task UpdatePasswordAsync(User user, PasswordChangedIntegrationEvent passwordChangedEvent, string auditAction, CancellationToken cancellationToken);
