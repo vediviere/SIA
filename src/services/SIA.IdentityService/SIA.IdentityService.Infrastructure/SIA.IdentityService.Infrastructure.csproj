@@ -5,6 +5,7 @@
     <ProjectReference Include="..\SIA.IdentityService.Domain\SIA.IdentityService.Domain.csproj" />
     <ProjectReference Include="..\SIA.IdentityService.Contracts\SIA.IdentityService.Contracts.csproj" />
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
+    <ProjectReference Include="..\..\SIA.TenancyService\SIA.TenancyService.Contracts\SIA.TenancyService.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

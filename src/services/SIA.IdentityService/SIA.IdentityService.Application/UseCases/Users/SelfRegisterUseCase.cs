@@ -24,9 +24,9 @@ public sealed class SelfRegisterUseCase
 
   public async Task<SelfRegisterResponse> ExecuteAsync(SelfRegisterRequest request, Guid correlationId, CancellationToken cancellationToken)
   {
-    if (string.IsNullOrWhiteSpace(request.InstitutionCode))
+    if (string.IsNullOrWhiteSpace(request.InstituteCode))
     {
-      throw new ArgumentException("El código institucional es obligatorio.", nameof(request.InstitutionCode));
+      throw new ArgumentException("El código institucional es obligatorio.", nameof(request.InstituteCode));
     }
 
     if (string.IsNullOrWhiteSpace(request.Email))
@@ -44,14 +44,14 @@ public sealed class SelfRegisterUseCase
       throw new ArgumentException("El identificador de correlación es obligatorio.", nameof(correlationId));
     }
 
-    var institutionCode = request.InstitutionCode.Trim().ToUpperInvariant();
+    var instituteCode = request.InstituteCode.Trim().ToUpperInvariant();
     var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
-    var tenantId = await _tenantResolver.ResolveTenantIdAsync(institutionCode, cancellationToken);
+    var tenantId = await _tenantResolver.ResolveTenantIdAsync(instituteCode, normalizedEmail, cancellationToken);
 
     if (tenantId is null || tenantId == Guid.Empty)
     {
-      throw new InstitutionNotFoundException(institutionCode);
+      throw new InstitutionNotFoundException(instituteCode);
     }
 
     var emailExists = await _userDataStore.EmailExistsAsync(normalizedEmail, cancellationToken);

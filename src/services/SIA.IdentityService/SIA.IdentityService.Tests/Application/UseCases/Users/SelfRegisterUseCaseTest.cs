@@ -19,7 +19,7 @@ public sealed class SelfRegisterUseCaseTest
 
     var response = await useCase.ExecuteAsync(new SelfRegisterRequest
     {
-      InstitutionCode = " institution ",
+      InstituteCode = " institution ",
       Email = " Student@Institution.edu.mx ",
       Password = "Password123!"
     }, correlationId, CancellationToken.None);
@@ -41,7 +41,7 @@ public sealed class SelfRegisterUseCaseTest
 
     await Assert.ThrowsAsync<InstitutionNotFoundException>(() => useCase.ExecuteAsync(new SelfRegisterRequest
     {
-      InstitutionCode = "UNKNOWN",
+      InstituteCode = "UNKNOWN",
       Email = "student@institution.edu.mx",
       Password = "Password123!"
     }, Guid.NewGuid(), CancellationToken.None));
@@ -55,7 +55,7 @@ public sealed class SelfRegisterUseCaseTest
 
     await Assert.ThrowsAsync<UserEmailAlreadyExistsException>(() => useCase.ExecuteAsync(new SelfRegisterRequest
     {
-      InstitutionCode = "INSTITUTION",
+      InstituteCode = "INSTITUTION",
       Email = "student@institution.edu.mx",
       Password = "Password123!"
     }, Guid.NewGuid(), CancellationToken.None));
@@ -70,7 +70,7 @@ public sealed class SelfRegisterUseCaseTest
       _tenantId = tenantId;
     }
 
-    public Task<Guid?> ResolveTenantIdAsync(string institutionCode, CancellationToken cancellationToken) => Task.FromResult(_tenantId);
+    public Task<Guid?> ResolveTenantIdAsync(string instituteCode, string email, CancellationToken cancellationToken) => Task.FromResult(_tenantId);
   }
 
   private sealed class FakePasswordHasher : IPasswordHasher
