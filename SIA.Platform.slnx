@@ -67,6 +67,14 @@
     <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Infrastructure/SIA.IdentityService.Infrastructure.csproj" />
     <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Tests/SIA.IdentityService.Tests.csproj" />
   </Folder>
+  <Folder Name="/src/services/SIA.IndicatorService/">
+    <Project Path="SIA.IndicatorService.Api/SIA.IndicatorService.Api.csproj" Id="14a482ea-8103-460e-ac9d-ba3271226bb5" />
+    <Project Path="SIA.IndicatorService.Application/SIA.IndicatorService.Application.csproj" Id="1ee8262f-475e-4869-97cc-c8629a3f7fe9" />
+    <Project Path="SIA.IndicatorService.Contracts/SIA.IndicatorService.Contracts.csproj" Id="1b090ba8-bd79-4ef9-adf8-684233c6e59d" />
+    <Project Path="SIA.IndicatorService.Domain/SIA.IndicatorService.Domain.csproj" Id="70cf28ef-48ca-409f-92c3-e39e932e2491" />
+    <Project Path="SIA.IndicatorService.Infrastructure/SIA.IndicatorService.Infrastructure.csproj" Id="782f488e-e5df-4273-a15f-6a3d5cbd67ad" />
+    <Project Path="SIA.IndicatorService.Tests/SIA.IndicatorService.Tests.csproj" Id="784136b5-ce30-4361-892e-209363a3ec87" />
+  </Folder>
   <Folder Name="/src/services/SIA.NotificationsService/">
     <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Api/SIA.NotificationsService.Api.csproj" />
     <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Application/SIA.NotificationsService.Application.csproj" />
