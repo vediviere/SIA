@@ -40,6 +40,7 @@ public sealed class AcademicLoadDataStore : IAcademicLoadDataStore
         var eventType = SchedulingIntegrationEventTypes.AcademicLoadUpdatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.AcademicLoad.Update(academicLoad);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
         
@@ -51,6 +52,7 @@ public sealed class AcademicLoadDataStore : IAcademicLoadDataStore
         var eventType = SchedulingIntegrationEventTypes.AcademicLoadDeactivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.AcademicLoad.Update(academicLoad);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -61,6 +63,7 @@ public sealed class AcademicLoadDataStore : IAcademicLoadDataStore
         var eventType = SchedulingIntegrationEventTypes.AcademicLoadActivatedV1;
         var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
 
+        _dbContext.AcademicLoad.Update(academicLoad);
         await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
