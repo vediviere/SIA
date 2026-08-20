@@ -26,7 +26,7 @@ public sealed class ActivateBuildingUseCase
 
         building.Activate();
 
-        var integrationEvent = new BuildingDeactivatedIntegrationEvent
+        var integrationEvent = new BuildingActivatedIntegrationEvent
         {
             EventId = Guid.NewGuid(),
             CorrelationId = correlationId,

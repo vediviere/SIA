@@ -43,12 +43,12 @@ public sealed class AcademicLoad
 
         if (classHours < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(classHours), "Las horas clase no pueden ser negativas.");
+            throw new ArgumentOutOfRangeException(nameof(classHours), "Las horas clase no pueden ser negativas, Tampoco pueden ser 0");
         }
 
         if (supportHours < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(supportHours), "Las horas de apoyo no pueden ser negativas.");
+            throw new ArgumentOutOfRangeException(nameof(supportHours), "Las horas de apoyo no pueden ser negativas, Tampoco pueden ser 0");
         }
 
         Id = Guid.NewGuid();
