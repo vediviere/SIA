@@ -1,168 +1,192 @@
-## Estándar de pruebas de SIA Platform
+# Pruebas de SIA Platform
 
-## 1. Objetivo
+## Responsabilidad
 
-* Este documento define el estándar obligatorio para crear, organizar y revisar pruebas en SIA Platform.
+Definir el estándar común para crear, organizar, ejecutar y revisar las pruebas automatizadas de SIA Platform.
 
-* Su propósito es que todos los servicios utilicen las mismas convenciones de estructura, nombres, aislamiento y validación, independientemente del desarrollador que implemente las pruebas.
+Este documento busca que todos los servicios utilicen las mismas convenciones de estructura, nombres, aislamiento y validación.
 
-* La normalización no significa que todos los servicios deban tener la misma cantidad de pruebas. Cada servicio debe cubrir las reglas y riesgos que realmente le corresponden, pero debe hacerlo siguiendo una estructura común.
+La normalización no significa que todos los servicios deban tener la misma cantidad de pruebas. Cada servicio debe cubrir las reglas y riesgos que realmente le corresponden.
 
-## 2. Alcance
+## Lo que sí hace
 
-Este estándar aplica a:
+- Define la ubicación de las pruebas.
+- Define la estructura de los proyectos de pruebas.
+- Establece convenciones para archivos, clases y métodos.
+- Define la cobertura mínima esperada por capa.
+- Establece reglas para el uso de fakes.
+- Define cómo validar eventos, Outbox y auditoría.
+- Establece reglas de aislamiento y determinismo.
+- Define los criterios mínimos para enviar pruebas a revisión.
+- Sirve como referencia para normalizar pruebas existentes.
 
-* Pruebas unitarias de `Domain`.
+## Lo que no hace
 
-* Pruebas unitarias de `Application`.
+- No sustituye los criterios de aceptación de cada tarea.
+- No obliga a que todos los servicios tengan la misma cantidad de pruebas.
+- No convierte una prueba unitaria en una prueba de integración.
+- No permite conectarse a bases de datos o servicios externos desde pruebas unitarias.
+- No sustituye la revisión técnica del Pull Request.
+- No define reglas funcionales propias de cada dominio.
 
-* Pruebas unitarias de `Infrastructure`.
+## Ubicación de las pruebas
 
-* Fakes utilizados para aislar dependencias.
+Las pruebas unitarias de cada servicio deben permanecer dentro de su propio proyecto:
 
-* Pruebas de integración, contrato, arquitectura y Building Blocks ubicadas bajo tests/.
-
-No sustituye los criterios de aceptación de cada tarea ni las reglas de la Definition of Done.
-
-## 3. Tipos y ubicación de pruebas
-
-### 3.1 Pruebas unitarias de servicios
-
-* Las pruebas unitarias de un servicio deben permanecer dentro de su propio proyecto:
-
+```text
 src/services/SIA.{Service}/SIA.{Service}.Tests
+```
 
-Estas pruebas no deben requerir bases de datos, brokers, servicios remotos ni infraestructura externa.
+Las pruebas transversales deben ubicarse bajo la carpeta `tests` según su propósito:
 
-### 3.2 Pruebas transversales
+```text
+tests/architecture
+tests/building-blocks
+tests/contract
+tests/integration
+```
 
-* Las pruebas compartidas o transversales deben ubicarse según su propósito:
+Responsabilidad de cada ubicación:
 
-tests/
-├── architecture/       Reglas de dependencias y estructura
-├── building-blocks/    Building Blocks compartidos
-├── contract/           Compatibilidad de contratos entre servicios
-└── integration/        Interacción real entre componentes
+- `architecture`: reglas de dependencias y estructura.
+- `building-blocks`: componentes compartidos.
+- `contract`: compatibilidad de contratos entre servicios.
+- `integration`: interacción real entre componentes.
 
-Una prueba de integración no debe colocarse dentro de una carpeta de pruebas unitarias solo para reutilizar su proyecto.
+Una prueba de integración no debe colocarse dentro de un proyecto de pruebas unitarias.
 
-## 4. Tecnología estándar
+## Tecnología estándar
 
 Los proyectos de pruebas unitarias utilizan:
 
-* xUnit como framework de pruebas.
+- xUnit.
+- `Microsoft.NET.Test.Sdk`.
+- `xunit.runner.visualstudio`.
+- `coverlet.collector`.
+- `Assert` de xUnit.
 
-* Microsoft.NET.Test.Sdk para descubrimiento y ejecución.
+Las versiones deben mantenerse alineadas con las utilizadas por el repositorio.
 
-* xunit.runner.visualstudio para integración con Visual Studio.
+No se deben agregar otros frameworks de mocks o aserciones sin justificación y revisión técnica.
 
-* coverlet.collector para recopilación de cobertura.
+## Estructura del proyecto
 
-* Assert de xUnit como biblioteca estándar de aserciones.
+Cada proyecto de pruebas debe utilizar las siguientes carpetas cuando correspondan:
 
-Las versiones deben mantenerse alineadas con las utilizadas por el repositorio. No se deben agregar frameworks de mocks o aserciones diferentes sin justificación y revisión técnica.
-
-## 5. Estructura canónica del proyecto
-
-Cada proyecto de pruebas debe seguir esta estructura:
-
-SIA.{Service}.Tests/
-├── Application/
-│   └── UseCases/
-│       └── {FeaturePlural}/
-│           └── {UseCase}Tests.cs
-├── Domain/
-│   └── {Entity}Tests.cs
-├── Infrastructure/
-│   ├── Persistence/
-│   ├── Security/
-│   └── {TechnologyBoundary}/
-└── Common/
-    └── Fakes/
-        └── Fake{Dependency}.cs
-
-Reglas:
-
-* Las carpetas de funcionalidades deben escribirse en plural: Users, Persons, Buildings.
-
-* El namespace debe coincidir exactamente con la ubicación del archivo.
-
-* No deben mezclarse carpetas equivalentes en singular y plural.
-
-* No deben agregarse carpetas vacías al .csproj.
-
-* Infrastructure solo debe existir cuando contenga pruebas reales.
-
-* Las pruebas de entidades deben utilizar una sola ubicación dentro del servicio. Para servicios nuevos se utilizará directamente Domain/{Entity}Tests.cs.
-
-## 6. Nombres de archivos y clases
-
-El archivo y la clase deben usar el nombre del elemento probado seguido de Tests en plural:
-
-UserTests.cs
-CreateUserUseCaseTests.cs
-PasswordHasherTests.cs
+```text
+Application
+Application/UseCases
+Domain
+Infrastructure
+Common/Fakes
+```
 
 Ejemplo:
 
+```text
+SIA.IdentityService.Tests
+Application/UseCases/Users
+Domain
+Infrastructure/Persistence
+Infrastructure/Security
+Common/Fakes
+```
+
+Reglas:
+
+- Las carpetas de funcionalidades deben escribirse en plural.
+- El namespace debe coincidir con la ubicación del archivo.
+- No deben mezclarse carpetas equivalentes en singular y plural.
+- No deben agregarse carpetas vacías al `.csproj`.
+- `Infrastructure` solo debe existir cuando contenga pruebas reales.
+- Las pruebas de entidades deben ubicarse directamente dentro de `Domain`.
+- Los fakes compartidos deben ubicarse dentro de `Common/Fakes`.
+
+## Nombres de archivos y clases
+
+El archivo y la clase deben utilizar el nombre del elemento probado seguido de `Tests` en plural.
+
+Ejemplos correctos:
+
+```text
+UserTests.cs
+CreateUserUseCaseTests.cs
+PasswordHasherTests.cs
+```
+
+Ejemplo de clase:
+
+```csharp
 public sealed class CreateUserUseCaseTests
 {
 }
+```
 
 No utilizar:
 
-`CreateUserUseCaseTest.cs`
-`TestCreateUser.cs`
-`CreateUserTesting.cs`
+```text
+CreateUserUseCaseTest.cs
+TestCreateUser.cs
+CreateUserTesting.cs
+```
 
-## 7. Nombres de métodos de prueba
+## Nombres de métodos
 
-Los nombres deben estar en inglés y describir comportamiento, escenario y resultado.
+Los nombres deben estar escritos en inglés y describir:
 
-Formato:
+- El método probado.
+- El escenario.
+- El resultado esperado.
 
-* Method_WithCondition_ShouldExpectedResult
-* Method_WhenCondition_ShouldExpectedResult
+Formatos oficiales:
 
-Uso recomendado:
+```text
+Method_WithCondition_ShouldExpectedResult
+Method_WhenCondition_ShouldExpectedResult
+```
 
-`With` describe los datos o estado de entrada.
+`With` se utiliza para describir los datos o el estado de entrada.
 
-`When` describe una condición especial, ausencia o conflicto.
+`When` se utiliza para describir una condición especial, ausencia o conflicto.
 
 `Should` describe el resultado esperado.
 
 Ejemplos correctos:
 
-* Constructor_WithValidData_ShouldCreateActiveUser
-* Constructor_WithEmptyTenantId_ShouldThrowArgumentException
-* ExecuteAsync_WithValidData_ShouldCreateUser
-* ExecuteAsync_WhenUserDoesNotExist_ShouldThrowNotFound
-* Deactivate_ShouldSetStatusToInactive
+```text
+Constructor_WithValidData_ShouldCreateActiveUser
+Constructor_WithEmptyTenantId_ShouldThrowArgumentException
+ExecuteAsync_WithValidData_ShouldCreateUser
+ExecuteAsync_WhenUserDoesNotExist_ShouldThrowNotFound
+Deactivate_ShouldSetStatusToInactive
+```
 
 Ejemplos incorrectos:
 
-* Constructor_ValidData_CreateUser
-* ExecuteAsync_UserNotFound_Throw
-* Deactivate_StatusFalse
-* Test1
-* PruebaCrearUsuario
+```text
+Constructor_ValidData_CreateUser
+ExecuteAsync_UserNotFound_Throw
+Deactivate_StatusFalse
+Test1
+PruebaCrearUsuario
+```
 
-Los nombres deben ser claros, pero no innecesariamente largos. Se debe evitar repetir información que ya aporta el nombre de la clase.
+Los nombres deben ser claros, pero no innecesariamente largos.
 
-## 8. Estructura Arrange, Act, Assert
+## Estructura de una prueba
 
-Cada prueba debe separar visualmente las tres fases:
+Cada prueba debe seguir el patrón Arrange, Act, Assert:
 
-`Arrange`: preparar datos y dependencias.
+- Arrange: preparar datos y dependencias.
+- Act: ejecutar el comportamiento.
+- Assert: verificar el resultado.
 
-`Act`: ejecutar el comportamiento.
+No es obligatorio escribir comentarios con los nombres de las fases. Los espacios entre bloques son suficientes cuando la prueba es clara.
 
-`Assert`: verificar el resultado.
+Ejemplo:
 
-No es obligatorio escribir comentarios Arrange, Act y Assert; los saltos de línea son suficientes cuando la prueba permanece clara.
-
-`[Fact]`
+```csharp
+[Fact]
 public async Task ExecuteAsync_WithValidData_ShouldCreateUser()
 {
   var tenantId = Guid.NewGuid();
@@ -176,245 +200,252 @@ public async Task ExecuteAsync_WithValidData_ShouldCreateUser()
   Assert.Equal(correlationId, response.CorrelationId);
   Assert.NotNull(dataStore.AddedUser);
 }
+```
 
 Las firmas, llamadas y expresiones que caben claramente en una sola línea deben permanecer en una sola línea.
 
-## 9. Cobertura mínima por capa
-
-### 9.1 Domain
+## Pruebas de Domain
 
 Las pruebas de Domain deben cubrir, cuando aplique:
 
-* Creación válida de la entidad.
+- Creación válida de la entidad.
+- Normalización de textos.
+- Identificadores obligatorios.
+- Textos obligatorios.
+- Rangos numéricos.
+- Fechas válidas.
+- Cambios de estado.
+- Actualización de `UpdatedAtUtc`.
+- Soft delete.
+- Restauración.
+- Idempotencia.
+- Manejo de `EntityVersion`.
 
-* Normalización de texto: Trim, mayúsculas o minúsculas.
+No es necesario crear pruebas diferentes para combinaciones que representen exactamente el mismo comportamiento.
 
-* Identificadores obligatorios.
+## Pruebas de Application
 
-* Textos obligatorios.
+Cada caso de uso debe cubrir los escenarios relevantes para su comportamiento.
 
-* Rangos numéricos y fechas válidas.
+Como mínimo debe evaluarse, cuando aplique:
 
-* Cambios de estado.
+- Flujo exitoso.
+- Entidad inexistente.
+- Duplicado o conflicto.
+- Regla de negocio inválida.
+- Aislamiento por `TenantId`.
+- Respuesta generada.
+- `CorrelationId`.
+- Interacción con el DataStore.
+- Evento de integración.
+- Acción de auditoría.
+- Usuario actor.
+- Ausencia de efectos secundarios cuando el flujo falla.
 
-* Actualización de UpdatedAtUtc.
+Una prueba de error debe comprobar que no se guardó, actualizó ni publicó información.
 
-* Soft delete y restauración.
+No se establece una cantidad fija de pruebas por caso de uso. La cantidad depende de las reglas y riesgos que se deban cubrir.
 
-* Idempotencia cuando una operación pueda repetirse.
+## Pruebas de Infrastructure
 
-Incremento o conservación de EntityVersion cuando corresponda.
+Infrastructure debe probarse cuando contenga lógica propia.
 
-No es necesario crear una prueba distinta para combinaciones que no representen comportamientos diferentes. Para múltiples entradas equivalentes debe considerarse [Theory].
+Ejemplos:
 
-### 9.2 Application
+- Hash y verificación de contraseñas.
+- Generación y validación de tokens.
+- Conversión de entidades a registros persistentes.
+- Serialización de auditoría.
+- Serialización de eventos.
+- Traducción de respuestas de servicios externos.
+- Deduplicación.
+- Outbox.
+- Inbox.
 
-Cada caso de uso debe cubrir los escenarios relevantes, no una cantidad fija de pruebas.
+No es obligatorio crear pruebas para clases que solamente delegan directamente a una librería sin agregar comportamiento propio.
 
-Como mínimo se debe evaluar:
+No deben agregarse carpetas vacías para aparentar cobertura.
 
-* Flujo exitoso.
+## Uso de fakes
 
-* Entidad inexistente cuando exista una consulta previa.
-
-* Duplicado o conflicto cuando exista una regla de unicidad.
-
-* Regla de negocio inválida.
-
-* Aislamiento por TenantId cuando aplique.
-
-* Respuesta y CorrelationId.
-
-* Interacción esperada con el DataStore.
-
-* Creación del evento de integración cuando aplique.
-
-* Acción de auditoría y actor cuando aplique.
-
-* Ausencia de efectos secundarios cuando el flujo falla.
-
-Una prueba de error debe comprobar también que no se guardó, actualizó o publicó información.
-
-### 9.3 Infrastructure
-
-`Infrastructure` debe probarse cuando contenga lógica propia, por ejemplo:
-
-`Hash` y verificación de contraseñas.
-
-Generación y validación de `tokens`.
-
-Conversión de entidades a registros `persistentes`.
-
-Serialización de auditoría o eventos.
-
-Traducción de respuestas de un servicio externo.
-
-Reglas de deduplicación, `Outbox` o `Inbox`.
-
-No es obligatorio crear pruebas de Infrastructure para clases que solo delegan directamente a una librería sin lógica adicional. Tampoco deben dejarse carpetas vacías para aparentar cobertura.
-
-## 10. Uso de Fakes
-
-Los `fakes` deben ser pequeños, deterministas y creados únicamente cuando ayuden a aislar el caso de uso.
+Los fakes deben ser pequeños, deterministas y utilizarse únicamente cuando ayuden a aislar un caso de uso.
 
 Reglas:
 
-* Un `fake` reutilizado por varias clases debe ubicarse en `Common/Fakes`.
+- Un fake reutilizado debe ubicarse en `Common/Fakes`.
+- Un fake utilizado por una sola clase puede declararse dentro del archivo de pruebas.
+- El nombre debe utilizar el formato `Fake{Dependency}`.
+- Los resultados configurables deben tener nombres claros.
+- Los argumentos relevantes deben capturarse para poder verificarlos.
+- No deben conectarse a SQL Server.
+- No deben conectarse a RabbitMQ.
+- No deben realizar llamadas HTTP.
+- No deben reproducir reglas de negocio.
+- No deben contener funciones que ninguna prueba utiliza.
 
-* Un `fake` utilizado por una sola clase puede declararse como clase privada dentro del archivo de pruebas.
+Cuando un DataStore recibe una entidad o un evento, el fake debe capturar el objeto recibido.
 
-* El nombre debe usar el formato `Fake{Dependency}`.
+Ejemplo:
 
-* Los resultados configurables deben exponerse con nombres explícitos.
+```csharp
+public User? AddedUser { get; private set; }
 
-* Los argumentos relevantes deben capturarse para poder verificarlos.
+public UserCreatedIntegrationEvent? AddedEvent { get; private set; }
+```
 
-* No deben conectarse a `SQL Server`, `RabbitMQ`, `HTTP` ni otros recursos externos.
+Es preferible comprobar el contenido capturado en lugar de validar únicamente un indicador como:
 
-* No deben reproducir reglas de negocio que pertenecen a la implementación real.
+```csharp
+UserAdded = true;
+```
 
-* No deben acumular funciones que ninguna prueba utiliza.
+## Eventos, Outbox y auditoría
 
-Cuando se guarda una entidad o un evento, se debe capturar el objeto recibido:
+Cuando un caso de uso genere eventos o auditoría, las pruebas deben comprobar los campos relevantes:
 
-`public User? AddedUser { get; private set; }`
+- Tipo de evento.
+- Identificador de la entidad.
+- `TenantId`.
+- `CorrelationId`.
+- Versión del evento.
+- Versión de la entidad.
+- Acción de auditoría.
+- Usuario actor.
+- Actor `null` para operaciones anónimas o de sistema.
 
-`public UserCreatedIntegrationEvent? AddedEvent { get; private set; }`
+Las pruebas unitarias validan que el evento sea entregado al DataStore dentro de la operación correspondiente.
 
-Es preferible comprobar el contenido capturado en lugar de validar únicamente un indicador booleano como UserAdded = true.
+La publicación física en RabbitMQ pertenece a las pruebas de integración.
 
-## 11. Eventos, Outbox y auditoría
+No debe simularse una publicación exitosa para afirmar que RabbitMQ fue probado.
 
-Cuando un caso de uso genere eventos o auditoría, las pruebas deben comprobar los campos que forman parte del contrato funcional:
-
-* Tipo de evento.
-
-* Identificador de la entidad.
-
-* TenantId.
-
-* CorrelationId.
-
-* Versión del evento o de la entidad.
-
-* Acción de auditoría.
-
-* Usuario actor, incluyendo null para operaciones anónimas o de sistema.
-
-Las pruebas unitarias validan que el evento se entregue al `DataStore` dentro de la operación esperada. La publicación física en `RabbitMQ` corresponde a pruebas de integración.
-
-No debe simularse una publicación exitosa para afirmar que `RabbitMQ` fue probado.
-
-## 12. Fact y Theory
+## Uso de Fact y Theory
 
 Utilizar `[Fact]` cuando la prueba represente un solo escenario.
 
-Utilizar `[Theory]` con `[InlineData]`, `[MemberData]` o `[ClassData]` cuando el mismo comportamiento deba validarse con diferentes entradas.
+Utilizar `[Theory]` cuando el mismo comportamiento deba validarse con diferentes entradas.
 
-No se deben crear múltiples métodos idénticos que solo cambien un valor de entrada.
+Los datos de un `[Theory]` pueden proporcionarse mediante:
 
-Cada conjunto de datos de un `[Theory]` cuenta como un caso ejecutado. Por esa razón, el número mostrado por el Explorador de pruebas puede ser mayor que la cantidad de métodos declarados.
+- `InlineData`.
+- `MemberData`.
+- `ClassData`.
 
-## 13. Aislamiento y determinismo
+No se deben crear métodos idénticos que solamente cambien un valor de entrada.
+
+Cada conjunto de datos de un `[Theory]` cuenta como un caso ejecutado. Por esta razón, el Explorador de pruebas puede mostrar más pruebas que métodos declarados.
+
+## Aislamiento
 
 Una prueba unitaria debe poder ejecutarse:
 
-* Sin conexión a internet.
-
-* Sin `Azure SQL`.
-
-* Sin `RabbitMQ`.
-
-* Sin depender del orden de otras pruebas.
-
-* Sin reutilizar información persistida por otra prueba.
-
-* Sin depender de la hora local de la computadora.
+- Sin conexión a internet.
+- Sin Azure SQL.
+- Sin RabbitMQ.
+- Sin servicios externos.
+- Sin depender del orden de ejecución.
+- Sin reutilizar información persistida.
+- Sin depender de la hora local del equipo.
 
 Reglas:
 
-* Preferir fechas fijas en lugar de `DateTime.Now`.
+- Preferir fechas fijas.
+- Utilizar `DateTime.UtcNow` solo cuando el valor exacto no forme parte de la aserción.
+- No utilizar `Thread.Sleep`.
+- No compartir instancias mutables entre pruebas.
+- Cada prueba debe preparar su propio estado.
+- No incluir secretos ni cadenas de conexión.
 
-* Utilizar `DateTime.UtcNow` solo cuando el valor exacto no forme parte de la aserción.
-
-* No utilizar `Thread.Sleep` para esperar resultados.
-
-* No compartir instancias mutables entre pruebas.
-
-* Cada prueba debe preparar su propio estado.
-
-Los secretos y cadenas de conexión no deben incluirse en proyectos de pruebas unitarias.
-
-## 14. Aserciones
+## Aserciones
 
 Las aserciones deben validar resultados observables y relevantes.
 
-Una prueba puede tener varias aserciones cuando todas comprueben el mismo comportamiento. No debe validar varios comportamientos independientes dentro del mismo método.
+Una prueba puede contener varias aserciones cuando todas comprueben el mismo comportamiento.
 
-Además de la respuesta, debe verificarse el cambio de estado o la interacción relevante:
+No deben validarse diferentes comportamientos independientes dentro del mismo método.
 
-`Assert.Equal(tenantId, response.TenantId)`;
-`Assert.Equal(correlationId, response.CorrelationId)`;
-`Assert.NotNull(dataStore.AddedUser)`;
-`Assert.NotNull(dataStore.AddedEvent)`;
-`Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId)`;
+Además de la respuesta, debe verificarse el cambio de estado o la interacción relevante.
 
-No se deben escribir aserciones que repitan la implementación sin comprobar una regla o resultado útil.
+Ejemplo:
 
-## 15. Ejecución
+```csharp
+Assert.Equal(tenantId, response.TenantId);
+Assert.Equal(correlationId, response.CorrelationId);
+Assert.NotNull(dataStore.AddedUser);
+Assert.NotNull(dataStore.AddedEvent);
+Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
+```
 
-Desde la raíz del repositorio:
+No se deben agregar aserciones que repitan la implementación sin comprobar una regla útil.
 
-`dotnet test SIA.Platform.slnx`
+## Ejecución
+
+Para ejecutar todas las pruebas desde la raíz del repositorio:
+
+```bash
+dotnet test SIA.Platform.slnx
+```
 
 Para ejecutar únicamente las pruebas de un servicio:
 
-`dotnet test src/services/SIA.IdentityService/SIA.IdentityService.Tests/SIA.IdentityService.Tests.csproj`
+```bash
+dotnet test src/services/SIA.IdentityService/SIA.IdentityService.Tests/SIA.IdentityService.Tests.csproj
+```
 
-En Visual Studio se debe agrupar el Explorador de pruebas por proyecto antes de reportar la cantidad de pruebas. Los resultados anteriores deben limpiarse o actualizarse cuando se agreguen o eliminen pruebas.
+En Visual Studio se debe agrupar el Explorador de pruebas por proyecto antes de reportar la cantidad de pruebas.
 
-## 16. Criterios para Pull Request
+Los resultados anteriores deben actualizarse cuando se agreguen o eliminen pruebas.
+
+## Pull Request
 
 Una tarea de pruebas puede enviarse a revisión cuando:
 
-* El proyecto de pruebas compila sin errores.
+- El proyecto compila sin errores.
+- No introduce advertencias nuevas.
+- Todas las pruebas nuevas pasan.
+- Las pruebas existentes continúan pasando.
+- Los nombres respetan este estándar.
+- Las carpetas y namespaces coinciden.
+- Los fakes contienen únicamente lo necesario.
+- Se cubren los flujos exitosos y errores relevantes.
+- Los eventos y auditorías se validan cuando aplican.
+- No existen pruebas vacías.
+- No existen pruebas deshabilitadas.
+- No existe código comentado.
+- No se agregaron carpetas vacías al `.csproj`.
+- No se agregaron secretos.
+- No se agregaron dependencias externas innecesarias.
+- El PR indica la cantidad de pruebas del proyecto afectado.
 
-* No introduce advertencias nuevas.
+La cantidad de pruebas no sustituye la revisión de su calidad.
 
-* Todas las pruebas nuevas pasan.
-
-* Las pruebas existentes continúan pasando.
-
-* Los nombres siguen este estándar.
-
-* Las carpetas y namespaces coinciden.
-
-* Los `fakes` solo contienen lo necesario.
-
-* Se cubren flujos exitosos y errores relevantes.
-
-* Los eventos y auditorías se validan cuando aplican.
-
-* No existen pruebas vacías, deshabilitadas o comentadas.
-
-* No se agregaron carpetas vacías al .csproj.
-
-* No se agregaron secretos ni dependencias externas innecesarias.
-
-* El PR indica la cantidad de pruebas del proyecto afectado, no la cantidad global mostrada por Visual Studio.
-
-La cantidad de pruebas no reemplaza la revisión de su calidad.
-
-## 17. Adopción del estándar
+## Adopción del estándar
 
 Este documento es obligatorio para pruebas nuevas y para pruebas modificadas después de su incorporación.
 
-La normalización de pruebas existentes debe realizarse por servicio y mediante tareas delimitadas. No se deben mezclar refactorizaciones masivas de pruebas con cambios funcionales no relacionados.
+La normalización de pruebas existentes debe realizarse por servicio y mediante tareas delimitadas.
 
-Cuando una tarea detecte pruebas fuera del estándar:
+No deben mezclarse refactorizaciones masivas de pruebas con cambios funcionales no relacionados.
 
-* Debe corregir las pruebas que formen parte directa de su alcance.
+Cuando se detecten pruebas fuera del estándar:
 
-* Debe registrar una tarea separada si la corrección excede el alcance actual.
+- Se deben corregir las pruebas que formen parte del alcance actual.
+- Se debe registrar una tarea separada si la corrección excede el alcance.
+- No debe copiarse una convención inconsistente a archivos nuevos.
 
-* No debe copiar una convención inconsistente a nuevos archivos.
+IdentityService se utiliza como referencia inicial por su separación entre Domain, Application e Infrastructure.
+
+A partir de la incorporación de este documento, `tests/README.md` es la fuente canónica para todos los servicios.
+
+## Reglas críticas
+
+- Las pruebas unitarias no utilizan infraestructura externa.
+- Cada prueba prepara su propio estado.
+- Los nombres deben describir escenario y resultado.
+- Los namespaces deben coincidir con las carpetas.
+- Los fakes deben capturar los datos relevantes.
+- Los errores deben comprobar la ausencia de efectos secundarios.
+- Los eventos deben validarse por contenido.
+- Las carpetas vacías no cuentan como cobertura.
+- Las pruebas nuevas deben respetar este estándar.
+- Ninguna tarea se considera terminada únicamente por tener una cantidad alta de pruebas.
