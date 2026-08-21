@@ -195,7 +195,7 @@ Reglas funcionales
 7.	Cuando IsRequired = false, la materia no deberá tener una dependencia de prerrequisito. 
 8.	La materia requerida y la materia dependiente deberán pertenecer al mismo StudyPlan. 
 9.	Una materia no podrá depender de sí misma. 
-10.	No deberán existir relaciones duplicadas.  
+10.	No deberán existir relaciones duplicadas.   
 11.	El modelo deberá respetar TenantId. 
 12.	El semestre no deberá utilizarse para inferir automáticamente prerrequisitos. 
 13.	Una materia podrá tener múltiples prerrequisitos, sujeto a las reglas académicas que posteriormente se definan. 
