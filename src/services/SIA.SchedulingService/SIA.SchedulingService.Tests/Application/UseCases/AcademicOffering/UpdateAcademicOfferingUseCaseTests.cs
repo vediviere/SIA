@@ -9,7 +9,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicOfferings;
 public sealed class UpdateAcademicOfferingUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidData_UpdateAcademicOffering()
+    public async Task ExecuteAsync_WithValidData_ShouldUpdateAcademicOffering()
     {
         var tenantId = Guid.NewGuid();
         var offeringId = Guid.NewGuid();
@@ -30,11 +30,16 @@ public sealed class UpdateAcademicOfferingUseCaseTests
         Assert.Equal("ACEPTADA", response.OfferingStatus);
         Assert.NotNull(response.UpdatedAtUtc);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.OfferingUpdated);
+
+        Assert.NotNull(dataStore.UpdatedAcademicOffering);
+        Assert.Equal("ACEPTADA", dataStore.UpdatedAcademicOffering.OfferingStatus);
+
+        Assert.NotNull(dataStore.AddedUpdatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedUpdatedEvent.CorrelationId);
     }
 
     [Fact]
-    public async Task ExecuteAsync_OfferingDoesNotExist_ThrowNotFound()
+    public async Task ExecuteAsync_WhenOfferingDoesNotExist_ShouldThrowAcademicOfferingNotFoundException()
     {
         var dataStore = new FakeAcademicOfferingDataStore(null);
         var useCase = new UpdateAcademicOfferingUseCase(dataStore);
@@ -44,5 +49,7 @@ public sealed class UpdateAcademicOfferingUseCaseTests
             OfferingStatus = "ACEPTADA"
         };
         await Assert.ThrowsAsync<AcademicOfferingNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+        Assert.Null(dataStore.UpdatedAcademicOffering);
+        Assert.Null(dataStore.AddedUpdatedEvent);
     }
 }

@@ -8,7 +8,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.Groups;
 public sealed class ActivateGroupUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidGroup_ActivateAndPublishEvent()
+    public async Task ExecuteAsync_WithValidGroup_ShouldActivateAndPublishEvent()
     {
         var tenantId = Guid.NewGuid();
         var groupId = Guid.NewGuid();
@@ -24,11 +24,14 @@ public sealed class ActivateGroupUseCaseTests
 
         Assert.True(group.Status);
         Assert.NotNull(group.UpdatedAtUtc);
-        Assert.True(dataStore.GroupActivated);
+
+        Assert.NotNull(dataStore.AddedActivatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedActivatedEvent.CorrelationId);
+        Assert.True(dataStore.AddedActivatedEvent.Status);
     }
 
     [Fact]
-    public async Task ExecuteAsync_GroupDoesNotExist_ThrowNotFound()
+    public async Task ExecuteAsync_WhenGroupDoesNotExist_ShouldThrowGroupNotFoundException()
     {
         var tenantId = Guid.NewGuid();
         var groupId = Guid.NewGuid();
@@ -38,5 +41,6 @@ public sealed class ActivateGroupUseCaseTests
         var useCase = new ActivateGroupUseCase(dataStore);
 
         await Assert.ThrowsAsync<GroupNotFoundException>(() => useCase.ExecuteAsync(tenantId, groupId, correlationId, CancellationToken.None));
+        Assert.Null(dataStore.AddedActivatedEvent);
     }
 }

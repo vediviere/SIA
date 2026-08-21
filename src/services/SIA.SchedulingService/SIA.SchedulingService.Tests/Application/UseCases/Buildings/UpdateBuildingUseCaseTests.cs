@@ -9,7 +9,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.Buildings;
 public sealed class UpdateBuildingUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidData_UpdateBuilding()
+    public async Task ExecuteAsync_WithValidData_ShouldUpdateBuilding()
     {
         var tenantId = Guid.NewGuid();
         var buildingId = Guid.NewGuid();
@@ -34,11 +34,16 @@ public sealed class UpdateBuildingUseCaseTests
         Assert.Equal("EDIFICIO A-ISIC-IFOR", responseBuilding.Description);
         Assert.NotNull(responseBuilding.UpdatedAtUtc);
         Assert.Equal(correlationId, responseBuilding.CorrelationId);
-        Assert.True(dataStore.BuildingUpdated);
+
+        Assert.NotNull(dataStore.UpdatedBuilding);
+        Assert.Equal("A2", dataStore.UpdatedBuilding.Code);
+
+        Assert.NotNull(dataStore.AddedUpdatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedUpdatedEvent.CorrelationId);
     }
 
     [Fact]
-    public async Task ExecuteAsync_BuildingDoesNotExist_ThrowNotFound()
+    public async Task ExecuteAsync_WhenBuildingDoesNotExist_ShouldThrowBuildingNotFoundException()
     {
         var dataStore = new FakeBuildingDataStore(null);
         var useCase = new UpdateBuildingUseCase(dataStore);
@@ -50,13 +55,16 @@ public sealed class UpdateBuildingUseCaseTests
             Description = "EDIFICIO A-ISIC"
         };
         await Assert.ThrowsAsync<BuildingNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.UpdatedBuilding);
+        Assert.Null(dataStore.AddedUpdatedEvent);
     }
 
     [Fact]
-    public async Task ExecuteAsync_NewCodeAlreadyExists_ThrowConflict()
+    public async Task ExecuteAsync_WhenNewCodeAlreadyExists_ShouldThrowDuplicateBuildingCodeException()
     {
         var tenantId = Guid.NewGuid();
-        var existingBuilding = new Building(tenantId, "A1", "Edificio A", "Descripción");
+        var existingBuilding = new Building(tenantId, "A1", "Edificio A", "EDIFICIO A-ISIC");
 
         var dataStore = new FakeBuildingDataStore(existingBuilding)
         {
@@ -71,13 +79,16 @@ public sealed class UpdateBuildingUseCaseTests
             Description = "Descripción"
         };
         await Assert.ThrowsAsync<DuplicateBuildingCodeException>(() => useCase.ExecuteAsync(tenantId, Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.UpdatedBuilding);
+        Assert.Null(dataStore.AddedUpdatedEvent);
     }
 
     [Fact]
-    public async Task ExecuteAsync_NullDescription_UpdateBuildingWithEmptyDescription()
+    public async Task ExecuteAsync_WithNullDescription_ShouldUpdateBuildingWithEmptyDescription()
     {
         var tenantId = Guid.NewGuid();
-        var existingBuilding = new Building(tenantId, "A1", "Edificio A", "Descripción vieja");
+        var existingBuilding = new Building(tenantId, "A1", "Edificio A", "EDIFICIO A-ISIC");
 
         var dataStore = new FakeBuildingDataStore(existingBuilding);
         var useCase = new UpdateBuildingUseCase(dataStore);
@@ -90,5 +101,8 @@ public sealed class UpdateBuildingUseCaseTests
         };
         var responseBuilding = await useCase.ExecuteAsync(tenantId, Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None);
         Assert.Equal(string.Empty, responseBuilding.Description);
+
+        Assert.NotNull(dataStore.UpdatedBuilding);
+        Assert.Equal(string.Empty, dataStore.UpdatedBuilding.Description);
     }
 }

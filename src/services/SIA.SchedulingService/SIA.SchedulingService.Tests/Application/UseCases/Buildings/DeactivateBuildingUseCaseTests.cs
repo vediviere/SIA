@@ -8,7 +8,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.Buildings;
 public sealed class DeactivateBuildingUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidBuilding_DeactivateAndPublishEvent()
+    public async Task ExecuteAsync_WithValidBuilding_ShouldDeactivateAndPublishEvent()
     {
         var tenantId = Guid.NewGuid();
         var buildingId = Guid.NewGuid();
@@ -23,14 +23,18 @@ public sealed class DeactivateBuildingUseCaseTests
 
         Assert.False(building.Status);
         Assert.NotNull(building.UpdatedAtUtc);
-        Assert.True(dataStore.BuildingDeactivated);
+
+        Assert.NotNull(dataStore.AddedDeactivatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedDeactivatedEvent.CorrelationId);
+        Assert.False(dataStore.AddedDeactivatedEvent.Status);
     }
 
     [Fact]
-    public async Task ExecuteAsync_BuildingDoesNotExist_ThrowNotFound()
+    public async Task ExecuteAsync_WhenBuildingDoesNotExist_ShouldThrowBuildingNotFoundException()
     {
         var dataStore = new FakeBuildingDataStore(null);
         var useCase = new DeactivateBuildingUseCase(dataStore);
         await Assert.ThrowsAsync<BuildingNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+        Assert.Null(dataStore.AddedDeactivatedEvent);
     }
 }

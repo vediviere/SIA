@@ -8,7 +8,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.Groups;
 public sealed class CreateGroupUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidData_ShouldCreateGroup()
+    public async Task ExecuteAsync_WithValidData_ShouldCreateGroup()
     {
         var tenantId = Guid.NewGuid();
         var educationalProgramId = Guid.NewGuid();
@@ -34,11 +34,20 @@ public sealed class CreateGroupUseCaseTests
         Assert.Equal(9, response.Capacity);
         Assert.True(response.Status);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.GroupAdded);
+
+        Assert.NotNull(dataStore.AddedGroup);
+        Assert.Equal(tenantId, dataStore.AddedGroup.TenantId);
+        Assert.Equal("GRUPO A-ISIC", dataStore.AddedGroup.GroupName);
+        Assert.Equal("VESPERTINO", dataStore.AddedGroup.Shift);
+
+        Assert.NotNull(dataStore.AddedCreatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedCreatedEvent.CorrelationId);
+        Assert.Equal(tenantId, dataStore.AddedCreatedEvent.TenantId);
+        Assert.Equal(1, dataStore.AddedCreatedEvent.Version);
     }
 
     [Fact]
-    public async Task ExecuteAsync_GroupAlreadyExists_ThrowConflict()
+    public async Task ExecuteAsync_WhenGroupAlreadyExists_ShouldThrowDuplicateGroupException()
     {
         var dataStore = new FakeGroupDataStore { GroupExistsResult = true };
         var useCase = new CreateGroupUseCase(dataStore);
@@ -52,5 +61,8 @@ public sealed class CreateGroupUseCaseTests
             Capacity = 9
         };
         await Assert.ThrowsAsync<DuplicateGroupException>(() => useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.AddedGroup);
+        Assert.Null(dataStore.AddedCreatedEvent);
     }
 }

@@ -7,7 +7,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicLoads;
 public sealed class CreateAcademicLoadUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidData_CreateAcademicLoad()
+    public async Task ExecuteAsync_WithValidData_ShouldCreateAcademicLoad()
     {
         var tenantId = Guid.NewGuid();
         var teacherId = Guid.NewGuid();
@@ -42,6 +42,15 @@ public sealed class CreateAcademicLoadUseCaseTests
         Assert.Equal(10, response.SupportHours);
         Assert.True(response.Status);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.AcademicLoadAdded);
+
+        
+        Assert.NotNull(dataStore.AddedAcademicLoad);
+        Assert.Equal(tenantId, dataStore.AddedAcademicLoad.TenantId);
+        Assert.Equal("OF-2026-001", dataStore.AddedAcademicLoad.OfficialLetterNumber);
+
+        Assert.NotNull(dataStore.AddedCreatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedCreatedEvent.CorrelationId);
+        Assert.Equal(tenantId, dataStore.AddedCreatedEvent.TenantId);
+        Assert.Equal(1, dataStore.AddedCreatedEvent.Version);
     }
 }

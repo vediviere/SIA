@@ -8,7 +8,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicOfferings;
 public sealed class ActivateAcademicOfferingUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidOffering_ActivateAndPublishEvent()
+    public async Task ExecuteAsync_WithValidOffering_ShouldActivateAndPublishEvent()
     {
         var tenantId = Guid.NewGuid();
         var offeringId = Guid.NewGuid();
@@ -25,14 +25,18 @@ public sealed class ActivateAcademicOfferingUseCaseTests
 
         Assert.True(offering.Status);
         Assert.NotNull(offering.UpdatedAtUtc);
-        Assert.True(dataStore.OfferingActivated);
+
+        Assert.NotNull(dataStore.AddedActivatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedActivatedEvent.CorrelationId);
+        Assert.True(dataStore.AddedActivatedEvent.Status);
     }
 
     [Fact]
-    public async Task ExecuteAsync_OfferingDoesNotExist_ThrowNotFound()
+    public async Task ExecuteAsync_WhenOfferingDoesNotExist_ShouldThrowAcademicOfferingNotFoundException()
     {
         var dataStore = new FakeAcademicOfferingDataStore(null);
         var useCase = new ActivateAcademicOfferingUseCase(dataStore);
         await Assert.ThrowsAsync<AcademicOfferingNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+        Assert.Null(dataStore.AddedActivatedEvent);
     }
 }

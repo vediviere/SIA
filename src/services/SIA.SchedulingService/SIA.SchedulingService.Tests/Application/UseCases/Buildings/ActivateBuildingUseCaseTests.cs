@@ -8,13 +8,13 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.Buildings;
 public sealed class ActivateBuildingUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidBuilding_ActivateAndPublishEvent()
+    public async Task ExecuteAsync_WithValidBuilding_ShouldActivateAndPublishEvent()
     {
         var tenantId = Guid.NewGuid();
         var buildingId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
-        var building = new Building(tenantId, "A1", "Edificio A", "Descripción");
+        var building = new Building(tenantId, "A1", "Edificio A", "EDIFICIO A-ISIC");
         building.Deactivate();
 
         var dataStore = new FakeBuildingDataStore(building);
@@ -24,14 +24,18 @@ public sealed class ActivateBuildingUseCaseTests
 
         Assert.True(building.Status);
         Assert.NotNull(building.UpdatedAtUtc);
-        Assert.True(dataStore.BuildingActivated);
+
+        Assert.NotNull(dataStore.AddedActivatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedActivatedEvent.CorrelationId);
+        Assert.True(dataStore.AddedActivatedEvent.Status);
     }
 
     [Fact]
-    public async Task ExecuteAsync_BuildingDoesNotExist_ThrowNotFound()
+    public async Task ExecuteAsync_WhenBuildingDoesNotExist_ShouldThrowBuildingNotFoundException()
     {
         var dataStore = new FakeBuildingDataStore(null);
         var useCase = new ActivateBuildingUseCase(dataStore);
         await Assert.ThrowsAsync<BuildingNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+        Assert.Null(dataStore.AddedActivatedEvent);
     }
 }

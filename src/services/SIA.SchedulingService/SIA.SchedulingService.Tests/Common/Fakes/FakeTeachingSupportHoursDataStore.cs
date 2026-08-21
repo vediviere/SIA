@@ -12,33 +12,36 @@ public sealed class FakeTeachingSupportHoursDataStore : ITeachingSupportHoursDat
     {
         _tshReturn = tshReturn;
     }
-
     public bool ExistsResult { get; set; }
-    public bool SupportHoursAdded { get; private set; }
-    public bool SupportHoursUpdated { get; private set; }
-    public bool SupportHoursActivated { get; private set; }
-    public bool SupportHoursDeactivated { get; private set; }
+    public TeachingSupportHour? AddedTeachingSupportHours { get; private set; }
+    public TeachingSupportHoursCreatedIntegrationEvent? AddedCreatedEvent { get; private set; }
+    public TeachingSupportHour? UpdatedTeachingSupportHours { get; private set; }
+    public TeachingSupportHoursUpdatedIntegrationEvent? AddedUpdatedEvent { get; private set; }
+    public TeachingSupportHoursActivatedIntegrationEvent? AddedActivatedEvent { get; private set; }
+    public TeachingSupportHoursDeactivatedIntegrationEvent? AddedDeactivatedEvent { get; private set; }
 
     public Task<bool> ExistsByActivityAndAcademicLoadAsync(Guid activityId, Guid academicLoadId, CancellationToken cancellationToken) => Task.FromResult(ExistsResult);
     public Task<TeachingSupportHour?> GetByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken) => Task.FromResult(_tshReturn);
     public Task AddTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, TeachingSupportHoursCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        SupportHoursAdded = true;
+        AddedTeachingSupportHours = teachingSupportHours;
+        AddedCreatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task UpdateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, TeachingSupportHoursUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        SupportHoursUpdated = true;
+        UpdatedTeachingSupportHours = teachingSupportHours;
+        AddedUpdatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task ActivateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, TeachingSupportHoursActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        SupportHoursActivated = true;
+        AddedActivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task DeactivateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, TeachingSupportHoursDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        SupportHoursDeactivated = true;
+        AddedDeactivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }
