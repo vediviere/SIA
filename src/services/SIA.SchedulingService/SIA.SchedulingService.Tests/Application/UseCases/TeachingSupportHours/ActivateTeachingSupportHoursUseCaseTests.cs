@@ -8,7 +8,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.TeachingSupportHours;
 public sealed class ActivateTeachingSupportHoursUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidSupportHours_ActivateAndPublishEvent()
+    public async Task ExecuteAsync_WithValidSupportHours_ShouldActivateAndPublishEvent()
     {
         var tenantId = Guid.NewGuid();
         var supportHourId = Guid.NewGuid();
@@ -24,15 +24,19 @@ public sealed class ActivateTeachingSupportHoursUseCaseTests
 
         Assert.True(tsh.Status);
         Assert.NotNull(tsh.UpdatedAtUtc);
-        Assert.True(dataStore.SupportHoursActivated);
+
+        Assert.NotNull(dataStore.AddedActivatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedActivatedEvent.CorrelationId);
+        Assert.True(dataStore.AddedActivatedEvent.Status);
     }
 
     [Fact]
-    public async Task ExecuteAsync_DoesNotExist_ThrowNotFoundException()
+    public async Task ExecuteAsync_WhenDoesNotExist_ShouldThrowTeachingSupportHoursNotFoundException()
     {
+        
         var dataStore = new FakeTeachingSupportHoursDataStore(null);
         var useCase = new ActivateTeachingSupportHoursUseCase(dataStore);
-
         await Assert.ThrowsAsync<TeachingSupportHoursNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+        Assert.Null(dataStore.AddedActivatedEvent);
     }
 }

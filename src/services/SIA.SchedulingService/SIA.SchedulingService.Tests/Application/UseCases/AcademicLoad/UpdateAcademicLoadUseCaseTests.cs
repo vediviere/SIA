@@ -9,7 +9,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicLoads;
 public sealed class UpdateAcademicLoadUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidData_UpdateAcademicLoad()
+    public async Task ExecuteAsync_WithValidData_ShouldUpdateAcademicLoad()
     {
         var tenantId = Guid.NewGuid();
         var academicLoadId = Guid.NewGuid();
@@ -36,11 +36,16 @@ public sealed class UpdateAcademicLoadUseCaseTests
         Assert.Equal(8, response.SupportHours);
         Assert.NotNull(response.UpdatedAtUtc);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.AcademicLoadUpdated);
+
+        Assert.NotNull(dataStore.UpdatedAcademicLoad);
+        Assert.Equal("OF-NEW-200", dataStore.UpdatedAcademicLoad.OfficialLetterNumber);
+
+        Assert.NotNull(dataStore.AddedUpdatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedUpdatedEvent.CorrelationId);
     }
 
     [Fact]
-    public async Task ExecuteAsync_AcademicLoadDoesNotExist_ThrowNotFound()
+    public async Task ExecuteAsync_WhenAcademicLoadDoesNotExist_ShouldThrowAcademicLoadNotFoundException()
     {
         var dataStore = new FakeAcademicLoadDataStore(null);
         var useCase = new UpdateAcademicLoadUseCase(dataStore);
@@ -53,6 +58,9 @@ public sealed class UpdateAcademicLoadUseCaseTests
             SupportHours = 8,
             AssignmentDate = DateTime.UtcNow
         };
-        await Assert.ThrowsAsync<AcademicLoadNotFoundException>(() =>  useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+
+        await Assert.ThrowsAsync<AcademicLoadNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+        Assert.Null(dataStore.UpdatedAcademicLoad);
+        Assert.Null(dataStore.AddedUpdatedEvent);
     }
 }

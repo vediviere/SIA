@@ -8,7 +8,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.TeachingSupportHours;
 public sealed class DeactivateTeachingSupportHoursUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidSupportHours_DeactivateAndPublishEvent()
+    public async Task ExecuteAsync_WithValidSupportHours_ShouldDeactivateAndPublishEvent()
     {
         var tenantId = Guid.NewGuid();
         var supportHourId = Guid.NewGuid();
@@ -23,15 +23,18 @@ public sealed class DeactivateTeachingSupportHoursUseCaseTests
 
         Assert.False(tsh.Status);
         Assert.NotNull(tsh.UpdatedAtUtc);
-        Assert.True(dataStore.SupportHoursDeactivated);
+
+        Assert.NotNull(dataStore.AddedDeactivatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedDeactivatedEvent.CorrelationId);
+        Assert.False(dataStore.AddedDeactivatedEvent.Status);
     }
 
     [Fact]
-    public async Task ExecuteAsync_DoesNotExist_ThrowNotFoundException()
+    public async Task ExecuteAsync_WhenDoesNotExist_ShouldThrowTeachingSupportHoursNotFoundException()
     {
         var dataStore = new FakeTeachingSupportHoursDataStore(null);
         var useCase = new DeactivateTeachingSupportHoursUseCase(dataStore);
-
         await Assert.ThrowsAsync<TeachingSupportHoursNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+        Assert.Null(dataStore.AddedDeactivatedEvent);
     }
 }

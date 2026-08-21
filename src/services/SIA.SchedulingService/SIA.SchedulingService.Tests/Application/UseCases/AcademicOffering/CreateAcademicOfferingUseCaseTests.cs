@@ -8,7 +8,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicOfferings;
 public sealed class CreateAcademicOfferingUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidData_CreateAcademicOffering()
+    public async Task ExecuteAsync_WithValidData_ShouldCreateAcademicOffering()
     {
         var tenantId = Guid.NewGuid();
         var groupId = Guid.NewGuid();
@@ -36,11 +36,19 @@ public sealed class CreateAcademicOfferingUseCaseTests
         Assert.Equal("ACEPTADA", response.OfferingStatus);
         Assert.True(response.Status);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.OfferingAdded);
+
+        Assert.NotNull(dataStore.AddedAcademicOffering);
+        Assert.Equal(tenantId, dataStore.AddedAcademicOffering.TenantId);
+        Assert.Equal("ACEPTADA", dataStore.AddedAcademicOffering.OfferingStatus);
+
+        Assert.NotNull(dataStore.AddedCreatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedCreatedEvent.CorrelationId);
+        Assert.Equal(tenantId, dataStore.AddedCreatedEvent.TenantId);
+        Assert.Equal(1, dataStore.AddedCreatedEvent.Version);
     }
 
     [Fact]
-    public async Task ExecuteAsync_OfferingAlreadyExists_ThrowException()
+    public async Task ExecuteAsync_WhenOfferingAlreadyExists_ShouldThrowAcademicOfferingAlreadyExistsException()
     {
         var dataStore = new FakeAcademicOfferingDataStore { ExistsResult = true };
         var useCase = new CreateAcademicOfferingUseCase(dataStore);
@@ -54,5 +62,7 @@ public sealed class CreateAcademicOfferingUseCaseTests
             OfferingStatus = "ACEPTADA"
         };
         await Assert.ThrowsAsync<AcademicOfferingAlreadyExistsException>(() => useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+        Assert.Null(dataStore.AddedAcademicOffering);
+        Assert.Null(dataStore.AddedCreatedEvent);
     }
 }

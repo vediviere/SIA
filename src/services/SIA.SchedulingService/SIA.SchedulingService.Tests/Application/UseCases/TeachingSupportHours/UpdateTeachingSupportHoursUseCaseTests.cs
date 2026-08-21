@@ -9,7 +9,7 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.TeachingSupportHours;
 public sealed class UpdateTeachingSupportHoursUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ValidData_UpdateTeachingSupportHours()
+    public async Task ExecuteAsync_WithValidData_ShouldUpdateTeachingSupportHours()
     {
         var tenantId = Guid.NewGuid();
         var supportHourId = Guid.NewGuid();
@@ -31,17 +31,24 @@ public sealed class UpdateTeachingSupportHoursUseCaseTests
         Assert.Equal(10, response.Hours);
         Assert.NotNull(response.UpdatedAtUtc);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.SupportHoursUpdated);
+
+        Assert.NotNull(dataStore.UpdatedTeachingSupportHours);
+        Assert.Equal(10, dataStore.UpdatedTeachingSupportHours.Hours);
+
+        Assert.NotNull(dataStore.AddedUpdatedEvent);
+        Assert.Equal(correlationId, dataStore.AddedUpdatedEvent.CorrelationId);
     }
 
     [Fact]
-    public async Task ExecuteAsync_DoesNotExist_ThrowNotFoundException()
+    public async Task ExecuteAsync_WhenDoesNotExist_ShouldThrowTeachingSupportHoursNotFoundException()
     {
         var dataStore = new FakeTeachingSupportHoursDataStore(null);
         var useCase = new UpdateTeachingSupportHoursUseCase(dataStore);
-
         var request = new UpdateTeachingSupportHoursRequest { Hours = 10 };
 
         await Assert.ThrowsAsync<TeachingSupportHoursNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.UpdatedTeachingSupportHours);
+        Assert.Null(dataStore.AddedUpdatedEvent);
     }
 }

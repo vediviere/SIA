@@ -6,36 +6,40 @@ namespace SIA.SchedulingService.Tests.Common.Fakes;
 
 public sealed class FakeAcademicLoadDataStore : IAcademicLoadDataStore
 {
-    private readonly AcademicLoad? _academicLoaoReturn;
+    private readonly AcademicLoad? _academicLoadReturn;
 
     public FakeAcademicLoadDataStore(AcademicLoad? academicLoadReturn = null)
     {
-        _academicLoaoReturn = academicLoadReturn;
+        _academicLoadReturn = academicLoadReturn;
     }
-    public bool AcademicLoadAdded { get; private set; }
-    public bool AcademicLoadUpdated { get; private set; }
-    public bool AcademicLoadActivated { get; private set; }
-    public bool AcademicLoadDeactivated { get; private set; }
+    public AcademicLoad? AddedAcademicLoad { get; private set; }
+    public AcademicLoad? UpdatedAcademicLoad { get; private set; }
+    public AcademicLoadCreatedIntegrationEvent? AddedCreatedEvent { get; private set; }
+    public AcademicLoadUpdatedIntegrationEvent? AddedUpdatedEvent { get; private set; }
+    public AcademicLoadActivatedIntegrationEvent? AddedActivatedEvent { get; private set; }
+    public AcademicLoadDeactivatedIntegrationEvent? AddedDeactivatedEvent { get; private set; }
 
-    public Task<AcademicLoad?> GetByIdAsync(Guid tenantId, Guid academicLoadId, CancellationToken cancellationToken) => Task.FromResult(_academicLoaoReturn);
+    public Task<AcademicLoad?> GetByIdAsync(Guid tenantId, Guid academicLoadId, CancellationToken cancellationToken) => Task.FromResult(_academicLoadReturn);
     public Task AddAcademicLoadWithOutboxAsync(AcademicLoad academicLoad, AcademicLoadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        AcademicLoadAdded = true;
+        AddedAcademicLoad = academicLoad;
+        AddedCreatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task UpdateAcademicLoadWithOutboxAsync(AcademicLoad academic, AcademicLoadUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        AcademicLoadUpdated = true;
+        UpdatedAcademicLoad = academic;
+        AddedUpdatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task ActivateAcademicLoadWithOutboxAsync(AcademicLoad academic, AcademicLoadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        AcademicLoadActivated = true;
+        AddedActivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task DeactivateAcademicLoadWithOutboxAsync(AcademicLoad academic, AcademicLoadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        AcademicLoadDeactivated = true;
+        AddedDeactivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }

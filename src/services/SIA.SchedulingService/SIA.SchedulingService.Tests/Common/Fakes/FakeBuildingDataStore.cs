@@ -12,33 +12,36 @@ public sealed class FakeBuildingDataStore : IBuildingDataStore
     {
         _buildingReturn = buildingReturn;
     }
-
     public bool CodeExistsResult { get; set; }
-    public bool BuildingAdd { get; private set; }
-    public bool BuildingUpdated { get; private set; }
-    public bool BuildingActivated { get; private set; }
-    public bool BuildingDeactivated { get; private set; }
+    public Building? AddedBuilding { get; private set; }
+    public Building? UpdatedBuilding { get; private set; }
+    public BuildingCreatedIntegrationEvent? AddedCreatedEvent { get; private set; }
+    public BuildingUpdatedIntegrationEvent? AddedUpdatedEvent { get; private set; }
+    public BuildingActivatedIntegrationEvent? AddedActivatedEvent { get; private set; }
+    public BuildingDeactivatedIntegrationEvent? AddedDeactivatedEvent { get; private set; }
 
     public Task<Building?> GetByIdAsync(Guid tenantId, Guid buildingId, CancellationToken cancellationToken) => Task.FromResult(_buildingReturn);
     public Task<bool> BuildingCodeExistsAsync(Guid tenantId, string code, CancellationToken cancellationToken) => Task.FromResult(CodeExistsResult);
     public Task AddBuildingWithOutboxAsync(Building building, BuildingCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        BuildingAdd = true;
+        AddedBuilding = building;
+        AddedCreatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task UpdateBuildingWithOutboxAsync(Building building, BuildingUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        BuildingUpdated = true;
+        UpdatedBuilding = building;
+        AddedUpdatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task ActivateBuildingWithOutboxAsync(Building building, BuildingActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        BuildingActivated = true;
+        AddedActivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
     public Task DeactivateBuildingWithOutboxAsync(Building building, BuildingDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        BuildingDeactivated = true;
+        AddedDeactivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }
