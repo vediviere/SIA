@@ -12,14 +12,20 @@ public sealed class ActivateDivisionHeadUseCaseTests
     {
         var divisionHead = new DivisionHead(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
         divisionHead.Deactivate();
+        var correlationId = Guid.NewGuid();
 
         var dataStore = new FakeDivisionHeadDataStore { DivisionHeadById = divisionHead };
         var useCase = new ActivateDivisionHeadUseCase(dataStore);
 
-        await useCase.ExecuteAsync(divisionHead.TenantId, divisionHead.Id, Guid.NewGuid(), CancellationToken.None);
+        await useCase.ExecuteAsync(divisionHead.TenantId, divisionHead.Id, correlationId, CancellationToken.None);
 
         Assert.True(divisionHead.Status);
-        Assert.True(dataStore.DivisionHeadActivated);
+        Assert.NotNull(dataStore.ActivatedDivisionHead);
+        Assert.Equal(divisionHead.Id, dataStore.ActivatedDivisionHead.Id);
+        Assert.NotNull(dataStore.ActivatedEvent);
+        Assert.Equal(divisionHead.Id, dataStore.ActivatedEvent.DivisionManagerId);
+        Assert.Equal(divisionHead.TenantId, dataStore.ActivatedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.ActivatedEvent.CorrelationId);
     }
 
     [Fact]
@@ -30,6 +36,7 @@ public sealed class ActivateDivisionHeadUseCaseTests
 
         await Assert.ThrowsAsync<DivisionHeadNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.DivisionHeadActivated);
+        Assert.Null(dataStore.ActivatedDivisionHead);
+        Assert.Null(dataStore.ActivatedEvent);
     }
 }
