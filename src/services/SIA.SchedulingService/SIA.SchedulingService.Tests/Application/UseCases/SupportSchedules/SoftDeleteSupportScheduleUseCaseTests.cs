@@ -14,14 +14,21 @@ public sealed class SoftDeleteSupportScheduleUseCaseTests
     public async Task ExecuteAsync_WithValidId_ShouldSoftDeleteSupportSchedule()
     {
         var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var existingSchedule = new SupportSchedule(tenantId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "LUNES", DateTime.UtcNow, DateTime.UtcNow.AddHours(1));
         var dataStore = new FakeSupportScheduleDataStore(existingSchedule);
         var useCase = new SoftDeleteSupportScheduleUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingSchedule.Id, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, existingSchedule.Id, correlationId, CancellationToken.None);
 
         Assert.False(response.Status);
-        Assert.True(dataStore.ScheduleDeleted);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.DeletedSchedule);
+        Assert.False(dataStore.DeletedSchedule.Status);
+        Assert.NotNull(dataStore.DeletedEvent);
+        Assert.Equal(existingSchedule.Id, dataStore.DeletedEvent.SupportScheduleId);
+        Assert.Equal(correlationId, dataStore.DeletedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.DeletedEvent.Version);
     }
 
     [Fact]
@@ -32,5 +39,8 @@ public sealed class SoftDeleteSupportScheduleUseCaseTests
 
         await Assert.ThrowsAsync<SupportScheduleNotFoundException>(() =>
             useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.DeletedSchedule);
+        Assert.Null(dataStore.DeletedEvent);
     }
 }

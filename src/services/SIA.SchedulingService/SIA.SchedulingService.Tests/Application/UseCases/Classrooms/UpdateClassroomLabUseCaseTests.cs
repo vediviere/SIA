@@ -14,7 +14,9 @@ public sealed class UpdateClassroomLabUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithValidData_ShouldUpdateClassroomLab()
     {
-        var existingLab = new ClassroomLab(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "LAB-01", "Lab", 30, "Desc");
+        var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+        var existingLab = new ClassroomLab(tenantId, Guid.NewGuid(), Guid.NewGuid(), "LAB-01", "Lab", 30, "Desc");
         var dataStore = new FakeClassroomLabDataStore(existingLab);
         var useCase = new UpdateClassroomLabUseCase(dataStore);
 
@@ -26,22 +28,29 @@ public sealed class UpdateClassroomLabUseCaseTests
             Description = "Desc Actualizada"
         };
 
-        var response = await useCase.ExecuteAsync(existingLab.TenantId, existingLab.Id, request, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, existingLab.Id, request, correlationId, CancellationToken.None);
 
         Assert.Equal("LAB-02", response.Code);
-        Assert.Equal("Lab Actualizado", response.Name);
-        Assert.True(dataStore.ClassroomLabUpdated);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.UpdatedClassroomLab);
+        Assert.Equal("LAB-02", dataStore.UpdatedClassroomLab.Code);
+        Assert.NotNull(dataStore.UpdatedEvent);
+        Assert.Equal(existingLab.Id, dataStore.UpdatedEvent.ClassroomLabId);
+        Assert.Equal(correlationId, dataStore.UpdatedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.UpdatedEvent.Version);
     }
 
     [Fact]
     public async Task ExecuteAsync_WhenLabDoesNotExist_ShouldThrowNotFoundException()
     {
-        var dataStore = new FakeClassroomLabDataStore(null); 
+        var dataStore = new FakeClassroomLabDataStore(null);
         var useCase = new UpdateClassroomLabUseCase(dataStore);
-
         var request = new UpdateClassroomLabRequest { Code = "LAB-02", Name = "Lab", Capacity = 30 };
 
         await Assert.ThrowsAsync<ClassroomLabNotFoundException>(() =>
             useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.UpdatedClassroomLab);
+        Assert.Null(dataStore.UpdatedEvent);
     }
 }

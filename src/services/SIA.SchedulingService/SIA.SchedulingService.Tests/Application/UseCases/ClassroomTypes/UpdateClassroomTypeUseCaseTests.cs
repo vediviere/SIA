@@ -15,6 +15,7 @@ public sealed class UpdateClassroomTypeUseCaseTests
     public async Task ExecuteAsync_WithValidData_ShouldUpdateClassroomType()
     {
         var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var existingType = new ClassroomType(tenantId, "LAB", "Lab", "Desc");
         var dataStore = new FakeClassroomTypeDataStore(existingType);
         var useCase = new UpdateClassroomTypeUseCase(dataStore);
@@ -26,11 +27,16 @@ public sealed class UpdateClassroomTypeUseCaseTests
             Description = "Desc Actualizada"
         };
 
-        var response = await useCase.ExecuteAsync(tenantId, existingType.Id, request, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, existingType.Id, request, correlationId, CancellationToken.None);
 
         Assert.Equal("LAB-NEW", response.Code);
-        Assert.Equal("Lab Actualizado", response.Name);
-        Assert.True(dataStore.ClassroomTypeUpdated);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.UpdatedType);
+        Assert.Equal("LAB-NEW", dataStore.UpdatedType.Code);
+        Assert.NotNull(dataStore.UpdatedEvent);
+        Assert.Equal(existingType.Id, dataStore.UpdatedEvent.ClassroomTypeId);
+        Assert.Equal(correlationId, dataStore.UpdatedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.UpdatedEvent.Version);
     }
 
     [Fact]
@@ -38,11 +44,13 @@ public sealed class UpdateClassroomTypeUseCaseTests
     {
         var dataStore = new FakeClassroomTypeDataStore(null);
         var useCase = new UpdateClassroomTypeUseCase(dataStore);
-
         var request = new UpdateClassroomTypeRequest { Code = "L", Name = "N", Description = "D" };
 
         await Assert.ThrowsAsync<ClassroomTypeNotFoundException>(() =>
             useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.UpdatedType);
+        Assert.Null(dataStore.UpdatedEvent);
     }
 
     [Fact]
@@ -50,18 +58,15 @@ public sealed class UpdateClassroomTypeUseCaseTests
     {
         var tenantId = Guid.NewGuid();
         var existingType = new ClassroomType(tenantId, "LAB", "Viejo Nombre", "Desc");
-
         var dataStore = new FakeClassroomTypeDataStore(existingType) { NameExistsResult = true };
         var useCase = new UpdateClassroomTypeUseCase(dataStore);
 
-        var request = new UpdateClassroomTypeRequest
-        {
-            Code = "LAB",
-            Name = "Nuevo Nombre", 
-            Description = "Desc"
-        };
+        var request = new UpdateClassroomTypeRequest { Code = "LAB", Name = "Nuevo Nombre", Description = "Desc" };
 
         await Assert.ThrowsAsync<DuplicateClassroomTypeNameException>(() =>
             useCase.ExecuteAsync(tenantId, existingType.Id, request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.UpdatedType);
+        Assert.Null(dataStore.UpdatedEvent);
     }
 }

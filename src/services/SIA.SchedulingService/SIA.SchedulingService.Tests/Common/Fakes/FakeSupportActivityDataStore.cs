@@ -11,15 +11,13 @@ public sealed class FakeSupportActivityDataStore : ISupportActivityDataStore
 {
     private readonly SupportActivity? _existingActivity;
 
-    public bool ActivityAdded { get; private set; }
-    public bool ActivityUpdated { get; private set; }
-    public bool ActivityDeleted { get; private set; }
-    public bool ActivityRestored { get; private set; }
-
     public SupportActivity? AddedActivity { get; private set; }
     public SupportActivityCreatedIntegrationEvent? AddedEvent { get; private set; }
+    public SupportActivity? UpdatedActivity { get; private set; }
     public SupportActivityUpdatedIntegrationEvent? UpdatedEvent { get; private set; }
+    public SupportActivity? DeletedActivity { get; private set; }
     public SupportActivityDeletedIntegrationEvent? DeletedEvent { get; private set; }
+    public SupportActivity? RestoredActivity { get; private set; }
     public SupportActivityRestoredIntegrationEvent? RestoredEvent { get; private set; }
 
     public FakeSupportActivityDataStore(SupportActivity? existingActivity = null)
@@ -34,7 +32,6 @@ public sealed class FakeSupportActivityDataStore : ISupportActivityDataStore
 
     public Task AddSupportActivityWithOutboxAsync(SupportActivity supportActivity, SupportActivityCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ActivityAdded = true;
         AddedActivity = supportActivity;
         AddedEvent = integrationEvent;
         return Task.CompletedTask;
@@ -42,21 +39,21 @@ public sealed class FakeSupportActivityDataStore : ISupportActivityDataStore
 
     public Task UpdateSupportActivityWithOutboxAsync(SupportActivity supportActivity, SupportActivityUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ActivityUpdated = true;
+        UpdatedActivity = supportActivity;
         UpdatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task SoftDeleteSupportActivityWithOutboxAsync(SupportActivity supportActivity, SupportActivityDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ActivityDeleted = true;
+        DeletedActivity = supportActivity;
         DeletedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task RestoreSupportActivityWithOutboxAsync(SupportActivity supportActivity, SupportActivityRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ActivityRestored = true;
+        RestoredActivity = supportActivity;
         RestoredEvent = integrationEvent;
         return Task.CompletedTask;
     }
