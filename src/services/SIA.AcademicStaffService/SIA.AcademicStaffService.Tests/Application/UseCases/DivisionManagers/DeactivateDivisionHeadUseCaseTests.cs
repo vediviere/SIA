@@ -11,14 +11,20 @@ public sealed class DeactivateDivisionHeadUseCaseTests
     public async Task ExecuteAsync_WithExistingDivisionHead_ShouldDeactivate()
     {
         var divisionHead = new DivisionHead(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var correlationId = Guid.NewGuid();
 
         var dataStore = new FakeDivisionHeadDataStore { DivisionHeadById = divisionHead };
         var useCase = new DeactivateDivisionHeadUseCase(dataStore);
 
-        await useCase.ExecuteAsync(divisionHead.TenantId, divisionHead.Id, Guid.NewGuid(), CancellationToken.None);
+        await useCase.ExecuteAsync(divisionHead.TenantId, divisionHead.Id, correlationId, CancellationToken.None);
 
         Assert.False(divisionHead.Status);
-        Assert.True(dataStore.DivisionHeadDeactivated);
+        Assert.NotNull(dataStore.DeactivatedDivisionHead);
+        Assert.Equal(divisionHead.Id, dataStore.DeactivatedDivisionHead.Id);
+        Assert.NotNull(dataStore.DeactivatedEvent);
+        Assert.Equal(divisionHead.Id, dataStore.DeactivatedEvent.DivisionManagerId);
+        Assert.Equal(divisionHead.TenantId, dataStore.DeactivatedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.DeactivatedEvent.CorrelationId);
     }
 
     [Fact]
@@ -29,6 +35,7 @@ public sealed class DeactivateDivisionHeadUseCaseTests
 
         await Assert.ThrowsAsync<DivisionHeadNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.DivisionHeadDeactivated);
+        Assert.Null(dataStore.DeactivatedDivisionHead);
+        Assert.Null(dataStore.DeactivatedEvent);
     }
 }

@@ -12,14 +12,21 @@ public sealed class ActivatePersonUseCaseTests
     {
         var person = new Person(Guid.NewGuid(), "EMP-0001", "Ana", "García", "López", "Maestría", "ana@example.com", "7821234567");
         person.Deactivate();
+        var correlationId = Guid.NewGuid();
 
         var dataStore = new FakePersonDataStore { PersonById = person };
         var useCase = new ActivatePersonUseCase(dataStore);
 
-        await useCase.ExecuteAsync(person.TenantId, person.Id, Guid.NewGuid(), CancellationToken.None);
+        await useCase.ExecuteAsync(person.TenantId, person.Id, correlationId, CancellationToken.None);
 
         Assert.True(person.Status);
-        Assert.True(dataStore.PersonActivated);
+        Assert.NotNull(dataStore.ActivatedPerson);
+        Assert.Equal(person.Id, dataStore.ActivatedPerson.Id);
+
+        Assert.NotNull(dataStore.ActivatedEvent);
+        Assert.Equal(person.Id, dataStore.ActivatedEvent.PersonId);
+        Assert.Equal(person.TenantId, dataStore.ActivatedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.ActivatedEvent.CorrelationId);
     }
 
     [Fact]
@@ -30,6 +37,7 @@ public sealed class ActivatePersonUseCaseTests
 
         await Assert.ThrowsAsync<PersonNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.PersonActivated);
+        Assert.Null(dataStore.ActivatedPerson);
+        Assert.Null(dataStore.ActivatedEvent);
     }
 }
