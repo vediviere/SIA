@@ -2,9 +2,9 @@
   <Folder Name="/deploy/" />
   <Folder Name="/docs/" />
   <Folder Name="/docs/onboarding/">
-    <File Path="LOCAL_PORTS.md" />
-    <File Path="TEAM_WORK_RULES.md" />
-    <File Path="TECHNICAL_ONBOARDING.md" />
+    <File Path="docs/onboarding/LOCAL_PORTS.md" />
+    <File Path="docs/onboarding/TEAM_WORK_RULES.md" />
+    <File Path="docs/onboarding/TECHNICAL_ONBOARDING.md" />
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/bff/">
