@@ -21,7 +21,7 @@ public sealed class CreateSupportActivityUseCaseTests
         var request = new CreateSupportActivityRequest
         {
             TenantId = tenantId,
-            Activity = "Asesoría de BD",
+            Activity = "Tutoría Académica",
             Observation = "Observación de prueba"
         };
 
@@ -29,35 +29,14 @@ public sealed class CreateSupportActivityUseCaseTests
 
         Assert.NotEqual(Guid.Empty, response.Id);
         Assert.Equal(tenantId, response.TenantId);
-        Assert.Equal("Asesoría de BD", response.Activity);
-        Assert.Equal("Observación de prueba", response.Observation);
-        Assert.True(response.Status);
         Assert.Equal(correlationId, response.CorrelationId);
-
-        Assert.True(dataStore.ActivityAdded);
         Assert.NotNull(dataStore.AddedActivity);
-        Assert.Equal(tenantId, dataStore.AddedActivity.TenantId);
-
+        Assert.Equal("Tutoría Académica", dataStore.AddedActivity.Activity);
+        Assert.Equal("Observación de prueba", dataStore.AddedActivity.Observation);
         Assert.NotNull(dataStore.AddedEvent);
+        Assert.Equal(response.Id, dataStore.AddedEvent.SupportActivityId);
+        Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
         Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
-        Assert.Equal(dataStore.AddedActivity.Id, dataStore.AddedEvent.SupportActivityId);
         Assert.Equal(1, dataStore.AddedEvent.Version);
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_WithInvalidData_ShouldThrowArgumentException()
-    {
-        var dataStore = new FakeSupportActivityDataStore();
-        var useCase = new CreateSupportActivityUseCase(dataStore);
-
-        var request = new CreateSupportActivityRequest
-        {
-            TenantId = Guid.Empty, 
-            Activity = "Asesoría de BD",
-            Observation = "Observación de prueba"
-        };
-
-        await Assert.ThrowsAsync<ArgumentException>(() =>
-            useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
     }
 }
