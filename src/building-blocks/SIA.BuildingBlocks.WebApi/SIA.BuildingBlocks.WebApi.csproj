@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\building-blocks\SIA.BuildingBlocks.Application\SIA.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\SIA.BuildingBlocks.Application\SIA.BuildingBlocks.Application.csproj" />
   </ItemGroup>
 
 </Project>

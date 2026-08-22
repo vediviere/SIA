@@ -11,7 +11,7 @@
     <ProjectReference Include="..\SIA.AcademicStaffService.Application\SIA.AcademicStaffService.Application.csproj" />
     <ProjectReference Include="..\SIA.AcademicStaffService.Infrastructure\SIA.AcademicStaffService.Infrastructure.csproj" />
     <ProjectReference Include="..\SIA.AcademicStaffService.Contracts\SIA.AcademicStaffService.Contracts.csproj" />
-    <ProjectReference Include="..\..\..\..\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
