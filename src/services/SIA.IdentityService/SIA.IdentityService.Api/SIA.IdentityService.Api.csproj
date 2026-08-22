@@ -11,7 +11,6 @@
     <ProjectReference Include="..\SIA.IdentityService.Application\SIA.IdentityService.Application.csproj" />
     <ProjectReference Include="..\SIA.IdentityService.Infrastructure\SIA.IdentityService.Infrastructure.csproj" />
     <ProjectReference Include="..\SIA.IdentityService.Contracts\SIA.IdentityService.Contracts.csproj" />
-    <ProjectReference Include="..\..\..\..\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -24,6 +23,10 @@
 
   <ItemGroup>
     <Folder Include="Docs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
   </ItemGroup>
 
 

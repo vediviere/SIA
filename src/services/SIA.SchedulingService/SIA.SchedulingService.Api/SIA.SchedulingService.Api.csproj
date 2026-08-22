@@ -18,11 +18,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\..\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
 		<ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
 		<ProjectReference Include="..\SIA.SchedulingService.Application\SIA.SchedulingService.Application.csproj" />
 		<ProjectReference Include="..\SIA.SchedulingService.Infrastructure\SIA.SchedulingService.Infrastructure.csproj" />
 		<ProjectReference Include="..\SIA.SchedulingService.Contracts\SIA.SchedulingService.Contracts.csproj" />
+		<ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
