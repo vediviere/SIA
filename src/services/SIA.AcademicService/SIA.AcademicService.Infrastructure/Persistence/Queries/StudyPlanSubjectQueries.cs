@@ -3,9 +3,6 @@ using SIA.AcademicService.Application.DTOs.StudyPlanSubjects;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Domain.Entities;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Queries;
 
