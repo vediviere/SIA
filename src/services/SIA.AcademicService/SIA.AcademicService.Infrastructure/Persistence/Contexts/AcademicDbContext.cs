@@ -24,6 +24,7 @@ public sealed class AcademicDbContext : DbContext
 
     public DbSet<StudyPlan> StudyPlans => Set<StudyPlan>();
 
+    public DbSet<ServiceComplementary> ServiceComplementaries => Set<ServiceComplementary>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

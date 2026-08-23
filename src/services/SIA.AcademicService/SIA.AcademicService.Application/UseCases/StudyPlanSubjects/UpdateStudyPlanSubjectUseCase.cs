@@ -1,4 +1,4 @@
-﻿/*
+﻿using SIA.AcademicService.Application.Common.Exceptions;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 using SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
@@ -17,19 +17,19 @@ public sealed class UpdateStudyPlanSubjectUseCase
 
     public async Task<UpdateStudyPlanSubjectResponse> ExecuteAsync(
         Guid tenantId,
-        Guid id,
+        Guid studyPlanSubjectId, 
         UpdateStudyPlanSubjectRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var studyPlanSubject = await _dataStore.GetStudyPlanSubjectByIdAsync(
             tenantId,
-            id,
+            studyPlanSubjectId, 
             cancellationToken);
 
         if (studyPlanSubject is null)
         {
-            throw new InvalidOperationException($"No se encontró la asignación de materia con el ID {id}.");
+            throw new StudyPlanSubjectNotFoundException(studyPlanSubjectId); 
         }
 
         studyPlanSubject.Update(request.Semester, request.Credits, request.IsRequired);
@@ -67,5 +67,3 @@ public sealed class UpdateStudyPlanSubjectUseCase
         };
     }
 }
-
-*/

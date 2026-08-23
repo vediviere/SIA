@@ -1,33 +1,35 @@
-﻿/*
+﻿using SIA.AcademicService.Application.Common.Exceptions;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
-using SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
-using SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
 
-public sealed class DeleteStudyPlanSubjectUseCase
+public sealed class SoftDeleteStudyPlanSubjectUseCase
 {
     private readonly IStudyPlanSubjectDataStore _dataStore;
 
-    public DeleteStudyPlanSubjectUseCase(IStudyPlanSubjectDataStore dataStore)
+    public SoftDeleteStudyPlanSubjectUseCase(IStudyPlanSubjectDataStore dataStore)
     {
         _dataStore = dataStore;
     }
 
-    public async Task<DeleteStudyPlanSubjectResponse> ExecuteAsync(
-        DeleteStudyPlanSubjectRequest request,
+    public async Task ExecuteAsync(
+        Guid tenantId,
+        Guid studyPlanSubjectId,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var studyPlanSubject = await _dataStore.GetStudyPlanSubjectByIdAsync(
-            request.TenantId,
-            request.Id,
+            tenantId,
+            studyPlanSubjectId,
             cancellationToken);
 
         if (studyPlanSubject is null)
         {
-            throw new InvalidOperationException($"No se encontró la asignación de materia con el ID {request.Id}.");
+            throw new StudyPlanSubjectNotFoundException(studyPlanSubjectId);
         }
 
         studyPlanSubject.SoftDelete();
@@ -39,19 +41,12 @@ public sealed class DeleteStudyPlanSubjectUseCase
             OccurredAtUtc = studyPlanSubject.UpdatedAtUtc ?? DateTime.UtcNow,
             TenantId = studyPlanSubject.TenantId,
             StudyPlanSubjectId = studyPlanSubject.Id,
+            StudyPlanId = studyPlanSubject.StudyPlanId, 
+            SubjectId = studyPlanSubject.SubjectId,    
             Status = studyPlanSubject.Status,
             Version = 1
         };
 
         await _dataStore.SoftDeleteStudyPlanSubjectWithOutboxAsync(studyPlanSubject, integrationEvent, cancellationToken);
-
-        return new DeleteStudyPlanSubjectResponse
-        {
-            Id = studyPlanSubject.Id,
-            Status = studyPlanSubject.Status,
-            UpdatedAtUtc = studyPlanSubject.UpdatedAtUtc,
-            CorrelationId = correlationId
-        };
     }
 }
-*/

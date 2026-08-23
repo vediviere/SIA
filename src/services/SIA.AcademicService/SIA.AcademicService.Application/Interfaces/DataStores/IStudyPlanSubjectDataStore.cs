@@ -1,5 +1,4 @@
-﻿/*
-using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
+﻿using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Application.Interfaces.DataStores;
@@ -8,7 +7,7 @@ public interface IStudyPlanSubjectDataStore
 {
     Task<bool> StudyPlanSubjectExistsAsync(Guid tenantId, Guid studyPlanId, Guid subjectId, CancellationToken cancellationToken);
 
-    Task<StudyPlanSubject?> GetStudyPlanSubjectByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken);
+    Task<StudyPlanSubject?> GetStudyPlanSubjectByIdAsync(Guid tenantId, Guid studyPlanSubjectId, CancellationToken cancellationToken); // <-- Parámetro ajustado
 
     Task AddStudyPlanSubjectWithOutboxAsync(StudyPlanSubject studyPlanSubject, StudyPlanSubjectCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 
@@ -18,5 +17,3 @@ public interface IStudyPlanSubjectDataStore
 
     Task RestoreStudyPlanSubjectWithOutboxAsync(StudyPlanSubject studyPlanSubject, StudyPlanSubjectRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 }
-
-*/

@@ -17,6 +17,8 @@ using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 using SIA.AcademicService.Contracts.IntegrationEvents.AcademicPeriods;
 using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
 using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlans;
+using SIA.AcademicService.Application.UseCases.ServiceComplementaries;
+using SIA.AcademicService.Contracts.IntegrationEvents.ServiceComplementaries;
 
 
 
@@ -91,7 +93,13 @@ builder.Services.AddSingleton(new OutboxEventRegistry()
   .Register<StudyPlanCreatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanCreatedV1)
   .Register<StudyPlanUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanUpdatedV1)
   .Register<StudyPlanDeactivatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanDeactivatedV1)
-  .Register<StudyPlanRestoredIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanRestoredV1));
+  .Register<StudyPlanRestoredIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanRestoredV1)
+  .Register<ServiceComplementaryCreatedIntegrationEvent>(AcademicIntegrationEventTypes.ServiceComplementaryCreatedV1)
+  .Register<ServiceComplementaryUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.ServiceComplementaryUpdatedV1)
+  .Register<ServiceComplementaryDeletedIntegrationEvent>(AcademicIntegrationEventTypes.ServiceComplementaryDeletedV1)
+  .Register<ServiceComplementaryRestoredIntegrationEvent>(AcademicIntegrationEventTypes.ServiceComplementaryRestoredV1));
+
+
 
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
 builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
@@ -121,11 +129,21 @@ builder.Services.AddScoped<ISubjectQueries, SubjectQueries>();
 //builder.Services.AddScoped<IStudyPlanSubjectDataStore, StudyPlanSubjectDataStore>();
 //builder.Services.AddScoped<IStudyPlanQueries, StudyPlanQueries>();
 
+// DataStores y Queries de Service Complementary
+builder.Services.AddScoped<IServiceComplementaryDataStore, ServiceComplementaryDataStore>();
+builder.Services.AddScoped<IServiceComplementaryQueries, ServiceComplementaryQueries>();
+
 // UseCases Subjects
 builder.Services.AddScoped<CreateSubjectUseCase>();
 builder.Services.AddScoped<UpdateSubjectUseCase>();
 builder.Services.AddScoped<SoftDeleteSubjectUseCase>();
 builder.Services.AddScoped<RestoreSubjectUseCase>();
+
+// UseCases de Service Complementary
+builder.Services.AddScoped<CreateServiceComplementaryUseCase>();
+builder.Services.AddScoped<UpdateServiceComplementaryUseCase>();
+builder.Services.AddScoped<SoftDeleteServiceComplementaryUseCase>();
+builder.Services.AddScoped<RestoreServiceComplementaryUseCase>();
 
 // UseCases de StudyPlanSubjects
 //builder.Services.AddScoped<CreateStudyPlanSubjectUseCase>();
