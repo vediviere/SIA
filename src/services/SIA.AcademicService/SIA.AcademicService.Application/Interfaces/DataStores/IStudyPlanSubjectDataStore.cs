@@ -7,7 +7,7 @@ public interface IStudyPlanSubjectDataStore
 {
     Task<bool> StudyPlanSubjectExistsAsync(Guid tenantId, Guid studyPlanId, Guid subjectId, CancellationToken cancellationToken);
 
-    Task<StudyPlanSubject?> GetStudyPlanSubjectByIdAsync(Guid tenantId, Guid studyPlanSubjectId, CancellationToken cancellationToken); // <-- Parámetro ajustado
+    Task<StudyPlanSubject?> GetStudyPlanSubjectByIdAsync(Guid tenantId, Guid studyPlanSubjectId, CancellationToken cancellationToken); 
 
     Task AddStudyPlanSubjectWithOutboxAsync(StudyPlanSubject studyPlanSubject, StudyPlanSubjectCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 
