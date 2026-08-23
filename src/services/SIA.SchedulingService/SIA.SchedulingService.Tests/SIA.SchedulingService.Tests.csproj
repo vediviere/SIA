@@ -24,9 +24,4 @@
     <ProjectReference Include="..\SIA.SchedulingService.Infrastructure\SIA.SchedulingService.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Infrastructure\Security\" />
-    <Folder Include="Infrastructure\Persistence\" />
-  </ItemGroup>
-
 </Project>
