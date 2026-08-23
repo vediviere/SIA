@@ -1,7 +1,4 @@
-﻿using SIA.AcademicService.Domain.Entities;
-using System;
-
-namespace SIA.AcademicService.Domain.Entities;
+﻿namespace SIA.AcademicService.Domain.Entities;
 
 public sealed class StudyPlanSubject
 {

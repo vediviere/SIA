@@ -1,36 +1,62 @@
-﻿/*
+﻿
 using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Application.Common.Exceptions;
 using SIA.AcademicService.Application.DTOs.StudyPlan;
+using SIA.AcademicService.Application.DTOs.StudyPlanSubjects;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
 using SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
 using SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
+using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Api.Controllers;
-
 
 [ApiController]
 [Route("api/study-plan-subjects")]
 public sealed class StudyPlanSubjectsController : ControllerBase
 {
-    private readonly CreateStudyPlanSubjectUseCase _createStudyPlanSubjectUseCase;
-    private readonly UpdateStudyPlanSubjectUseCase _updateStudyPlanSubjectUseCase;
-    private readonly DeleteStudyPlanSubjectUseCase _deleteStudyPlanSubjectUseCase;
-    private readonly RestoreStudyPlanSubjectUseCase _restoreStudyPlanSubjectUseCase;
-    private readonly IStudyPlanQueries _studyPlanQueries;
+    private readonly CreateStudyPlanSubjectUseCase _createUseCase;
+    private readonly UpdateStudyPlanSubjectUseCase _updateUseCase;
+    private readonly SoftDeleteStudyPlanSubjectUseCase _softDeleteUseCase;
+    private readonly RestoreStudyPlanSubjectUseCase _restoreUseCase;
+    private readonly IStudyPlanSubjectQueries _queries;
+    private readonly IStudyPlanQueries _studyPlanQueries; 
 
     public StudyPlanSubjectsController(
-        CreateStudyPlanSubjectUseCase createStudyPlanSubjectUseCase,
-        UpdateStudyPlanSubjectUseCase updateStudyPlanSubjectUseCase,
-        DeleteStudyPlanSubjectUseCase deleteStudyPlanSubjectUseCase,
-        RestoreStudyPlanSubjectUseCase restoreStudyPlanSubjectUseCase,
+        CreateStudyPlanSubjectUseCase createUseCase,
+        UpdateStudyPlanSubjectUseCase updateUseCase,
+        SoftDeleteStudyPlanSubjectUseCase softDeleteUseCase,
+        RestoreStudyPlanSubjectUseCase restoreUseCase,
+        IStudyPlanSubjectQueries queries,
         IStudyPlanQueries studyPlanQueries)
     {
-        _createStudyPlanSubjectUseCase = createStudyPlanSubjectUseCase;
-        _updateStudyPlanSubjectUseCase = updateStudyPlanSubjectUseCase;
-        _deleteStudyPlanSubjectUseCase = deleteStudyPlanSubjectUseCase;
-        _restoreStudyPlanSubjectUseCase = restoreStudyPlanSubjectUseCase;
+        _createUseCase = createUseCase;
+        _updateUseCase = updateUseCase;
+        _softDeleteUseCase = softDeleteUseCase;
+        _restoreUseCase = restoreUseCase;
+        _queries = queries;
         _studyPlanQueries = studyPlanQueries;
+    }
+
+    [HttpGet("Filter")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<StudyPlanSubject>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<StudyPlanSubject>>> SearchAsync(
+        [FromQuery] StudyPlanSubjectFilter filter,
+        CancellationToken cancellationToken)
+    {
+        var secureFilter = new StudyPlanSubjectFilter
+        {
+            TenantId = filter.TenantId,
+            StudyPlanId = filter.StudyPlanId,
+            SubjectId = filter.SubjectId,
+            IsRequired = filter.IsRequired,
+            Status = filter.Status,
+            Page = filter.Page,
+            PageSize = filter.PageSize
+        };
+
+        var results = await _queries.SearchAsync(secureFilter, cancellationToken);
+        return Ok(results);
     }
 
     [HttpGet("{tenantId:guid}/study-plan/{studyPlanId:guid}")]
@@ -44,6 +70,24 @@ public sealed class StudyPlanSubjectsController : ControllerBase
         return Ok(subjects);
     }
 
+    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [ProducesResponseType(typeof(StudyPlanSubject), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<StudyPlanSubject>> GetByIdAsync(
+        [FromRoute] Guid tenantId,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var result = await _queries.GetByIdAsync(tenantId, id, cancellationToken);
+
+        if (result == null)
+        {
+            throw new StudyPlanSubjectNotFoundException(id);
+        }
+
+        return Ok(result);
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(CreateStudyPlanSubjectResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -54,30 +98,11 @@ public sealed class StudyPlanSubjectsController : ControllerBase
     {
         var correlationId = ResolveCorrelationId();
 
-        try
-        {
-            var response = await _createStudyPlanSubjectUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        var response = await _createUseCase.ExecuteAsync(request, correlationId, cancellationToken);
 
-            return StatusCode(StatusCodes.Status201Created, response);
-        }
-        catch (InvalidOperationException exception)
-        {
-            return Conflict(new
-            {
-                message = exception.Message,
-                correlationId
-            });
-        }
-        catch (ArgumentException exception)
-        {
-            return BadRequest(new
-            {
-                message = exception.Message,
-                correlationId
-            });
-        }
+        return StatusCode(StatusCodes.Status201Created, response);
     }
 
     [HttpPut("{tenantId:guid}/{id:guid}")]
@@ -92,25 +117,17 @@ public sealed class StudyPlanSubjectsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-        try
-        {
-            var response = await _updateStudyPlanSubjectUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
 
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
-            return Ok(response);
-        }
-        catch (InvalidOperationException exception) when (exception.Message.Contains("asignada") || exception.Message.Contains("existe"))
-        {
-            return Conflict(new { message = exception.Message, correlationId });
-        }
-        catch (InvalidOperationException exception)
-        {
-            return NotFound(new { message = exception.Message, correlationId });
-        }
-        catch (ArgumentException exception)
-        {
-            return BadRequest(new { message = exception.Message, correlationId });
-        }
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var response = await _updateUseCase.ExecuteAsync(
+            tenantId,
+            id,
+            request,
+            correlationId,
+            cancellationToken);
+
+        return Ok(response);
     }
 
     [HttpDelete("{tenantId:guid}/{id:guid}")]
@@ -123,26 +140,11 @@ public sealed class StudyPlanSubjectsController : ControllerBase
     {
         var correlationId = ResolveCorrelationId();
 
-        try
-        {
-            var request = new DeleteStudyPlanSubjectRequest
-            {
-                TenantId = tenantId,
-                Id = id
-            };
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-            await _deleteStudyPlanSubjectUseCase.ExecuteAsync(request, correlationId, cancellationToken);
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
-            return NoContent();
-        }
-        catch (InvalidOperationException exception)
-        {
-            return NotFound(new
-            {
-                message = exception.Message,
-                correlationId
-            });
-        }
+        await _softDeleteUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+
+        return NoContent();
     }
 
     [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
@@ -155,23 +157,11 @@ public sealed class StudyPlanSubjectsController : ControllerBase
     {
         var correlationId = ResolveCorrelationId();
 
-        try
-        {
-            var request = new RestoreStudyPlanSubjectRequest
-            {
-                TenantId = tenantId,
-                Id = id
-            };
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-            await _restoreStudyPlanSubjectUseCase.ExecuteAsync(request, correlationId, cancellationToken);
-            Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+        await _restoreUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
-            return NoContent();
-        }
-        catch (InvalidOperationException exception)
-        {
-            return NotFound(new { message = exception.Message, correlationId });
-        }
+        return NoContent();
     }
 
     private Guid ResolveCorrelationId()
@@ -186,4 +176,3 @@ public sealed class StudyPlanSubjectsController : ControllerBase
         return Guid.NewGuid();
     }
 }
-*/

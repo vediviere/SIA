@@ -1,20 +1,13 @@
-﻿/*
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
 
-public sealed class CreateStudyPlanSubjectRequest
+public sealed record CreateStudyPlanSubjectRequest
 {
-    public Guid TenantId { get; set; }
-
-    public Guid StudyPlanId { get; set; }
-
-    public Guid SubjectId { get; init; }
-
-    public int Semester { get; init; }
-
-    public int Credits { get; init; }
-
-    public bool IsRequired { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid StudyPlanId { get; init; }
+    public required Guid SubjectId { get; init; }
+    public required int Semester { get; init; }
+    public required int Credits { get; init; }
+    public required bool IsRequired { get; init; }
 }
-*/
