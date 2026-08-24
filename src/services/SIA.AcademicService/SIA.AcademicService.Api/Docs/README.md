@@ -9,12 +9,12 @@ ___
 ## Contexto
 
 AcademicService administra la estructura académica de la institución, incluyendo:
-•	AcademicPeriod 
-•	EducationalProgram 
-•	StudyPlan 
-•	StudyPlanSubject 
-•	Subject 
-•	ServiceComplementary 
+-	AcademicPeriod 
+-	EducationalProgram 
+-	StudyPlan 
+-	StudyPlanSubject 
+-	Subject 
+-	ServiceComplementary 
 Subject representa el catálogo de materias y debe poder reutilizarse en diferentes planes de estudio sin duplicar el registro de la materia.
 StudyPlanSubject representa la participación de una materia dentro de un determinado StudyPlan.
 ___
@@ -37,6 +37,8 @@ ___
 El prerrequisito deberá pertenecer al contexto de StudyPlanSubject.
 No se deberá agregar el prerrequisito directamente a Subject, debido a que una misma materia puede participar en diferentes planes de estudio y su relación académica puede depender de dicho contexto.
 La estructura conceptual es:
+
+```
 Subject
    │
    │
@@ -47,6 +49,7 @@ StudyPlanSubject
    ├── Semester
    ├── IsRequired
    └── Prerequisite
+```
 De esta manera, una misma materia puede participar en diferentes planes sin duplicar el registro de Subject.
 ___
 
@@ -54,6 +57,8 @@ ___
 
 StudyPlanSubject deberá permitir identificar la materia de la cual depende académicamente.
 Conceptualmente:
+
+```
 Materia dependiente
         │
         ▼
@@ -62,6 +67,7 @@ Ejemplo:
 Cálculo Integral
         │
         └── depende de ──→ Cálculo Diferencial
+```
 La referencia deberá realizarse utilizando el identificador de la participación correspondiente dentro del StudyPlan.
 Esto permite que la relación permanezca dentro del contexto del plan y evita depender de una relación global entre Subject.
 
@@ -82,6 +88,7 @@ ___
 El semestre y el prerrequisito son conceptos independientes.
 El hecho de que una materia normalmente se encuentre en un semestre determinado no significa que automáticamente sea prerrequisito de una materia de un semestre posterior.
 Por ejemplo:
+```
 Semestre 1
 Cálculo Diferencial
 
@@ -91,6 +98,7 @@ puede existir la relación:
 Cálculo Diferencial
         ↓
 Cálculo Integral
+```
 pero el sistema no deberá inferir automáticamente la relación solamente a partir del número de semestre.
 Esto es importante debido a que la estructura de un plan de estudios puede permitir movimientos de materias entre semestres siempre que se respeten las relaciones académicas correspondientes.
 ___
@@ -102,11 +110,15 @@ Ejemplo:
 Subject
 Cálculo Diferencial
 puede participar en:
+
+```
 StudyPlanSubject
         │
         ├── Plan ISIC-2010-224
         │
         └── Otro StudyPlan
+```
+
 La relación de prerrequisito deberá establecerse sobre la participación de la materia dentro del plan (StudyPlanSubject) y no sobre Subject.
 Esto evita duplicar materias únicamente porque participan en diferentes planes de estudio.
 
@@ -118,6 +130,7 @@ Una materia solamente podrá depender de otra materia que participe en el mismo 
 Ejemplo válido:
 ISIC-2010-224
 
+```
 Cálculo Diferencial
         ↓
 Cálculo Integral
@@ -128,6 +141,8 @@ Cálculo Diferencial
 Plan B
 Cálculo Integral
 como un prerrequisito.
+```
+
 El prerrequisito es una regla interna de la estructura académica de un plan.
 ___
 
@@ -135,9 +150,14 @@ ___
 
 No deberá ser posible registrar dos veces la misma relación de dependencia dentro de un mismo StudyPlan.
 Ejemplo:
+
+```
 Cálculo Diferencial
         ↓
 Cálculo Integral
+
+```
+
 no deberá registrarse nuevamente para el mismo contexto.
 La combinación que representa la relación deberá mantenerse única considerando el contexto correspondiente, incluyendo TenantId.
 ___
@@ -161,8 +181,8 @@ ___
 
 ServiceComplementary forma parte de la estructura de un StudyPlan, pero no representa una materia.
 Puede representar conceptos académicos como:
-•	Actividades complementarias. 
-•	Servicio social. 
+-	Actividades complementarias. 
+-	Servicio social. 
 Estas actividades cuentan con reglas de créditos propias y no deberán modelarse como Subject únicamente para reutilizar la estructura de materias.
 Por lo tanto, ServiceComplementary queda fuera de la relación de prerrequisitos definida en esta tarea.
 El estudiante podrá posteriormente requerir cumplir estas condiciones dentro de su trayectoria académica, pero dicha validación pertenece a otros procesos y no forma parte de ACAD-15.
@@ -171,26 +191,28 @@ ___
 
 ## Fuera de alcance
 Esta tarea NO contempla:
-•	Estudiantes. 
-•	Inscripción. 
-•	Reinscripción. 
-•	Historial académico. 
-•	Calificaciones. 
-•	Aprobación de materias por estudiantes. 
-•	Validación de avance reticular. 
-•	Validación de cumplimiento de prerrequisitos por estudiantes. 
-•	Oferta académica. 
-•	Grupos. 
-•	Horarios. 
-•	Carga académica. 
-•	Servicio social como proceso operativo. 
-•	Actividades complementarias como proceso operativo. 
+-	Estudiantes. 
+-	Inscripción. 
+-	Reinscripción. 
+-	Historial académico. 
+-	Calificaciones. 
+-	Aprobación de materias por estudiantes. 
+-	Validación de avance reticular. 
+-	Validación de cumplimiento de prerrequisitos por estudiantes. 
+-	Oferta académica. 
+-	Grupos. 
+-	Horarios. 
+-	Carga académica. 
+-	Servicio social como proceso operativo. 
+-	Actividades complementarias como proceso operativo. 
 La responsabilidad de esta tarea se limita a definir cómo representar la estructura académica de dependencia entre materias.
 
 ___
 
 ## Modelo funcional propuesto
 Conceptualmente:
+
+```
 StudyPlan
     │
     ├── StudyPlanSubject
@@ -216,23 +238,24 @@ StudyPlan: ISIC-2010-224
                 Subject: Cálculo Integral
                 Semester: 2
                 IsRequired: true
+```
 ___
 
 ## Reglas funcionales
-1.	Un prerrequisito representa una dependencia académica entre materias. 
-2.	La dependencia pertenece al contexto de StudyPlanSubject. 
-3.	Subject debe permanecer reutilizable entre diferentes planes de estudio. 
-4.	El prerrequisito no deberá definirse como una propiedad global de Subject. 
-5.	IsRequired indica que la materia depende de otra materia. 
-6.	Cuando IsRequired = true, deberá existir una materia requerida asociada. 
-7.	Cuando IsRequired = false, la materia no deberá tener una dependencia de prerrequisito. 
-8.	La materia requerida y la materia dependiente deberán pertenecer al mismo StudyPlan. 
-9.	Una materia no podrá depender de sí misma. 
-10.	No deberán existir relaciones duplicadas.   
-11.	El modelo deberá respetar TenantId. 
-12.	El semestre no deberá utilizarse para inferir automáticamente prerrequisitos. 
-13.	Una materia podrá tener múltiples prerrequisitos, sujeto a las reglas académicas que posteriormente se definan. 
-14.	No se incorporarán estudiantes, inscripciones ni historial académico. 
-15.	AcademicService representa la estructura académica del prerrequisito, pero no determina si un estudiante cumple dicha condición.
+-	Un prerrequisito representa una dependencia académica entre materias. 
+-	La dependencia pertenece al contexto de StudyPlanSubject. 
+-	Subject debe permanecer reutilizable entre diferentes planes de estudio. 
+-	El prerrequisito no deberá definirse como una propiedad global de Subject. 
+-	IsRequired indica que la materia depende de otra materia. 
+-	Cuando IsRequired = true, deberá existir una materia requerida asociada. 
+-	Cuando IsRequired = false, la materia no deberá tener una dependencia de prerrequisito. 
+-	La materia requerida y la materia dependiente deberán pertenecer al mismo StudyPlan. 
+-	Una materia no podrá depender de sí misma. 
+-	No deberán existir relaciones duplicadas.   
+-	El modelo deberá respetar TenantId. 
+-	El semestre no deberá utilizarse para inferir automáticamente prerrequisitos. 
+-	Una materia podrá tener múltiples prerrequisitos, sujeto a las reglas académicas que posteriormente se definan. 
+	No se incorporarán estudiantes, inscripciones ni historial académico. 
+-	AcademicService representa la estructura académica del prerrequisito, pero no determina si un estudiante cumple dicha condición.
 
 
