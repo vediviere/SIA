@@ -11,10 +11,14 @@ public sealed class FakeSupportScheduleDataStore : ISupportScheduleDataStore
 {
     private readonly SupportSchedule? _existingSchedule;
 
-    public bool ScheduleAdded { get; private set; }
-    public bool ScheduleUpdated { get; private set; }
-    public bool ScheduleDeleted { get; private set; }
-    public bool ScheduleRestored { get; private set; }
+    public SupportSchedule? AddedSchedule { get; private set; }
+    public SupportScheduleCreatedIntegrationEvent? AddedEvent { get; private set; }
+    public SupportSchedule? UpdatedSchedule { get; private set; }
+    public SupportScheduleUpdatedIntegrationEvent? UpdatedEvent { get; private set; }
+    public SupportSchedule? DeletedSchedule { get; private set; }
+    public SupportScheduleDeletedIntegrationEvent? DeletedEvent { get; private set; }
+    public SupportSchedule? RestoredSchedule { get; private set; }
+    public SupportScheduleRestoredIntegrationEvent? RestoredEvent { get; private set; }
 
     public FakeSupportScheduleDataStore(SupportSchedule? existingSchedule = null)
     {
@@ -28,25 +32,29 @@ public sealed class FakeSupportScheduleDataStore : ISupportScheduleDataStore
 
     public Task AddSupportScheduleWithOutboxAsync(SupportSchedule supportSchedule, SupportScheduleCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ScheduleAdded = true;
+        AddedSchedule = supportSchedule;
+        AddedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task UpdateSupportScheduleWithOutboxAsync(SupportSchedule supportSchedule, SupportScheduleUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ScheduleUpdated = true;
+        UpdatedSchedule = supportSchedule;
+        UpdatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task SoftDeleteSupportScheduleWithOutboxAsync(SupportSchedule supportSchedule, SupportScheduleDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ScheduleDeleted = true;
+        DeletedSchedule = supportSchedule;
+        DeletedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task RestoreSupportScheduleWithOutboxAsync(SupportSchedule supportSchedule, SupportScheduleRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ScheduleRestored = true;
+        RestoredSchedule = supportSchedule;
+        RestoredEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }

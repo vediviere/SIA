@@ -29,7 +29,13 @@ public sealed class CreateDivisionHeadUseCaseTests
         Assert.Equal(personId, response.PersonId);
         Assert.True(response.Status);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.DivisionHeadAdded);
+        Assert.NotNull(dataStore.AddedDivisionHead);
+        Assert.Equal(programId, dataStore.AddedDivisionHead.ProgramId);
+        Assert.NotNull(dataStore.AddedEvent);
+        Assert.Equal(dataStore.AddedDivisionHead.Id, dataStore.AddedEvent.DivisionManagerId);
+        Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.AddedEvent.Version);
     }
 
     [Fact]
@@ -45,6 +51,7 @@ public sealed class CreateDivisionHeadUseCaseTests
             PersonId = Guid.NewGuid()
         }, Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.DivisionHeadAdded);
+        Assert.Null(dataStore.AddedDivisionHead);
+        Assert.Null(dataStore.AddedEvent);
     }
 }

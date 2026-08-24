@@ -14,16 +14,23 @@ public sealed class RestoreClassroomTypeUseCaseTests
     public async Task ExecuteAsync_WithValidId_ShouldRestoreClassroomType()
     {
         var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var existingType = new ClassroomType(tenantId, "LAB", "Lab", "Desc");
         existingType.SoftDelete();
 
         var dataStore = new FakeClassroomTypeDataStore(existingType);
         var useCase = new RestoreClassroomTypeUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingType.Id, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, existingType.Id, correlationId, CancellationToken.None);
 
         Assert.True(response.Status);
-        Assert.True(dataStore.ClassroomTypeRestored);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.RestoredType);
+        Assert.True(dataStore.RestoredType.Status);
+        Assert.NotNull(dataStore.RestoredEvent);
+        Assert.Equal(existingType.Id, dataStore.RestoredEvent.ClassroomTypeId);
+        Assert.Equal(correlationId, dataStore.RestoredEvent.CorrelationId);
+        Assert.Equal(1, dataStore.RestoredEvent.Version);
     }
 
     [Fact]
@@ -34,5 +41,8 @@ public sealed class RestoreClassroomTypeUseCaseTests
 
         await Assert.ThrowsAsync<ClassroomTypeNotFoundException>(() =>
             useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.RestoredType);
+        Assert.Null(dataStore.RestoredEvent);
     }
 }

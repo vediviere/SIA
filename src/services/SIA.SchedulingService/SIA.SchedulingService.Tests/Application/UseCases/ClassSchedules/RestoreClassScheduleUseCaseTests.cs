@@ -14,16 +14,23 @@ public sealed class RestoreClassScheduleUseCaseTests
     public async Task ExecuteAsync_WithValidId_ShouldRestoreClassSchedule()
     {
         var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var existingSchedule = new ClassSchedule(tenantId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "MARTES", DateTime.UtcNow, DateTime.UtcNow.AddHours(1));
         existingSchedule.SoftDelete();
 
         var dataStore = new FakeClassScheduleDataStore(existingSchedule);
         var useCase = new RestoreClassScheduleUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingSchedule.Id, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, existingSchedule.Id, correlationId, CancellationToken.None);
 
         Assert.True(response.Status);
-        Assert.True(dataStore.ScheduleRestored);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.RestoredSchedule);
+        Assert.True(dataStore.RestoredSchedule.Status);
+        Assert.NotNull(dataStore.RestoredEvent);
+        Assert.Equal(existingSchedule.Id, dataStore.RestoredEvent.ClassScheduleId);
+        Assert.Equal(correlationId, dataStore.RestoredEvent.CorrelationId);
+        Assert.Equal(1, dataStore.RestoredEvent.Version);
     }
 
     [Fact]
@@ -34,5 +41,8 @@ public sealed class RestoreClassScheduleUseCaseTests
 
         await Assert.ThrowsAsync<ClassScheduleNotFoundException>(() =>
             useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.RestoredSchedule);
+        Assert.Null(dataStore.RestoredEvent);
     }
 }

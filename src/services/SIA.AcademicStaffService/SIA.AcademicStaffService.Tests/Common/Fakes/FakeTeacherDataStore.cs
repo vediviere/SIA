@@ -9,10 +9,18 @@ public sealed class FakeTeacherDataStore : ITeacherDataStore
     public Teacher? TeacherById { get; set; }
     public bool PersonAlreadyProfessorResult { get; set; }
 
-    public bool TeacherAdded { get; private set; }
-    public bool TeacherUpdated { get; private set; }
-    public bool TeacherActivated { get; private set; }
-    public bool TeacherDeactivated { get; private set; }
+    public Teacher? AddedTeacher { get; private set; }
+    public TeacherCreatedIntegrationEvent? AddedEvent { get; private set; }
+
+    public Teacher? UpdatedTeacher { get; private set; }
+    public TeacherUpdatedIntegrationEvent? UpdatedEvent { get; private set; }
+
+    public Teacher? ActivatedTeacher { get; private set; }
+    public TeacherActivatedIntegrationEvent? ActivatedEvent { get; private set; }
+
+    public Teacher? DeactivatedTeacher { get; private set; }
+    public TeacherDeactivatedIntegrationEvent? DeactivatedEvent { get; private set; }
+
 
     public Task<bool> PersonAlreadyProfessorAsync(Guid tenantId, Guid personId, CancellationToken cancellationToken)
         => Task.FromResult(PersonAlreadyProfessorResult);
@@ -22,25 +30,29 @@ public sealed class FakeTeacherDataStore : ITeacherDataStore
 
     public Task AddProfessorWithOutboxAsync(Teacher teacher, TeacherCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        TeacherAdded = true;
+        AddedTeacher = teacher;
+        AddedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task UpdateProfessorWithOutboxAsync(Teacher teacher, TeacherUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        TeacherUpdated = true;
+        UpdatedTeacher = teacher;
+        UpdatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task ActivateProfessorWithOutboxAsync(Teacher teacher, TeacherActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        TeacherActivated = true;
+        ActivatedTeacher = teacher;
+        ActivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task DeactivateProfessorWithOutboxAsync(Teacher teacher, TeacherDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        TeacherDeactivated = true;
+        DeactivatedTeacher = teacher;
+        DeactivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }

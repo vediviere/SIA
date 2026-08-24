@@ -1,26 +1,15 @@
-﻿/*
-namespace SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
+﻿namespace SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
 
-public sealed class CreateStudyPlanSubjectResponse
+public sealed record CreateStudyPlanSubjectResponse
 {
-    public Guid Id { get; init; }
-
-    public Guid TenantId { get; init; }
-
-    public Guid StudyPlanId { get; init; }
-
-    public Guid SubjectId { get; init; }
-
-    public int Semester { get; init; }
-
-    public int Credits { get; init; }
-
-    public bool IsRequired { get; init; }
-
-    public bool Status { get; init; }
-
-    public DateTime CreatedAtUtc { get; init; }
-
-    public Guid CorrelationId { get; init; }
+    public required Guid Id { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid StudyPlanId { get; init; }
+    public required Guid SubjectId { get; init; }
+    public required int Semester { get; init; }
+    public required int Credits { get; init; }
+    public required bool IsRequired { get; init; }
+    public required bool Status { get; init; }
+    public required DateTime CreatedAtUtc { get; init; }
+    public required Guid CorrelationId { get; init; }
 }
-*/

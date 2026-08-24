@@ -13,12 +13,14 @@ public sealed class CreateClassroomLabUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithValidData_ShouldCreateClassroomLab()
     {
+        var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var dataStore = new FakeClassroomLabDataStore();
         var useCase = new CreateClassroomLabUseCase(dataStore);
 
         var request = new CreateClassroomLabRequest
         {
-            TenantId = Guid.NewGuid(),
+            TenantId = tenantId,
             BuildingId = Guid.NewGuid(),
             ClassroomTypeId = Guid.NewGuid(),
             Code = "LAB-01",
@@ -27,11 +29,18 @@ public sealed class CreateClassroomLabUseCaseTests
             Description = "Desc"
         };
 
-        var response = await useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, response.Id);
-        Assert.Equal("LAB-01", response.Code);
-        Assert.True(dataStore.ClassroomLabAdded);
+        Assert.Equal(tenantId, response.TenantId);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.AddedClassroomLab);
+        Assert.Equal("LAB-01", dataStore.AddedClassroomLab.Code);
+        Assert.NotNull(dataStore.AddedEvent);
+        Assert.Equal(response.Id, dataStore.AddedEvent.ClassroomLabId);
+        Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.AddedEvent.Version);
     }
 
     [Fact]
@@ -52,5 +61,8 @@ public sealed class CreateClassroomLabUseCaseTests
 
         await Assert.ThrowsAsync<DuplicateClassroomLabCodeException>(() =>
             useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.AddedClassroomLab);
+        Assert.Null(dataStore.AddedEvent);
     }
 }

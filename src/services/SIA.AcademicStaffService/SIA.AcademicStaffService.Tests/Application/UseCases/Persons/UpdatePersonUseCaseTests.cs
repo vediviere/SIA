@@ -12,6 +12,7 @@ public sealed class UpdatePersonUseCaseTests
     public async Task ExecuteAsync_WithValidData_ShouldUpdatePerson()
     {
         var person = new Person(Guid.NewGuid(), "EMP-0001", "Ana", "García", "López", "Maestría", "ana@example.com", "7821234567");
+        var correlationId = Guid.NewGuid();
         var dataStore = new FakePersonDataStore { PersonById = person };
         var useCase = new UpdatePersonUseCase(dataStore);
 
@@ -27,13 +28,18 @@ public sealed class UpdatePersonUseCaseTests
                 Email = "nueva@example.com",
                 Phone = "7820000000"
             },
-            Guid.NewGuid(),
+            correlationId,
             CancellationToken.None);
 
         Assert.Equal("Ana María", response.FirstName);
         Assert.Equal("Doctorado", response.AcademicDegree);
         Assert.Equal("nueva@example.com", response.Email);
-        Assert.True(dataStore.PersonUpdated);
+        Assert.NotNull(dataStore.UpdatedPerson);
+        Assert.Equal("Doctorado", dataStore.UpdatedPerson.AcademicDegree);
+        Assert.NotNull(dataStore.UpdatedEvent);
+        Assert.Equal(person.Id, dataStore.UpdatedEvent.PersonId);
+        Assert.Equal(person.TenantId, dataStore.UpdatedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.UpdatedEvent.CorrelationId);
     }
 
     [Fact]
@@ -57,6 +63,7 @@ public sealed class UpdatePersonUseCaseTests
             Guid.NewGuid(),
             CancellationToken.None));
 
-        Assert.False(dataStore.PersonUpdated);
+        Assert.Null(dataStore.UpdatedPerson);
+        Assert.Null(dataStore.UpdatedEvent);
     }
 }

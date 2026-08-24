@@ -31,7 +31,14 @@ public sealed class CreatePersonUseCaseTests
         Assert.Equal("EMP-0001", response.EmployeeNumber);
         Assert.True(response.Status);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.PersonAdded);
+        Assert.NotNull(dataStore.AddedPerson);
+        Assert.Equal("EMP-0001", dataStore.AddedPerson.EmployeeNumber);
+        Assert.Equal(tenantId, dataStore.AddedPerson.TenantId);
+        Assert.NotNull(dataStore.AddedEvent);
+        Assert.Equal(dataStore.AddedPerson.Id, dataStore.AddedEvent.PersonId);
+        Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.AddedEvent.Version);
     }
 
     [Fact]
@@ -52,6 +59,7 @@ public sealed class CreatePersonUseCaseTests
             Phone = "7821234567"
         }, Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.PersonAdded);
+        Assert.Null(dataStore.AddedPerson);
+        Assert.Null(dataStore.AddedEvent);
     }
 }

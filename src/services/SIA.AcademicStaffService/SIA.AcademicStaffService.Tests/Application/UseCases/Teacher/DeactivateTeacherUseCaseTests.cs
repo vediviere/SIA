@@ -11,14 +11,20 @@ public sealed class DeactivateTeacherUseCaseTests
     public async Task ExecuteAsync_WithExistingTeacher_ShouldDeactivate()
     {
         var teacher = new Teacher(Guid.NewGuid(), Guid.NewGuid(), "Perfil", "Tipo", 40);
+        var correlationId = Guid.NewGuid();
 
         var dataStore = new FakeTeacherDataStore { TeacherById = teacher };
         var useCase = new DeactivateTeacherUseCase(dataStore);
 
-        await useCase.ExecuteAsync(teacher.TenantId, teacher.Id, Guid.NewGuid(), CancellationToken.None);
+        await useCase.ExecuteAsync(teacher.TenantId, teacher.Id, correlationId, CancellationToken.None);
 
         Assert.False(teacher.Status);
-        Assert.True(dataStore.TeacherDeactivated);
+        Assert.NotNull(dataStore.DeactivatedTeacher);
+        Assert.Equal(teacher.Id, dataStore.DeactivatedTeacher.Id);
+        Assert.NotNull(dataStore.DeactivatedEvent);
+        Assert.Equal(teacher.Id, dataStore.DeactivatedEvent.ProfessorId);
+        Assert.Equal(teacher.TenantId, dataStore.DeactivatedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.DeactivatedEvent.CorrelationId);
     }
 
     [Fact]
@@ -29,6 +35,7 @@ public sealed class DeactivateTeacherUseCaseTests
 
         await Assert.ThrowsAsync<TeacherNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.TeacherDeactivated);
+        Assert.Null(dataStore.DeactivatedTeacher);
+        Assert.Null(dataStore.DeactivatedEvent);
     }
 }

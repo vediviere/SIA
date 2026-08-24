@@ -13,22 +13,31 @@ public sealed class CreateClassroomTypeUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WithValidData_ShouldCreateClassroomType()
     {
+        var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var dataStore = new FakeClassroomTypeDataStore();
         var useCase = new CreateClassroomTypeUseCase(dataStore);
 
         var request = new CreateClassroomTypeRequest
         {
-            TenantId = Guid.NewGuid(),
+            TenantId = tenantId,
             Code = "LAB-COMP",
             Name = "Laboratorio de Cómputo",
             Description = "Desc"
         };
 
-        var response = await useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, response.Id);
-        Assert.Equal("LAB-COMP", response.Code);
-        Assert.True(dataStore.ClassroomTypeAdded);
+        Assert.Equal(tenantId, response.TenantId);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.AddedType);
+        Assert.Equal("LAB-COMP", dataStore.AddedType.Code);
+        Assert.NotNull(dataStore.AddedEvent);
+        Assert.Equal(response.Id, dataStore.AddedEvent.ClassroomTypeId);
+        Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.AddedEvent.Version);
     }
 
     [Fact]
@@ -47,5 +56,8 @@ public sealed class CreateClassroomTypeUseCaseTests
 
         await Assert.ThrowsAsync<DuplicateClassroomTypeNameException>(() =>
             useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.AddedType);
+        Assert.Null(dataStore.AddedEvent);
     }
 }

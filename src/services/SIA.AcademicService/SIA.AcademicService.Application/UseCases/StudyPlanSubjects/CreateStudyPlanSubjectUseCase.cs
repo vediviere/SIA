@@ -1,8 +1,8 @@
-﻿/*
+﻿using SIA.AcademicService.Application.Common.Exceptions;
+using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 using SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
 using SIA.AcademicService.Contracts.Responses.StudyPlanSubjects;
-using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Domain.Entities;
 
 namespace SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
@@ -29,7 +29,7 @@ public sealed class CreateStudyPlanSubjectUseCase
 
         if (relationExists)
         {
-            throw new InvalidOperationException("La materia ya se encuentra asignada a este plan de estudios.");
+            throw new DuplicateStudyPlanSubjectException();
         }
 
         var studyPlanSubject = new StudyPlanSubject(
@@ -73,5 +73,3 @@ public sealed class CreateStudyPlanSubjectUseCase
         };
     }
 }
-
-*/
