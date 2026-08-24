@@ -4,17 +4,17 @@ using System.Text;
 
 namespace SIA.SchedulingService.Contracts.Responses.SupportSchedules;
 
-public sealed class CreateSupportScheduleResponse
+public sealed record CreateSupportScheduleResponse
 {
-    public Guid Id { get; init; }
-    public Guid TenantId { get; init; }
-    public Guid SupportHourId { get; init; }
-    public Guid ClassroomLabId { get; init; }
-    public Guid AcademicPeriodId { get; init; }
-    public string Day { get; init; } = string.Empty;
-    public DateTime StartTime { get; init; }
-    public DateTime EndTime { get; init; }
-    public bool Status { get; init; }
-    public DateTime CreatedAtUtc { get; init; }
-    public Guid CorrelationId { get; init; }
+    public required Guid Id { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid SupportHourId { get; init; }
+    public required Guid ClassroomLabId { get; init; }
+    public required Guid AcademicPeriodId { get; init; }
+    public required string Day { get; init; }
+    public required DateTime StartTime { get; init; }
+    public required DateTime EndTime { get; init; }
+    public required bool Status { get; init; }
+    public required DateTime CreatedAtUtc { get; init; }
+    public required Guid CorrelationId { get; init; }
 }

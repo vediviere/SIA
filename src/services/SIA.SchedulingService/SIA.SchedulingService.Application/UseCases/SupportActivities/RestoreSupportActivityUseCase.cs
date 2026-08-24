@@ -17,7 +17,7 @@ public sealed class RestoreSupportActivityUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<RestoreSupportActivityResponse> ExecuteAsync(
+    public async Task ExecuteAsync(
         Guid tenantId,
         Guid supportActivityId,
         Guid correlationId,
@@ -44,13 +44,5 @@ public sealed class RestoreSupportActivityUseCase
         };
 
         await _dataStore.RestoreSupportActivityWithOutboxAsync(supportActivity, integrationEvent, cancellationToken);
-
-        return new RestoreSupportActivityResponse
-        {
-            Id = supportActivity.Id,
-            Status = supportActivity.Status,
-            UpdatedAtUtc = supportActivity.UpdatedAtUtc,
-            CorrelationId = correlationId
-        };
     }
 }

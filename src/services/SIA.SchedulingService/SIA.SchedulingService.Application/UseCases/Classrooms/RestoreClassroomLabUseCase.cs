@@ -1,7 +1,6 @@
 ﻿using SIA.SchedulingService.Application.Common.Exceptions.ClassroomLab;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
-using SIA.SchedulingService.Contracts.Responses.Classrooms;
 
 
 namespace SIA.SchedulingService.Application.UseCases.Classrooms;
@@ -15,7 +14,7 @@ public sealed class RestoreClassroomLabUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<RestoreClassroomLabResponse> ExecuteAsync(
+    public async Task ExecuteAsync(
         Guid tenantId,
         Guid classroomLabId,
         Guid correlationId,
@@ -42,13 +41,5 @@ public sealed class RestoreClassroomLabUseCase
         };
 
         await _dataStore.RestoreClassroomLabWithOutboxAsync(classroomLab, integrationEvent, cancellationToken);
-
-        return new RestoreClassroomLabResponse
-        {
-            Id = classroomLab.Id,
-            Status = classroomLab.Status,
-            UpdatedAtUtc = classroomLab.UpdatedAtUtc,
-            CorrelationId = correlationId
-        };
     }
 }

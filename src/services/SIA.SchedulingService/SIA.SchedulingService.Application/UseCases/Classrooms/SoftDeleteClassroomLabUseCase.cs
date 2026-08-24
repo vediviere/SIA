@@ -1,7 +1,6 @@
 ﻿using SIA.SchedulingService.Application.Common.Exceptions.ClassroomLab;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
-using SIA.SchedulingService.Contracts.Responses.Classrooms;
 
 
 
@@ -16,7 +15,7 @@ public sealed class SoftDeleteClassroomLabUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<SoftDeleteClassroomLabResponse> ExecuteAsync(
+    public async Task ExecuteAsync(
         Guid tenantId,
         Guid classroomLabId,
         Guid correlationId,
@@ -43,13 +42,5 @@ public sealed class SoftDeleteClassroomLabUseCase
         };
 
         await _dataStore.SoftDeleteClassroomLabWithOutboxAsync(classroomLab, integrationEvent, cancellationToken);
-
-        return new SoftDeleteClassroomLabResponse
-        {
-            Id = classroomLab.Id,
-            Status = classroomLab.Status,
-            UpdatedAtUtc = classroomLab.UpdatedAtUtc,
-            CorrelationId = correlationId
-        };
     }
 }

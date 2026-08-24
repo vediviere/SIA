@@ -14,7 +14,7 @@ public sealed class RestoreClassroomTypeUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<RestoreClassroomTypeResponse> ExecuteAsync(
+    public async Task ExecuteAsync(
         Guid tenantId,
         Guid classroomTypeId,
         Guid correlationId,
@@ -41,13 +41,5 @@ public sealed class RestoreClassroomTypeUseCase
         };
 
         await _dataStore.RestoreClassroomTypeWithOutboxAsync(classroomType, integrationEvent, cancellationToken);
-
-        return new RestoreClassroomTypeResponse
-        {
-            Id = classroomType.Id,
-            Status = classroomType.Status,
-            UpdatedAtUtc = classroomType.UpdatedAtUtc,
-            CorrelationId = correlationId
-        };
     }
 }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace SIA.SchedulingService.Contracts.Responses.SupportActivity;
 
-namespace SIA.SchedulingService.Contracts.Responses.SupportActivity;
-
-public sealed class CreateSupportActivityResponse
+public sealed record CreateSupportActivityResponse
 {
-    public Guid Id { get; init; }
-    public Guid TenantId { get; init; }
-    public string Activity { get; init; } = string.Empty;
-    public string Observation { get; init; } = string.Empty;
-    public bool Status { get; init; }
-    public DateTime CreatedAtUtc { get; init; }
-    public Guid CorrelationId { get; init; }
+    public required Guid Id { get; init; }
+    public required Guid TenantId { get; init; }
+    public required string Activity { get; init; }
+    public required string Observation { get; init; }
+    public required bool Status { get; init; }
+    public required DateTime CreatedAtUtc { get; init; }
+    public required Guid CorrelationId { get; init; }
 }

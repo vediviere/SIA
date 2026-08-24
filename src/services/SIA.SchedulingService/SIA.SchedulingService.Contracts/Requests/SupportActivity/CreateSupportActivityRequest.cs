@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace SIA.SchedulingService.Contracts.Requests.SupportActivity;
 
-namespace SIA.SchedulingService.Contracts.Requests.SupportActivity;
-
-public sealed class CreateSupportActivityRequest
+public sealed record CreateSupportActivityRequest
 {
-    public Guid TenantId { get; init; }
-    public string Activity { get; init; } = string.Empty;
-    public string Observation { get; init; } = string.Empty;
+    public required Guid TenantId { get; init; }
+    public required string Activity { get; init; }
+    public required string Observation { get; init; }
 }

@@ -2,15 +2,15 @@
 
 public sealed class CreateClassroomLabResponse
 {
-    public Guid Id { get; init; }
-    public Guid TenantId { get; init; }
-    public Guid BuildingId { get; init; }
-    public Guid ClassroomTypeId { get; init; }
-    public string Code { get; init; } = string.Empty;
-    public string Name { get; init; } = string.Empty;
-    public int Capacity { get; init; }
-    public string Description { get; init; } = string.Empty;
-    public bool Status { get; init; }
-    public DateTime CreatedAtUtc { get; init; }
-    public Guid CorrelationId { get; init; }
+    public required Guid Id { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid BuildingId { get; init; }
+    public required Guid ClassroomTypeId { get; init; }
+    public required string Code { get; init; }
+    public required string Name { get; init; }
+    public required int Capacity { get; init; }
+    public required string Description { get; init; }
+    public required bool Status { get; init; }
+    public required DateTime CreatedAtUtc { get; init; }
+    public required Guid CorrelationId { get; init; }
 }
