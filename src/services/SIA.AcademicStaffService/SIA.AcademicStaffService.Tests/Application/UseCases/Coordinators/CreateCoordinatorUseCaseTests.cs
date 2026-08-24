@@ -26,7 +26,13 @@ public sealed class CreateCoordinatorUseCaseTests
         Assert.Equal(personId, response.PersonId);
         Assert.True(response.Status);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.CoordinatorAdded);
+        Assert.NotNull(dataStore.AddedCoordinator);
+        Assert.Equal(personId, dataStore.AddedCoordinator.PersonId);
+        Assert.NotNull(dataStore.AddedEvent);
+        Assert.Equal(dataStore.AddedCoordinator.Id, dataStore.AddedEvent.CoordinatorId);
+        Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.AddedEvent.Version);
     }
 
     [Fact]
@@ -41,6 +47,7 @@ public sealed class CreateCoordinatorUseCaseTests
             PersonId = Guid.NewGuid()
         }, Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.CoordinatorAdded);
+        Assert.Null(dataStore.AddedCoordinator);
+        Assert.Null(dataStore.AddedEvent);
     }
 }

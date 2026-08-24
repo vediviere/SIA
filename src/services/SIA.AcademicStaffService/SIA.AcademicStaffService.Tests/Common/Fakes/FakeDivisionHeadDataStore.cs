@@ -9,9 +9,15 @@ public sealed class FakeDivisionHeadDataStore : IDivisionHeadDataStore
     public DivisionHead? DivisionHeadById { get; set; }
     public bool PersonAlreadyManagesProgramResult { get; set; }
 
-    public bool DivisionHeadAdded { get; private set; }
-    public bool DivisionHeadActivated { get; private set; }
-    public bool DivisionHeadDeactivated { get; private set; }
+    public DivisionHead? AddedDivisionHead { get; private set; }
+    public DivisionHeadCreatedIntegrationEvent? AddedEvent { get; private set; }
+
+    public DivisionHead? ActivatedDivisionHead { get; private set; }
+    public DivisionHeadActivatedIntegrationEvent? ActivatedEvent { get; private set; }
+
+    public DivisionHead? DeactivatedDivisionHead { get; private set; }
+    public DivisionHeadDeactivatedIntegrationEvent? DeactivatedEvent { get; private set; }
+
 
     public Task<bool> PersonAlreadyManagesProgramAsync(Guid tenantId, Guid programId, Guid personId, CancellationToken cancellationToken)
         => Task.FromResult(PersonAlreadyManagesProgramResult);
@@ -21,19 +27,22 @@ public sealed class FakeDivisionHeadDataStore : IDivisionHeadDataStore
 
     public Task AddDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        DivisionHeadAdded = true;
+        AddedDivisionHead = divisionHead;
+        AddedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task ActivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        DivisionHeadActivated = true;
+        ActivatedDivisionHead = divisionHead;
+        ActivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task DeactivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        DivisionHeadDeactivated = true;
+        DeactivatedDivisionHead = divisionHead;
+        DeactivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }

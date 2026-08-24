@@ -11,14 +11,21 @@ public sealed class DeactivateCoordinatorUseCaseTests
     public async Task ExecuteAsync_WithExistingCoordinator_ShouldDeactivate()
     {
         var coordinator = new Coordinator(Guid.NewGuid(), Guid.NewGuid());
+        var correlationId = Guid.NewGuid();
 
         var dataStore = new FakeCoordinatorDataStore { CoordinatorById = coordinator };
         var useCase = new DeactivateCoordinatorUseCase(dataStore);
 
-        await useCase.ExecuteAsync(coordinator.TenantId, coordinator.Id, Guid.NewGuid(), CancellationToken.None);
+        await useCase.ExecuteAsync(coordinator.TenantId, coordinator.Id, correlationId, CancellationToken.None);
 
         Assert.False(coordinator.Status);
-        Assert.True(dataStore.CoordinatorDeactivated);
+        Assert.NotNull(dataStore.DeactivatedCoordinator);
+        Assert.Equal(coordinator.Id, dataStore.DeactivatedCoordinator.Id);
+        Assert.NotNull(dataStore.DeactivatedEvent);
+        Assert.Equal(coordinator.Id, dataStore.DeactivatedEvent.CoordinatorId);
+        Assert.Equal(coordinator.TenantId, dataStore.DeactivatedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.DeactivatedEvent.CorrelationId);
+
     }
 
     [Fact]
@@ -29,6 +36,7 @@ public sealed class DeactivateCoordinatorUseCaseTests
 
         await Assert.ThrowsAsync<CoordinatorNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.CoordinatorDeactivated);
+        Assert.Null(dataStore.DeactivatedCoordinator);
+        Assert.Null(dataStore.DeactivatedEvent);
     }
 }

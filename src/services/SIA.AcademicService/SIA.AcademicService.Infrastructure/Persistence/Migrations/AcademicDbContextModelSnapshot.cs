@@ -132,6 +132,43 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Migrations
                     b.ToTable("EducationalPrograms", (string)null);
                 });
 
+            modelBuilder.Entity("SIA.AcademicService.Domain.Entities.ServiceComplementary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ComplementaryCreditId");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Credit")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("StudyPlanId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Type")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudyPlanId");
+
+                    b.ToTable("ServiceComplementary", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_ServiceComplementary_Credit_Positive", "[Credit] > 0");
+                        });
+                });
+
             modelBuilder.Entity("SIA.AcademicService.Domain.Entities.StudyPlan", b =>
                 {
                     b.Property<Guid>("Id")
@@ -335,6 +372,17 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Migrations
                     b.HasIndex("ProcessedAtUtc", "DeadLetteredAtUtc", "NextAttemptAtUtc");
 
                     b.ToTable("OutboxMessages", (string)null);
+                });
+
+            modelBuilder.Entity("SIA.AcademicService.Domain.Entities.ServiceComplementary", b =>
+                {
+                    b.HasOne("SIA.AcademicService.Domain.Entities.StudyPlan", "StudyPlan")
+                        .WithMany()
+                        .HasForeignKey("StudyPlanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("StudyPlan");
                 });
 
             modelBuilder.Entity("SIA.AcademicService.Domain.Entities.StudyPlan", b =>

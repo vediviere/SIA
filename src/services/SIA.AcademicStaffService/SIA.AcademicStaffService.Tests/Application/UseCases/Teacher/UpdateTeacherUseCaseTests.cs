@@ -12,6 +12,7 @@ public sealed class UpdateTeacherUseCaseTests
     public async Task ExecuteAsync_WithValidData_ShouldUpdateTeacher()
     {
         var teacher = new Teacher(Guid.NewGuid(), Guid.NewGuid(), "Perfil viejo", "Tipo viejo", 20);
+        var correlationId = Guid.NewGuid();
         var dataStore = new FakeTeacherDataStore { TeacherById = teacher };
         var useCase = new UpdateTeacherUseCase(dataStore);
 
@@ -24,13 +25,17 @@ public sealed class UpdateTeacherUseCaseTests
                 ContractType = "Tiempo completo",
                 ContractHours = 40
             },
-            Guid.NewGuid(),
+            correlationId,
             CancellationToken.None);
 
         Assert.Equal("Nuevo perfil", response.ProfessionalProfile);
-        Assert.Equal("Tiempo completo", response.ContractType);
         Assert.Equal(40, response.ContractHours);
-        Assert.True(dataStore.TeacherUpdated);
+        Assert.NotNull(dataStore.UpdatedTeacher);
+        Assert.Equal("Nuevo perfil", dataStore.UpdatedTeacher.ProfessionalProfile);
+        Assert.NotNull(dataStore.UpdatedEvent);
+        Assert.Equal(teacher.Id, dataStore.UpdatedEvent.ProfessorId);
+        Assert.Equal(teacher.TenantId, dataStore.UpdatedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.UpdatedEvent.CorrelationId);
     }
 
     [Fact]
@@ -51,6 +56,7 @@ public sealed class UpdateTeacherUseCaseTests
             Guid.NewGuid(),
             CancellationToken.None));
 
-        Assert.False(dataStore.TeacherUpdated);
+        Assert.Null(dataStore.UpdatedTeacher);
+        Assert.Null(dataStore.UpdatedEvent);
     }
 }

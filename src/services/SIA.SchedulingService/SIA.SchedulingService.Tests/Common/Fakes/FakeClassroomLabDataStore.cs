@@ -11,11 +11,16 @@ internal class FakeClassroomLabDataStore : IClassroomLabDataStore
 {
     private readonly ClassroomLab? _existingLab;
 
-    public bool ClassroomLabAdded { get; private set; }
-    public bool ClassroomLabUpdated { get; private set; }
-    public bool ClassroomLabDeleted { get; private set; }
-    public bool ClassroomLabRestored { get; private set; }
-    public bool CodeExistsResult { get; set; } 
+    public ClassroomLab? AddedClassroomLab { get; private set; }
+    public ClassroomLabCreatedIntegrationEvent? AddedEvent { get; private set; }
+    public ClassroomLab? UpdatedClassroomLab { get; private set; }
+    public ClassroomLabUpdatedIntegrationEvent? UpdatedEvent { get; private set; }
+    public ClassroomLab? DeletedClassroomLab { get; private set; }
+    public ClassroomLabDeletedIntegrationEvent? DeletedEvent { get; private set; }
+    public ClassroomLab? RestoredClassroomLab { get; private set; }
+    public ClassroomLabRestoredIntegrationEvent? RestoredEvent { get; private set; }
+
+    public bool CodeExistsResult { get; set; }
 
     public FakeClassroomLabDataStore(ClassroomLab? existingLab = null)
     {
@@ -34,25 +39,29 @@ internal class FakeClassroomLabDataStore : IClassroomLabDataStore
 
     public Task AddClassroomLabWithOutboxAsync(ClassroomLab classroomLab, ClassroomLabCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ClassroomLabAdded = true;
+        AddedClassroomLab = classroomLab;
+        AddedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task UpdateClassroomLabWithOutboxAsync(ClassroomLab classroomLab, ClassroomLabUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ClassroomLabUpdated = true;
+        UpdatedClassroomLab = classroomLab;
+        UpdatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task SoftDeleteClassroomLabWithOutboxAsync(ClassroomLab classroomLab, ClassroomLabDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ClassroomLabDeleted = true;
+        DeletedClassroomLab = classroomLab;
+        DeletedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task RestoreClassroomLabWithOutboxAsync(ClassroomLab classroomLab, ClassroomLabRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ClassroomLabRestored = true;
+        RestoredClassroomLab = classroomLab;
+        RestoredEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }

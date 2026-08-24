@@ -30,7 +30,13 @@ public sealed class CreateTeacherUseCaseTests
         Assert.Equal(40, response.ContractHours);
         Assert.True(response.Status);
         Assert.Equal(correlationId, response.CorrelationId);
-        Assert.True(dataStore.TeacherAdded);
+        Assert.NotNull(dataStore.AddedTeacher);
+        Assert.Equal(personId, dataStore.AddedTeacher.PersonId);
+        Assert.NotNull(dataStore.AddedEvent);
+        Assert.Equal(dataStore.AddedTeacher.Id, dataStore.AddedEvent.ProfessorId);
+        Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.AddedEvent.Version);
     }
 
     [Fact]
@@ -48,6 +54,7 @@ public sealed class CreateTeacherUseCaseTests
             ContractHours = 40
         }, Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.TeacherAdded);
+        Assert.Null(dataStore.AddedTeacher);
+        Assert.Null(dataStore.AddedEvent);
     }
 }

@@ -11,10 +11,14 @@ public sealed class FakeClassroomTypeDataStore : IClassroomTypeDataStore
 {
     private readonly ClassroomType? _existingType;
 
-    public bool ClassroomTypeAdded { get; private set; }
-    public bool ClassroomTypeUpdated { get; private set; }
-    public bool ClassroomTypeDeleted { get; private set; }
-    public bool ClassroomTypeRestored { get; private set; }
+    public ClassroomType? AddedType { get; private set; }
+    public ClassroomTypeCreatedIntegrationEvent? AddedEvent { get; private set; }
+    public ClassroomType? UpdatedType { get; private set; }
+    public ClassroomTypeUpdatedIntegrationEvent? UpdatedEvent { get; private set; }
+    public ClassroomType? DeletedType { get; private set; }
+    public ClassroomTypeDeletedIntegrationEvent? DeletedEvent { get; private set; }
+    public ClassroomType? RestoredType { get; private set; }
+    public ClassroomTypeRestoredIntegrationEvent? RestoredEvent { get; private set; }
     public bool NameExistsResult { get; set; }
 
     public FakeClassroomTypeDataStore(ClassroomType? existingType = null)
@@ -34,25 +38,29 @@ public sealed class FakeClassroomTypeDataStore : IClassroomTypeDataStore
 
     public Task AddClassroomTypeWithOutboxAsync(ClassroomType classroomType, ClassroomTypeCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ClassroomTypeAdded = true;
+        AddedType = classroomType;
+        AddedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task UpdateClassroomTypeWithOutboxAsync(ClassroomType classroomType, ClassroomTypeUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ClassroomTypeUpdated = true;
+        UpdatedType = classroomType;
+        UpdatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task SoftDeleteClassroomTypeWithOutboxAsync(ClassroomType classroomType, ClassroomTypeDeletedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ClassroomTypeDeleted = true;
+        DeletedType = classroomType;
+        DeletedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task RestoreClassroomTypeWithOutboxAsync(ClassroomType classroomType, ClassroomTypeRestoredIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        ClassroomTypeRestored = true;
+        RestoredType = classroomType;
+        RestoredEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }

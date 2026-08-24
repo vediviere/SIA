@@ -9,9 +9,15 @@ public sealed class FakeCoordinatorDataStore : ICoordinatorDataStore
     public Coordinator? CoordinatorById { get; set; }
     public bool PersonAlreadyCoordinatorResult { get; set; }
 
-    public bool CoordinatorAdded { get; private set; }
-    public bool CoordinatorActivated { get; private set; }
-    public bool CoordinatorDeactivated { get; private set; }
+    public Coordinator? AddedCoordinator { get; private set; }
+    public CoordinatorCreatedIntegrationEvent? AddedEvent { get; private set; }
+
+    public Coordinator? ActivatedCoordinator { get; private set; }
+    public CoordinatorActivatedIntegrationEvent? ActivatedEvent { get; private set; }
+
+    public Coordinator? DeactivatedCoordinator { get; private set; }
+    public CoordinatorDeactivatedIntegrationEvent? DeactivatedEvent { get; private set; }
+
 
     public Task<bool> PersonAlreadyCoordinatorAsync(Guid tenantId, Guid personId, CancellationToken cancellationToken)
         => Task.FromResult(PersonAlreadyCoordinatorResult);
@@ -21,19 +27,22 @@ public sealed class FakeCoordinatorDataStore : ICoordinatorDataStore
 
     public Task AddCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        CoordinatorAdded = true;
+        AddedCoordinator = coordinator;
+        AddedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task ActivateCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        CoordinatorActivated = true;
+        ActivatedCoordinator = coordinator;
+        ActivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
     public Task DeactivateCoordinatorWithOutboxAsync(Coordinator coordinator, CoordinatorDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
-        CoordinatorDeactivated = true;
+        DeactivatedCoordinator = coordinator;
+        DeactivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 }

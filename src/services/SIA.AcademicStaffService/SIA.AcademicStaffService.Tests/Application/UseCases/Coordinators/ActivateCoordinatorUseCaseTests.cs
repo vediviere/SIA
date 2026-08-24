@@ -12,14 +12,20 @@ public sealed class ActivateCoordinatorUseCaseTests
     {
         var coordinator = new Coordinator(Guid.NewGuid(), Guid.NewGuid());
         coordinator.Deactivate();
+        var correlationId = Guid.NewGuid();
 
         var dataStore = new FakeCoordinatorDataStore { CoordinatorById = coordinator };
         var useCase = new ActivateCoordinatorUseCase(dataStore);
 
-        await useCase.ExecuteAsync(coordinator.TenantId, coordinator.Id, Guid.NewGuid(), CancellationToken.None);
+        await useCase.ExecuteAsync(coordinator.TenantId, coordinator.Id, correlationId, CancellationToken.None);
 
         Assert.True(coordinator.Status);
-        Assert.True(dataStore.CoordinatorActivated);
+        Assert.NotNull(dataStore.ActivatedCoordinator);
+        Assert.Equal(coordinator.Id, dataStore.ActivatedCoordinator.Id);
+        Assert.NotNull(dataStore.ActivatedEvent);
+        Assert.Equal(coordinator.Id, dataStore.ActivatedEvent.CoordinatorId);
+        Assert.Equal(coordinator.TenantId, dataStore.ActivatedEvent.TenantId);
+        Assert.Equal(correlationId, dataStore.ActivatedEvent.CorrelationId);
     }
 
     [Fact]
@@ -30,6 +36,7 @@ public sealed class ActivateCoordinatorUseCaseTests
 
         await Assert.ThrowsAsync<CoordinatorNotFoundException>(() => useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
 
-        Assert.False(dataStore.CoordinatorActivated);
+        Assert.Null(dataStore.ActivatedCoordinator);
+        Assert.Null(dataStore.ActivatedEvent);
     }
 }

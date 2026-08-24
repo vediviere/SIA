@@ -15,6 +15,7 @@ public sealed class UpdateClassScheduleUseCaseTests
     public async Task ExecuteAsync_WithValidData_ShouldUpdateClassSchedule()
     {
         var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var startTime = DateTime.UtcNow;
         var endTime = startTime.AddHours(2);
         var existingSchedule = new ClassSchedule(tenantId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "MARTES", startTime, endTime);
@@ -29,10 +30,16 @@ public sealed class UpdateClassScheduleUseCaseTests
             EndTime = endTime.AddDays(1)
         };
 
-        var response = await useCase.ExecuteAsync(tenantId, existingSchedule.Id, request, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, existingSchedule.Id, request, correlationId, CancellationToken.None);
 
         Assert.Equal("MIERCOLES", response.Day);
-        Assert.True(dataStore.ScheduleUpdated);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.UpdatedSchedule);
+        Assert.Equal("MIERCOLES", dataStore.UpdatedSchedule.Day);
+        Assert.NotNull(dataStore.UpdatedEvent);
+        Assert.Equal(existingSchedule.Id, dataStore.UpdatedEvent.ClassScheduleId);
+        Assert.Equal(correlationId, dataStore.UpdatedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.UpdatedEvent.Version);
     }
 
     [Fact]
@@ -45,5 +52,8 @@ public sealed class UpdateClassScheduleUseCaseTests
 
         await Assert.ThrowsAsync<ClassScheduleNotFoundException>(() =>
             useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.UpdatedSchedule);
+        Assert.Null(dataStore.UpdatedEvent);
     }
 }

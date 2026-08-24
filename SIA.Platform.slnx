@@ -2,9 +2,9 @@
   <Folder Name="/deploy/" />
   <Folder Name="/docs/" />
   <Folder Name="/docs/onboarding/">
-    <File Path="LOCAL_PORTS.md" />
-    <File Path="TEAM_WORK_RULES.md" />
-    <File Path="TECHNICAL_ONBOARDING.md" />
+    <File Path="docs/onboarding/LOCAL_PORTS.md" />
+    <File Path="docs/onboarding/TEAM_WORK_RULES.md" />
+    <File Path="docs/onboarding/TECHNICAL_ONBOARDING.md" />
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/bff/">
@@ -14,7 +14,7 @@
     <Project Path="src/bff/SIA.TeacherBff/SIA.TeacherBff.csproj" />
   </Folder>
   <Folder Name="/src/building-blocks/">
-    <Project Path="SIA.BuildingBlocks.WebApi/SIA.BuildingBlocks.WebApi.csproj" Id="04c235bd-46c9-4cc0-a358-633c115883bd" />
+    <Project Path="src/building-blocks/SIA.BuildingBlocks.WebApi/SIA.BuildingBlocks.WebApi.csproj" Id="04c235bd-46c9-4cc0-a358-633c115883bd" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Application/SIA.BuildingBlocks.Application.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Contracts/SIA.BuildingBlocks.Contracts.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Domain/SIA.BuildingBlocks.Domain.csproj" />
@@ -68,12 +68,12 @@
     <Project Path="src/services/SIA.IdentityService/SIA.IdentityService.Tests/SIA.IdentityService.Tests.csproj" />
   </Folder>
   <Folder Name="/src/services/SIA.IndicatorService/">
-    <Project Path="SIA.IndicatorService.Api/SIA.IndicatorService.Api.csproj" Id="14a482ea-8103-460e-ac9d-ba3271226bb5" />
-    <Project Path="SIA.IndicatorService.Application/SIA.IndicatorService.Application.csproj" Id="1ee8262f-475e-4869-97cc-c8629a3f7fe9" />
-    <Project Path="SIA.IndicatorService.Contracts/SIA.IndicatorService.Contracts.csproj" Id="1b090ba8-bd79-4ef9-adf8-684233c6e59d" />
-    <Project Path="SIA.IndicatorService.Domain/SIA.IndicatorService.Domain.csproj" Id="70cf28ef-48ca-409f-92c3-e39e932e2491" />
-    <Project Path="SIA.IndicatorService.Infrastructure/SIA.IndicatorService.Infrastructure.csproj" Id="782f488e-e5df-4273-a15f-6a3d5cbd67ad" />
-    <Project Path="SIA.IndicatorService.Tests/SIA.IndicatorService.Tests.csproj" Id="784136b5-ce30-4361-892e-209363a3ec87" />
+    <Project Path="src/services/SIA.IndicatorService/SIA.IndicatorService.Api/SIA.IndicatorService.Api.csproj" Id="14a482ea-8103-460e-ac9d-ba3271226bb5" />
+    <Project Path="src/services/SIA.IndicatorService/SIA.IndicatorService.Application/SIA.IndicatorService.Application.csproj" Id="1ee8262f-475e-4869-97cc-c8629a3f7fe9" />
+    <Project Path="src/services/SIA.IndicatorService/SIA.IndicatorService.Contracts/SIA.IndicatorService.Contracts.csproj" Id="1b090ba8-bd79-4ef9-adf8-684233c6e59d" />
+    <Project Path="src/services/SIA.IndicatorService/SIA.IndicatorService.Domain/SIA.IndicatorService.Domain.csproj" Id="70cf28ef-48ca-409f-92c3-e39e932e2491" />
+    <Project Path="src/services/SIA.IndicatorService/SIA.IndicatorService.Infrastructure/SIA.IndicatorService.Infrastructure.csproj" Id="782f488e-e5df-4273-a15f-6a3d5cbd67ad" />
+    <Project Path="src/services/SIA.IndicatorService/SIA.IndicatorService.Tests/SIA.IndicatorService.Tests.csproj" Id="784136b5-ce30-4361-892e-209363a3ec87" />
   </Folder>
   <Folder Name="/src/services/SIA.NotificationsService/">
     <Project Path="src/services/SIA.NotificationsService/SIA.NotificationsService.Api/SIA.NotificationsService.Api.csproj" />

@@ -14,14 +14,21 @@ public sealed class SoftDeleteClassroomTypeUseCaseTests
     public async Task ExecuteAsync_WithValidId_ShouldSoftDeleteClassroomType()
     {
         var tenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
         var existingType = new ClassroomType(tenantId, "LAB", "Lab", "Desc");
         var dataStore = new FakeClassroomTypeDataStore(existingType);
         var useCase = new SoftDeleteClassroomTypeUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingType.Id, Guid.NewGuid(), CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, existingType.Id, correlationId, CancellationToken.None);
 
         Assert.False(response.Status);
-        Assert.True(dataStore.ClassroomTypeDeleted);
+        Assert.Equal(correlationId, response.CorrelationId);
+        Assert.NotNull(dataStore.DeletedType);
+        Assert.False(dataStore.DeletedType.Status);
+        Assert.NotNull(dataStore.DeletedEvent);
+        Assert.Equal(existingType.Id, dataStore.DeletedEvent.ClassroomTypeId);
+        Assert.Equal(correlationId, dataStore.DeletedEvent.CorrelationId);
+        Assert.Equal(1, dataStore.DeletedEvent.Version);
     }
 
     [Fact]
@@ -32,5 +39,8 @@ public sealed class SoftDeleteClassroomTypeUseCaseTests
 
         await Assert.ThrowsAsync<ClassroomTypeNotFoundException>(() =>
             useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
+
+        Assert.Null(dataStore.DeletedType);
+        Assert.Null(dataStore.DeletedEvent);
     }
 }

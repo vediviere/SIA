@@ -1,16 +1,14 @@
-﻿/*
-namespace SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
+﻿namespace SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 
-public sealed class StudyPlanSubjectRestoredIntegrationEvent
+public sealed record StudyPlanSubjectRestoredIntegrationEvent
 {
-    public Guid EventId { get; init; }
-    public Guid CorrelationId { get; init; }
-    public DateTime OccurredAtUtc { get; init; }
-    public Guid TenantId { get; init; }
-    public Guid StudyPlanSubjectId { get; init; }
-    public Guid StudyPlanId { get; init; }
-    public Guid SubjectId { get; init; }
-    public bool Status { get; init; }
-    public int Version { get; init; }
+    public required Guid EventId { get; init; }
+    public required Guid CorrelationId { get; init; }
+    public required DateTime OccurredAtUtc { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid StudyPlanSubjectId { get; init; }
+    public required Guid StudyPlanId { get; init; }
+    public required Guid SubjectId { get; init; }
+    public required bool Status { get; init; }
+    public int Version { get; init; } = 1;
 }
-*/
