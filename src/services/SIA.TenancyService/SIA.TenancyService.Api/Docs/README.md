@@ -6,6 +6,19 @@
 
 Administra el `TenantId`, el código institucional, el dominio de correo permitido y el estado de cada institución.
 
+`TenancyService` es la autoridad sobre:
+
+- `Tenant`.
+- Instituciones.
+- Identificadores institucionales.
+- Configuración básica propia del tenant.
+- Estado de los tenants.
+- Información necesaria para identificar el contexto institucional.
+
+Los demás servicios deberán utilizar el identificador del tenant como referencia de contexto y no deberán asumir la propiedad de la información administrada por `TenancyService`.
+
+---
+
 ## Lo que sí hace
 
 Actualmente `TenancyService`:
@@ -35,6 +48,10 @@ Actualmente `TenancyService`:
 - Asignar automáticamente el rol `Student`.
 - Acceder directamente a bases de datos de otros servicios.
 
+Estas responsabilidades pertenecen a sus respectivos servicios.
+
+---
+
 ## Base de datos
 
 La base de datos propietaria es:
@@ -47,7 +64,11 @@ Solo `TenancyService` puede leer y escribir directamente sobre esta base.
 
 ### Tenant
 
-Representa una institución registrada en SIA.
+`Tenant` representa el contexto institucional dentro del cual se almacenan y procesan los datos correspondientes a una institución.
+
+Cada tenant deberá contar con un identificador único.
+
+El `TenantId` será utilizado por los demás servicios para mantener el aislamiento de la información correspondiente a cada institución.
 
 Mantiene:
 
@@ -127,3 +148,4 @@ Actualmente no consume eventos.
 - TenancyService no comparte su entidad `Tenant`.
 - La comunicación externa se realiza mediante contratos públicos.
 - PublicGateway no contiene la lógica de resolución institucional.
+- IdentityService podrá utilizar información institucional mediante contratos de integración permitidos.
