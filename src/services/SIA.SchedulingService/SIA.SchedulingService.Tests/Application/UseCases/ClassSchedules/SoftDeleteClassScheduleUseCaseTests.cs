@@ -19,10 +19,8 @@ public sealed class SoftDeleteClassScheduleUseCaseTests
         var dataStore = new FakeClassScheduleDataStore(existingSchedule);
         var useCase = new SoftDeleteClassScheduleUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingSchedule.Id, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, existingSchedule.Id, correlationId, CancellationToken.None);
 
-        Assert.False(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
         Assert.NotNull(dataStore.DeletedSchedule);
         Assert.False(dataStore.DeletedSchedule.Status);
         Assert.NotNull(dataStore.DeletedEvent);

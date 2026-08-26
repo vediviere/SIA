@@ -21,10 +21,8 @@ public sealed class RestoreClassScheduleUseCaseTests
         var dataStore = new FakeClassScheduleDataStore(existingSchedule);
         var useCase = new RestoreClassScheduleUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingSchedule.Id, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, existingSchedule.Id, correlationId, CancellationToken.None);
 
-        Assert.True(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
         Assert.NotNull(dataStore.RestoredSchedule);
         Assert.True(dataStore.RestoredSchedule.Status);
         Assert.NotNull(dataStore.RestoredEvent);

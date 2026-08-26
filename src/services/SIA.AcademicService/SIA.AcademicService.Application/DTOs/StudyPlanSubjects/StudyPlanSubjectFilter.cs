@@ -6,15 +6,15 @@ namespace SIA.AcademicService.Application.DTOs.StudyPlanSubjects;
 
 public sealed class StudyPlanSubjectFilter
 {
-    public Guid TenantId { get; set; }
+    public Guid TenantId { get; init; }
 
-    public Guid? StudyPlanId { get; set; }
+    public Guid? StudyPlanId { get; init; }
 
-    public Guid? SubjectId { get; set; }
+    public Guid? SubjectId { get; init; }
 
-    public bool? IsRequired { get; set; }
+    public bool? IsRequired { get; init; }
 
-    public bool? Status { get; set; }
+    public bool? Status { get; init; }
 
     public int Page { get; init; } = 1;
 

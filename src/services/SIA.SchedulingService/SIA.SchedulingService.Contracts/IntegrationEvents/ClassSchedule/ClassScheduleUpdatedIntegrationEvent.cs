@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
-
-public sealed class ClassScheduleUpdatedIntegrationEvent
+﻿namespace SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
+public sealed record ClassScheduleUpdatedIntegrationEvent
 {
-    public Guid EventId { get; init; }
-    public Guid CorrelationId { get; init; }
-    public DateTime OccurredAtUtc { get; init; }
-    public Guid TenantId { get; init; }
-    public Guid ClassScheduleId { get; init; }
-    public string Day { get; init; } = string.Empty;
-    public DateTime StartTime { get; init; }
-    public DateTime EndTime { get; init; }
-    public bool Status { get; init; }
-    public int Version { get; init; }
+    public required Guid EventId { get; init; }
+    public required Guid CorrelationId { get; init; }
+    public required DateTime OccurredAtUtc { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid ClassScheduleId { get; init; }
+    public required string Day { get; init; }
+    public required DateTime StartTime { get; init; }
+    public required DateTime EndTime { get; init; }
+    public required bool Status { get; init; }
+    public required int Version { get; init; }
 }

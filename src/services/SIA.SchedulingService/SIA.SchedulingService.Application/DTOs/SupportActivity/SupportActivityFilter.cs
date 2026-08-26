@@ -4,9 +4,9 @@ using System.Text;
 
 namespace SIA.SchedulingService.Application.DTOs.SupportActivity;
 
-public sealed class SupportActivityFilter
+public sealed record SupportActivityFilter
 {
-    public Guid TenantId { get; init; }
+    public required Guid TenantId { get; init; }
     public string? Activity { get; init; }
     public bool? Status { get; init; }
     public int Page { get; init; } = 1;

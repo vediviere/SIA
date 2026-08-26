@@ -2,8 +2,8 @@
 
 public sealed class CreateClassroomTypeRequest
 {
-    public Guid TenantId { get; init; }
-    public string Code { get; init; } = string.Empty;
-    public string Name { get; init; } = string.Empty;
-    public string Description { get; init; } = string.Empty;
+    public required Guid TenantId { get; init; }
+    public required string Code { get; init; }
+    public required string Name { get; init; }
+    public required string Description { get; init; }
 }

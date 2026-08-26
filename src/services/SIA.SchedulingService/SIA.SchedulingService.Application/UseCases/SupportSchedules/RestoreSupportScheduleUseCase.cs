@@ -17,7 +17,7 @@ public sealed class RestoreSupportScheduleUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<RestoreSupportScheduleResponse> ExecuteAsync(
+    public async Task ExecuteAsync(
         Guid tenantId,
         Guid supportScheduleId,
         Guid correlationId,
@@ -44,13 +44,5 @@ public sealed class RestoreSupportScheduleUseCase
         };
 
         await _dataStore.RestoreSupportScheduleWithOutboxAsync(supportSchedule, integrationEvent, cancellationToken);
-
-        return new RestoreSupportScheduleResponse
-        {
-            Id = supportSchedule.Id,
-            Status = supportSchedule.Status,
-            UpdatedAtUtc = supportSchedule.UpdatedAtUtc,
-            CorrelationId = correlationId
-        };
     }
 }

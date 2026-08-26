@@ -56,7 +56,8 @@ public sealed class CreateClassroomLabUseCaseTests
             ClassroomTypeId = Guid.NewGuid(),
             Code = "LAB-01",
             Name = "Lab",
-            Capacity = 30
+            Capacity = 30,
+            Description = "Desc"
         };
 
         await Assert.ThrowsAsync<DuplicateClassroomLabCodeException>(() =>

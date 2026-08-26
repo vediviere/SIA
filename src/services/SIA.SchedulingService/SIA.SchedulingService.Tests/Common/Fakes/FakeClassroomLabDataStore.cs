@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SIA.SchedulingService.Tests.Common.Fakes;
 
-internal class FakeClassroomLabDataStore : IClassroomLabDataStore
+public sealed class FakeClassroomLabDataStore : IClassroomLabDataStore
 {
     private readonly ClassroomLab? _existingLab;
 
