@@ -20,10 +20,8 @@ public sealed class SoftDeleteSupportActivityUseCaseTests
         var dataStore = new FakeSupportActivityDataStore(existingActivity);
         var useCase = new SoftDeleteSupportActivityUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingActivity.Id, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, existingActivity.Id, correlationId, CancellationToken.None);
 
-        Assert.False(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
         Assert.NotNull(dataStore.DeletedActivity);
         Assert.False(dataStore.DeletedActivity.Status);
         Assert.NotNull(dataStore.DeletedEvent);

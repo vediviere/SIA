@@ -19,10 +19,8 @@ public sealed class SoftDeleteClassroomLabUseCaseTests
         var dataStore = new FakeClassroomLabDataStore(existingLab);
         var useCase = new SoftDeleteClassroomLabUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingLab.Id, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, existingLab.Id, correlationId, CancellationToken.None);
 
-        Assert.False(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
         Assert.NotNull(dataStore.DeletedClassroomLab);
         Assert.False(dataStore.DeletedClassroomLab.Status);
         Assert.NotNull(dataStore.DeletedEvent);

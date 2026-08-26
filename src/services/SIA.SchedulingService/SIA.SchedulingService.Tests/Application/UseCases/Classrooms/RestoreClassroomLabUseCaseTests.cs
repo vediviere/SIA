@@ -21,10 +21,8 @@ public sealed class RestoreClassroomLabUseCaseTests
         var dataStore = new FakeClassroomLabDataStore(existingLab);
         var useCase = new RestoreClassroomLabUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingLab.Id, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, existingLab.Id, correlationId, CancellationToken.None);
 
-        Assert.True(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
         Assert.NotNull(dataStore.RestoredClassroomLab);
         Assert.True(dataStore.RestoredClassroomLab.Status);
         Assert.NotNull(dataStore.RestoredEvent);

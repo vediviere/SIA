@@ -45,7 +45,14 @@ public sealed class UpdateClassroomLabUseCaseTests
     {
         var dataStore = new FakeClassroomLabDataStore(null);
         var useCase = new UpdateClassroomLabUseCase(dataStore);
-        var request = new UpdateClassroomLabRequest { Code = "LAB-02", Name = "Lab", Capacity = 30 };
+
+        var request = new UpdateClassroomLabRequest
+        {
+            Code = "LAB-02",
+            Name = "Lab",
+            Capacity = 30,
+            Description = "Desc"
+        };
 
         await Assert.ThrowsAsync<ClassroomLabNotFoundException>(() =>
             useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));

@@ -21,10 +21,8 @@ public sealed class RestoreClassroomTypeUseCaseTests
         var dataStore = new FakeClassroomTypeDataStore(existingType);
         var useCase = new RestoreClassroomTypeUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingType.Id, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, existingType.Id, correlationId, CancellationToken.None);
 
-        Assert.True(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
         Assert.NotNull(dataStore.RestoredType);
         Assert.True(dataStore.RestoredType.Status);
         Assert.NotNull(dataStore.RestoredEvent);
