@@ -25,8 +25,4 @@
 		<ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.WebApi\SIA.BuildingBlocks.WebApi.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Docs\" />
-	</ItemGroup>
-
 </Project>
