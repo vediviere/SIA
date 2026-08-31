@@ -58,6 +58,36 @@ public sealed class TeacherTests
     }
 
     [Fact]
+    public void Constructor_WithoutProgramId_ShouldAllowNull()
+    {
+        var teacher = CreateValidTeacher();
+
+        Assert.Null(teacher.ProgramId);
+    }
+
+    [Fact]
+    public void Constructor_WithProgramId_ShouldSetProgramId()
+    {
+        var programId = Guid.NewGuid();
+
+        var teacher = new Teacher(Guid.NewGuid(), Guid.NewGuid(), "Perfil", "Tipo", 40, programId);
+
+        Assert.Equal(programId, teacher.ProgramId);
+    }
+
+    [Fact]
+    public void AssignProgram_ShouldUpdateProgramId()
+    {
+        var teacher = CreateValidTeacher();
+        var programId = Guid.NewGuid();
+
+        teacher.AssignProgram(programId);
+
+        Assert.Equal(programId, teacher.ProgramId);
+        Assert.NotNull(teacher.UpdatedAtUtc);
+    }
+
+    [Fact]
     public void Update_WithValidData_ShouldUpdateFields()
     {
         var teacher = CreateValidTeacher();
