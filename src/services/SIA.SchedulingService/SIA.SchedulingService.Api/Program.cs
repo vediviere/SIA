@@ -2,8 +2,11 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
+using SIA.SchedulingService.Application.Common.Services.AcademicLoads;
+using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Application.Interfaces.Queries;
+using SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
 using SIA.SchedulingService.Application.UseCases.AcademicLoads;
 using SIA.SchedulingService.Application.UseCases.AcademicOfferings;
 using SIA.SchedulingService.Application.UseCases.Buildings;
@@ -16,21 +19,24 @@ using SIA.SchedulingService.Application.UseCases.SupportSchedules;
 using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
+using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoadProposal;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Building;
-using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
-using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
-using SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
-using SIA.SchedulingService.Contracts.IntegrationEvents.SupportSchedules;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
 using SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
+using SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
+using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
+using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
+using SIA.SchedulingService.Contracts.IntegrationEvents.SupportSchedules;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+  .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -41,42 +47,42 @@ builder.Services.AddSiaExceptionHandling();
 // Configuración de base de datos
 builder.Services.AddDbContext<SchedulingDbContext>(options =>
 {
-    var connectionString = builder.Configuration
-        .GetConnectionString("SchedulingDatabase");
+  var connectionString = builder.Configuration
+      .GetConnectionString("SchedulingDatabase");
 
-    options.UseSqlServer(connectionString);
+  options.UseSqlServer(connectionString);
 });
 
 // Configuración de RabbitMQ (Bus de mensajes)
 builder.Services.AddMassTransit(configurator =>
 {
-    configurator.UsingRabbitMq((context, rabbitMq) =>
-    {
-        var host = builder.Configuration["RabbitMq:Host"]
-         ?? throw new InvalidOperationException(
-             "No se configuró RabbitMq:Host.");
+  configurator.UsingRabbitMq((context, rabbitMq) =>
+  {
+    var host = builder.Configuration["RabbitMq:Host"]
+       ?? throw new InvalidOperationException(
+           "No se configuró RabbitMq:Host.");
 
-        var virtualHost = builder.Configuration["RabbitMq:VirtualHost"]
-            ?? throw new InvalidOperationException(
-                "No se configuró RabbitMq:VirtualHost.");
+    var virtualHost = builder.Configuration["RabbitMq:VirtualHost"]
+          ?? throw new InvalidOperationException(
+              "No se configuró RabbitMq:VirtualHost.");
 
-        var username = builder.Configuration["RabbitMq:Username"]
-            ?? throw new InvalidOperationException(
-                "No se configuró RabbitMq:Username.");
+    var username = builder.Configuration["RabbitMq:Username"]
+          ?? throw new InvalidOperationException(
+              "No se configuró RabbitMq:Username.");
 
-        var password = builder.Configuration["RabbitMq:Password"]
-            ?? throw new InvalidOperationException(
-                "No se configuró RabbitMq:Password.");
+    var password = builder.Configuration["RabbitMq:Password"]
+          ?? throw new InvalidOperationException(
+              "No se configuró RabbitMq:Password.");
 
-        rabbitMq.Host(
-            host,
-            virtualHost,
-            hostConfigurator =>
-            {
-                hostConfigurator.Username(username);
-                hostConfigurator.Password(password);
-            });
-    });
+    rabbitMq.Host(
+          host,
+          virtualHost,
+          hostConfigurator =>
+          {
+            hostConfigurator.Username(username);
+            hostConfigurator.Password(password);
+          });
+  });
 });
 
 var outboxOptions = new OutboxOptions();
@@ -84,8 +90,6 @@ builder.Configuration.GetSection("Outbox").Bind(outboxOptions);
 builder.Services.AddSingleton(outboxOptions);
 
 builder.Services.AddSingleton(new OutboxEventRegistry()
-    .Register<AcademicLoadCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadCreatedV1)
-    .Register<AcademicLoadUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadUpdatedV1)
     .Register<AcademicLoadDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadDeactivatedV1)
     .Register<AcademicLoadActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadActivatedV1)
 
@@ -138,6 +142,10 @@ builder.Services.AddSingleton(new OutboxEventRegistry()
     .Register<ClassroomTypeUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeUpdatedV1)
     .Register<ClassroomTypeDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeDeletedV1)
     .Register<ClassroomTypeRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeRestoredV1)
+
+    // Proposal
+    .Register<ProposalCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ProposalCreatedV1)
+    .Register<AcademicLoadCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadCreatedV1)
 );
 
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
@@ -175,6 +183,10 @@ builder.Services.AddScoped<IClassScheduleQueries, ClassScheduleQueries>();
 builder.Services.AddScoped<ISupportActivityDataStore, SupportActivityDataStore>();
 builder.Services.AddScoped<ISupportActivityQueries, SupportActivityQueries>();
 
+builder.Services.AddScoped<AcademicLoadClassHoursCalculator>();
+builder.Services.AddScoped<AcademicLoadSupportHoursCalculator>();
+builder.Services.AddScoped<IProposalDataStore, ProposalDataStore>();
+builder.Services.AddScoped<ProposalValidator>();
 
 
 // UseCases: Buildings
@@ -242,20 +254,23 @@ builder.Services.AddScoped<UpdateSupportActivityUseCase>();
 builder.Services.AddScoped<SoftDeleteSupportActivityUseCase>();
 builder.Services.AddScoped<RestoreSupportActivityUseCase>();
 
+// UseCases: AcademicLoadProposals
+builder.Services.AddScoped<CreateProposalUseCase>();
+
 var app = builder.Build();
 
 app.UseSiaExceptionHandling();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+  app.MapOpenApi();
 
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint(
-            "/openapi/v1.json",
-            "SIA SchedulingService API v1");
-    });
+  app.UseSwaggerUI(options =>
+  {
+    options.SwaggerEndpoint(
+          "/openapi/v1.json",
+          "SIA SchedulingService API v1");
+  });
 }
 
 app.UseHttpsRedirection();
@@ -264,11 +279,11 @@ app.MapControllers();
 
 app.MapGet("/health", () =>
 {
-    return Results.Ok(new
-    {
-        service = "SIA.SchedulingService.Api",
-        status = "Healthy"
-    });
+  return Results.Ok(new
+  {
+    service = "SIA.SchedulingService.Api",
+    status = "Healthy"
+  });
 });
 
 //app.UseSiaExceptionHandling();

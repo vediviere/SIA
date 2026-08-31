@@ -1,56 +1,76 @@
-﻿using SIA.SchedulingService.Application.UseCases.AcademicLoads;
+using SIA.SchedulingService.Application.Common.Exceptions.AcademicLoadProposal;
+using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
+using SIA.SchedulingService.Application.UseCases.AcademicLoads;
 using SIA.SchedulingService.Contracts.Requests.AcademicLoad;
+using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Tests.Common.Fakes;
 
 namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicLoads;
 
 public sealed class CreateAcademicLoadUseCaseTests
 {
-    [Fact]
-    public async Task ExecuteAsync_WithValidData_ShouldCreateAcademicLoad()
+  [Fact]
+  public async Task ExecuteAsync_WithValidData_ShouldCreateAcademicLoad()
+  {
+    var tenantId = Guid.NewGuid();
+    var academicPeriodId = Guid.NewGuid();
+    var correlationId = Guid.NewGuid();
+    var proposal = new Proposal(tenantId, Guid.NewGuid(), academicPeriodId, Guid.NewGuid());
+
+    var dataStore = new FakeAcademicLoadDataStore();
+    var proposalValidator = new ProposalValidator(new FakeProposalDataStore(proposal));
+    var useCase = new CreateAcademicLoadUseCase(dataStore, proposalValidator);
+    var request = new CreateAcademicLoadRequest
     {
-        var tenantId = Guid.NewGuid();
-        var teacherId = Guid.NewGuid();
-        var divisionId = Guid.NewGuid();
-        var academicPeriodId = Guid.NewGuid();
-        var correlationId = Guid.NewGuid();
+      TenantId = tenantId,
+      ProposalId = proposal.Id,
+      TeacherId = Guid.NewGuid(),
+      DivisionId = Guid.NewGuid(),
+      AcademicPeriodId = academicPeriodId,
+      OfficialLetterNumber = "  OF-2026-001  ",
+      ProposedDate = DateTime.UtcNow,
+      AssignmentDate = DateTime.UtcNow
+    };
 
-        var dataStore = new FakeAcademicLoadDataStore();
-        var useCase = new CreateAcademicLoadUseCase(dataStore);
+    var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
 
-        var request = new CreateAcademicLoadRequest
-        {
-            TenantId = tenantId,
-            TeacherId = teacherId,
-            DivisionId = divisionId,
-            AcademicPeriodId = academicPeriodId,
-            OfficialLetterNumber = "  OF-2026-001  ",
-            ProposedDate = DateTime.UtcNow,
-            ClassHours = 20,
-            SupportHours = 10,
-            AssignmentDate = DateTime.UtcNow
-        };
+    Assert.Equal(tenantId, response.TenantId);
+    Assert.Equal(proposal.Id, response.ProposalId);
+    Assert.Equal(academicPeriodId, response.AcademicPeriodId);
+    Assert.Equal("OF-2026-001", response.OfficialLetterNumber);
+    Assert.Equal(0, response.ClassHours);
+    Assert.Equal(0, response.SupportHours);
+    Assert.True(response.Status);
+    Assert.Equal(correlationId, response.CorrelationId);
+    Assert.NotNull(dataStore.AddedAcademicLoad);
+    Assert.Equal(proposal.Id, dataStore.AddedAcademicLoad.ProposalId);
+    Assert.NotNull(dataStore.AddedCreatedEvent);
+    Assert.Equal(proposal.Id, dataStore.AddedCreatedEvent.ProposalId);
+    Assert.Equal(correlationId, dataStore.AddedCreatedEvent.CorrelationId);
+  }
 
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+  [Fact]
+  public async Task ExecuteAsync_WhenProposalIsNotEditable_ShouldThrowProposalNotEditableException()
+  {
+    var dataStore = new FakeAcademicLoadDataStore();
+    var proposalValidator = new ProposalValidator(new FakeProposalDataStore());
+    var useCase = new CreateAcademicLoadUseCase(dataStore, proposalValidator);
+    var request = new CreateAcademicLoadRequest
+    {
+      TenantId = Guid.NewGuid(),
+      ProposalId = Guid.NewGuid(),
+      TeacherId = Guid.NewGuid(),
+      DivisionId = Guid.NewGuid(),
+      AcademicPeriodId = Guid.NewGuid(),
+      OfficialLetterNumber = "OF-2026-001",
+      ProposedDate = DateTime.UtcNow,
+      AssignmentDate = DateTime.UtcNow
+    };
 
-        Assert.Equal(tenantId, response.TenantId);
-        Assert.Equal(teacherId, response.TeacherId);
-        Assert.Equal(divisionId, response.DivisionId);
-        Assert.Equal(academicPeriodId, response.AcademicPeriodId);
-        Assert.Equal("OF-2026-001", response.OfficialLetterNumber);
-        Assert.Equal(20, response.ClassHours);
-        Assert.Equal(10, response.SupportHours);
-        Assert.True(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
+    await Assert.ThrowsAsync<ProposalNotEditableException>(() =>
+      useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
 
-        
-        Assert.NotNull(dataStore.AddedAcademicLoad);
-        Assert.Equal(tenantId, dataStore.AddedAcademicLoad.TenantId);
-        Assert.Equal("OF-2026-001", dataStore.AddedAcademicLoad.OfficialLetterNumber);
-
-        Assert.NotNull(dataStore.AddedCreatedEvent);
-        Assert.Equal(correlationId, dataStore.AddedCreatedEvent.CorrelationId);
-        Assert.Equal(tenantId, dataStore.AddedCreatedEvent.TenantId);
-        Assert.Equal(1, dataStore.AddedCreatedEvent.Version);
-    }
+    Assert.Null(dataStore.AddedAcademicLoad);
+    Assert.Null(dataStore.AddedCreatedEvent);
+  }
 }
