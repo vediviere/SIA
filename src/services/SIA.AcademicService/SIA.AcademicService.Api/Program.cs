@@ -8,6 +8,7 @@ using SIA.AcademicService.Application.UseCases.StudyPlans;
 using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
 using SIA.AcademicService.Application.UseCases.Subjects;
 using SIA.AcademicService.Application.UseCases.ServiceComplementaries;
+using SIA.AcademicService.Application.UseCases.AcademicContext;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.DataStores;
 using SIA.AcademicService.Infrastructure.Persistence.Queries;
@@ -22,11 +23,14 @@ using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
 using SIA.AcademicService.Contracts.IntegrationEvents.ServiceComplementaries;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services.AddOpenApi();
 
@@ -175,6 +179,9 @@ builder.Services.AddScoped<CreateServiceComplementaryUseCase>();
 builder.Services.AddScoped<UpdateServiceComplementaryUseCase>();
 builder.Services.AddScoped<SoftDeleteServiceComplementaryUseCase>();
 builder.Services.AddScoped<RestoreServiceComplementaryUseCase>();
+
+// UseCases de Academic Context
+builder.Services.AddScoped<GetAcademicContextUseCase>();
 
 builder.Services.AddSiaExceptionHandling();
 

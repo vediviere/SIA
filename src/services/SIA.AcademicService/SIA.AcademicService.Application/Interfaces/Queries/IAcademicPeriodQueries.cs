@@ -11,5 +11,7 @@ namespace SIA.AcademicService.Application.Interfaces.Queries
         Task<AcademicPeriod?> GetByIdAsync(Guid tenantId,Guid academicPeriodId,CancellationToken cancellationToken);
 
         Task<IReadOnlyCollection<AcademicPeriod>> SearchAsync(AcademicPeriodFilter filter,CancellationToken cancellationToken);
+
+        Task<AcademicPeriod?> GetActivePeriodAsync(Guid tenantId, CancellationToken cancellationToken);
     }
 }

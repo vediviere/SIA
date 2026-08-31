@@ -55,5 +55,14 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
             return await query.OrderByDescending(x => x.StartDate)
                                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<AcademicPeriod?> GetActivePeriodAsync(Guid tenantId, CancellationToken cancellationToken)
+        {
+            return await _dbContext.AcademicPeriods
+                .AsNoTracking()
+                .Where(x => x.TenantId == tenantId && x.Status == true)
+                .OrderByDescending(x => x.StartDate)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }
