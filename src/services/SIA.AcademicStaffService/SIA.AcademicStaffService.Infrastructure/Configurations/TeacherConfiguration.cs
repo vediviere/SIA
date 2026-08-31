@@ -35,6 +35,8 @@ public sealed class TeacherConfiguration
         builder.Property(teacher => teacher.ContractHours)
             .IsRequired();
 
+        builder.Property(teacher => teacher.ProgramId);
+
         builder.Property(teacher => teacher.Status)
             .IsRequired();
 

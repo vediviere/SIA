@@ -131,6 +131,28 @@ public sealed class TeachersController : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("candidates")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<CandidateTeacherResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<CandidateTeacherResponse>>> GetCandidatesAsync(
+    [FromQuery] Guid tenantId,
+    CancellationToken cancellationToken)
+    {
+        var teachers = await _professorQueries.GetCandidatesAsync(
+            new CandidateTeacherFilter { TenantId = tenantId },
+            cancellationToken);
+
+        var response = teachers.Select(teacher => new CandidateTeacherResponse
+        {
+            TeacherId = teacher.Id,
+            ProfessionalProfile = teacher.ProfessionalProfile,
+            ProgramId = teacher.ProgramId,
+            ContractHours = teacher.ContractHours,
+            Status = teacher.Status
+        }).ToList();
+
+        return Ok(response);
+    }
+
     private Guid ResolveCorrelationId()
     {
         const string headerName = "X-Correlation-Id";

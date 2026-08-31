@@ -8,4 +8,6 @@ public interface ITeacherQueries
     Task<Teacher?> GetByIdAsync(Guid tenantId, Guid professorId, CancellationToken cancellationToken);
 
     Task<IReadOnlyCollection<Teacher>> SearchAsync(TeacherFilter filter, CancellationToken cancellationToken);
+
+    Task<IReadOnlyCollection<Teacher>> GetCandidatesAsync(CandidateTeacherFilter filter, CancellationToken cancellationToken);
 }
