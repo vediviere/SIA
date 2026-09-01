@@ -53,4 +53,6 @@ public static class SchedulingIntegrationEventTypes
   public const string ClassroomTypeRestoredV1 = "ClassroomTypeRestoredIntegrationEvent.v1";
 
   public const string ProposalCreatedV1 = "AcademicLoadProposalCreatedIntegrationEvent.v1";
+
+  public const string ProposalSubmittedForReviewV1 = "ProposalSubmittedForReviewIntegrationEvent.v1";
 }

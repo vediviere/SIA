@@ -14,10 +14,14 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   }
 
   public bool ExistsResult { get; set; }
+  public bool HasAcademicLoadsResult { get; set; } = true;
   public Proposal? AddedProposal { get; private set; }
   public ProposalCreatedIntegrationEvent? AddedCreatedEvent { get; private set; }
 
-  public Task<Proposal?> GetByIdAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
+  public Proposal? SubmittedProposal { get; private set; }
+  public ProposalSubmittedForReviewIntegrationEvent? SubmittedIntegrationEvent { get; private set; }
+
+    public Task<Proposal?> GetByIdAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
   {
     if (_proposal is null || _proposal.TenantId != tenantId || _proposal.Id != proposalId)
     {
@@ -36,6 +40,18 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   {
     AddedProposal = proposal;
     AddedCreatedEvent = integrationEvent;
+    return Task.CompletedTask;
+  }
+
+  public Task<bool> HasAcademicLoadsAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
+  {
+    return Task.FromResult(HasAcademicLoadsResult);
+  }
+
+  public Task SubmitForReviewWithOutboxAsync(Proposal proposal,ProposalSubmittedForReviewIntegrationEvent integrationEvent,CancellationToken cancellationToken)
+  {
+    SubmittedProposal = proposal;
+    SubmittedIntegrationEvent = integrationEvent;
     return Task.CompletedTask;
   }
 }

@@ -10,11 +10,15 @@ namespace SIA.SchedulingService.Api.Controllers;
 public sealed class ProposalsController : ControllerBase
 {
   private readonly CreateProposalUseCase _createUseCase;
+  private readonly SubmitProposalForReviewUseCase _submitProposalForReviewUseCase;
 
-  public ProposalsController(CreateProposalUseCase createUseCase)
-  {
-    _createUseCase = createUseCase;
-  }
+    public ProposalsController(
+        CreateProposalUseCase createUseCase,
+        SubmitProposalForReviewUseCase submitProposalForReviewUseCase)
+    {
+        _createUseCase = createUseCase;
+        _submitProposalForReviewUseCase = submitProposalForReviewUseCase;
+    }
 
   [HttpPost]
   [ProducesResponseType(typeof(CreateProposalResponse), StatusCodes.Status201Created)]
@@ -30,7 +34,22 @@ public sealed class ProposalsController : ControllerBase
     return StatusCode(StatusCodes.Status201Created, response);
   }
 
-  private Guid ResolveCorrelationId()
+
+    [HttpPost("{proposalId:guid}/submit-for-review")]
+    [ProducesResponseType(typeof(SubmitProposalForReviewResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<SubmitProposalForReviewResponse>> SubmitForReviewAsync([FromRoute] Guid proposalId, [FromQuery] Guid tenantId, CancellationToken cancellationToken)
+    {
+        var correlationId = ResolveCorrelationId();
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var response = await _submitProposalForReviewUseCase.ExecuteAsync(tenantId, proposalId, correlationId, cancellationToken);
+        return Ok(response);
+    }
+
+    private Guid ResolveCorrelationId()
   {
     const string headerName = "X-Correlation-Id";
 
