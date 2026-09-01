@@ -42,4 +42,19 @@ public sealed class ProposalDataStore : IProposalDataStore
     await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
     await _dbContext.SaveChangesAsync(cancellationToken);
   }
+
+  public Task<bool> HasAcademicLoadsAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
+  {
+    return _dbContext.AcademicLoad.AnyAsync(load => load.TenantId == tenantId && load.ProposalId == proposalId && load.Status,cancellationToken);
+  }
+  public async Task SubmitForReviewWithOutboxAsync(Proposal proposal,ProposalSubmittedForReviewIntegrationEvent integrationEvent,CancellationToken cancellationToken)
+  {
+    var payload = JsonSerializer.Serialize(integrationEvent);
+    var eventType = SchedulingIntegrationEventTypes.ProposalSubmittedForReviewV1;
+    var outboxMessage = new OutboxMessage(eventType, payload, integrationEvent.CorrelationId);
+
+    _dbContext.AcademicLoadProposals.Update(proposal);
+    await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+    await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

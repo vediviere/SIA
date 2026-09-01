@@ -49,4 +49,19 @@ public sealed class Proposal
   public bool Status { get; private set; }
   public DateTime CreatedAtUtc { get; private set; }
   public DateTime? UpdatedAtUtc { get; private set; }
+
+    public void SubmitForReview()
+    {
+        if (!Status)
+        {
+            throw new InvalidOperationException("No se puede enviar a revisión una propuesta inactiva.");
+        }
+        if (ProposalStatus != ProposalStatus.Draft)
+        {
+            throw new InvalidOperationException("Solo una propuesta en estado Borrador puede enviarse a revisión.");
+        }
+        ProposalStatus = ProposalStatus.SubmittedForReview;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
 }
+

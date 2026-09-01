@@ -146,6 +146,8 @@ builder.Services.AddSingleton(new OutboxEventRegistry()
     // Proposal
     .Register<ProposalCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ProposalCreatedV1)
     .Register<AcademicLoadCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadCreatedV1)
+
+    .Register<ProposalSubmittedForReviewIntegrationEvent>(SchedulingIntegrationEventTypes.ProposalSubmittedForReviewV1)
 );
 
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
@@ -256,6 +258,7 @@ builder.Services.AddScoped<RestoreSupportActivityUseCase>();
 
 // UseCases: AcademicLoadProposals
 builder.Services.AddScoped<CreateProposalUseCase>();
+builder.Services.AddScoped<SubmitProposalForReviewUseCase>();
 
 var app = builder.Build();
 
