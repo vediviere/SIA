@@ -2,9 +2,10 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
-using SIA.SchedulingService.Application.Common.Services.AcademicLoads;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
+using SIA.SchedulingService.Application.Common.Services.AcademicLoads;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
+using SIA.SchedulingService.Application.Interfaces.ExternalServices;
 using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
 using SIA.SchedulingService.Application.UseCases.AcademicLoads;
@@ -16,6 +17,7 @@ using SIA.SchedulingService.Application.UseCases.ClassSchedules;
 using SIA.SchedulingService.Application.UseCases.Groups;
 using SIA.SchedulingService.Application.UseCases.SupportActivities;
 using SIA.SchedulingService.Application.UseCases.SupportSchedules;
+using SIA.SchedulingService.Application.UseCases.Teachers;
 using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
@@ -28,6 +30,7 @@ using SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
 using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
 using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
 using SIA.SchedulingService.Contracts.IntegrationEvents.SupportSchedules;
+using SIA.SchedulingService.Infrastructure.ExternalServices;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
@@ -259,6 +262,17 @@ builder.Services.AddScoped<RestoreSupportActivityUseCase>();
 // UseCases: AcademicLoadProposals
 builder.Services.AddScoped<CreateProposalUseCase>();
 builder.Services.AddScoped<SubmitProposalForReviewUseCase>();
+
+// ExternalServices: AcademicStaffService
+builder.Services.AddHttpClient<IAcademicStaffServiceClient, AcademicStaffServiceClient>(client =>
+{
+    var baseUrl = builder.Configuration["Services:AcademicStaffService"]
+        ?? throw new InvalidOperationException("No se configuró Services:AcademicStaffService.");
+
+    client.BaseAddress = new Uri(baseUrl);
+});
+
+builder.Services.AddScoped<GetCandidateTeachersUseCase>();
 
 var app = builder.Build();
 
