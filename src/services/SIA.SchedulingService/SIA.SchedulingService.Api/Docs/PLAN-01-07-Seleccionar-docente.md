@@ -14,9 +14,7 @@ La selección del docente pertenece al contexto de la planeación académica y, 
 
 ## Servicio propietario
 
-El servicio propietario de este paso es:
-
-`SchedulingService`
+El servicio propietario de este paso es:`SchedulingService`
 
 `SchedulingService` es responsable de determinar qué docente será seleccionado dentro de la planeación académica.
 
