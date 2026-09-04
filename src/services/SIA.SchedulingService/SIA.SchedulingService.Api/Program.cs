@@ -273,6 +273,7 @@ builder.Services.AddHttpClient<IAcademicStaffServiceClient, AcademicStaffService
 });
 
 builder.Services.AddScoped<GetCandidateTeachersUseCase>();
+builder.Services.AddScoped<ValidateTeacherEligibilityUseCase>();
 
 var app = builder.Build();
 
