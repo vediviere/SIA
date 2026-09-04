@@ -52,5 +52,8 @@ public sealed class GetCandidateTeachersUseCaseTests
 
         public Task<IReadOnlyList<CandidateTeacherDto>> GetCandidateTeachersAsync(Guid tenantId, CancellationToken cancellationToken)
             => Task.FromResult(_candidates);
+
+        public Task<CandidateTeacherDto?> GetTeacherAsync(Guid tenantId, Guid teacherId, CancellationToken cancellationToken)
+            => Task.FromResult(_candidates.FirstOrDefault(c => c.TeacherId == teacherId));
     }
 }
