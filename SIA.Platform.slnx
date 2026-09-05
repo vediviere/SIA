@@ -8,19 +8,20 @@
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/bff/">
+    <Project Path="src/bff/SIA.AdminBff.Tests/SIA.AdminBff.Tests.csproj" Id="b01663d6-98b4-4d6c-82c8-a448d2ecd572" />
     <Project Path="src/bff/SIA.AdminBff/SIA.AdminBff.csproj" />
     <Project Path="src/bff/SIA.MobileBff/SIA.MobileBff.csproj" />
     <Project Path="src/bff/SIA.StudentBff/SIA.StudentBff.csproj" />
     <Project Path="src/bff/SIA.TeacherBff/SIA.TeacherBff.csproj" />
   </Folder>
   <Folder Name="/src/building-blocks/">
-    <Project Path="src/building-blocks/SIA.BuildingBlocks.WebApi/SIA.BuildingBlocks.WebApi.csproj" Id="04c235bd-46c9-4cc0-a358-633c115883bd" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Application/SIA.BuildingBlocks.Application.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Contracts/SIA.BuildingBlocks.Contracts.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Domain/SIA.BuildingBlocks.Domain.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Infrastructure/SIA.BuildingBlocks.Infrastructure.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Messaging/SIA.BuildingBlocks.Messaging.csproj" />
     <Project Path="src/building-blocks/SIA.BuildingBlocks.Observability/SIA.BuildingBlocks.Observability.csproj" />
+    <Project Path="src/building-blocks/SIA.BuildingBlocks.WebApi/SIA.BuildingBlocks.WebApi.csproj" Id="04c235bd-46c9-4cc0-a358-633c115883bd" />
   </Folder>
   <Folder Name="/src/gateways/">
     <Project Path="src/gateways/SIA.IntegrationGateway/SIA.IntegrationGateway.csproj" />
