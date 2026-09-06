@@ -6,6 +6,16 @@
     <ProjectReference Include="..\SIA.WorkflowService.Contracts\SIA.WorkflowService.Contracts.csproj" />
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Infrastructure\SIA.BuildingBlocks.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
+    <ProjectReference Include="..\..\SIA.SchedulingService\SIA.SchedulingService.Contracts\SIA.SchedulingService.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
   </ItemGroup>
 
   <PropertyGroup>
