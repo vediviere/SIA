@@ -17,16 +17,16 @@ public sealed class CreateProposalUseCase
     _dataStore = dataStore;
   }
 
-  public async Task<CreateProposalResponse> ExecuteAsync(CreateProposalRequest request, Guid correlationId, CancellationToken cancellationToken)
+  public async Task<CreateProposalResponse> ExecuteAsync(Guid tenantId, CreateProposalRequest request, Guid correlationId, CancellationToken cancellationToken)
   {
-    var exists = await _dataStore.ExistsAsync(request.TenantId, request.EducationalProgramId, request.AcademicPeriodId, cancellationToken);
+    var exists = await _dataStore.ExistsAsync(tenantId, request.EducationalProgramId, request.AcademicPeriodId, cancellationToken);
 
     if (exists)
     {
       throw new ProposalAlreadyExistsException(request.EducationalProgramId, request.AcademicPeriodId);
     }
 
-    var proposal = new Proposal(request.TenantId, request.EducationalProgramId, request.AcademicPeriodId, request.DivisionHeadId);
+    var proposal = new Proposal(tenantId, request.EducationalProgramId, request.AcademicPeriodId, request.DivisionHeadId);
     var proposalStatus = (ContractProposalStatus)proposal.ProposalStatus;
 
     var integrationEvent = new ProposalCreatedIntegrationEvent

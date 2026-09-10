@@ -35,6 +35,9 @@ using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using SIA.SchedulingService.Api.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,9 +46,68 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSchemeTransformer>();
+    options.AddOperationTransformer<AuthOperationTransformer>();
+});
 
 builder.Services.AddSiaExceptionHandling();
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var signingKey = builder.Configuration["Token:SigningKey"]
+            ?? throw new InvalidOperationException(
+                "No se configuró Token:SigningKey.");
+
+        var issuer = builder.Configuration["Token:Issuer"]
+            ?? throw new InvalidOperationException(
+                "No se configuró Token:Issuer.");
+
+        var audience = builder.Configuration["Token:Audience"]
+            ?? throw new InvalidOperationException(
+                "No se configuró Token:Audience.");
+
+        var signingKeyBytes = Convert.FromBase64String(signingKey);
+
+        options.MapInboundClaims = false;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+
+            IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
+
+            NameClaimType = "email",
+            RoleClaimType = "role",
+
+            ClockSkew = TimeSpan.FromSeconds(30)
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor(); 
+
+builder.Services.AddTransient<BearerTokenPropagationHandler>(); 
+
+builder.Services.AddHttpClient<IAcademicStaffServiceClient, AcademicStaffServiceClient>(client =>
+{
+    var baseUrl = builder.Configuration["Services:AcademicStaffService"]
+        ?? throw new InvalidOperationException("No se configuró Services:AcademicStaffService.");
+
+    client.BaseAddress = new Uri(baseUrl);
+})
+.AddHttpMessageHandler<BearerTokenPropagationHandler>(); 
+
 
 // Configuración de base de datos
 builder.Services.AddDbContext<SchedulingDbContext>(options =>
@@ -292,6 +354,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+/////////
+app.UseAuthentication();
+app.UseAuthorization();
+////////
 
 app.MapControllers();
 
