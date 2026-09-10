@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicService.Application.Common.Exceptions;
 using SIA.AcademicService.Application.DTOs.ServiceComplementaries;
 using SIA.AcademicService.Application.Interfaces.Queries;
@@ -11,6 +12,7 @@ namespace SIA.AcademicService.Api.Controllers;
 
 [ApiController]
 [Route("api/service-complementaries")]
+[Authorize]
 public sealed class ServiceComplementariesController : ControllerBase
 {
     private readonly CreateServiceComplementaryUseCase _createUseCase;

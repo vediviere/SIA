@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicService.Application.UseCases.AcademicContext;
 using SIA.AcademicService.Contracts.Requests.AcademicContext;
 using SIA.AcademicService.Contracts.Responses.AcademicContext;
@@ -7,6 +8,7 @@ namespace SIA.AcademicService.Api.Controllers
 {
     [ApiController]
     [Route("api/academic-context")]
+    [Authorize]
     public class AcademicContextController : ControllerBase
     {
         private readonly GetAcademicContextUseCase _useCase;
