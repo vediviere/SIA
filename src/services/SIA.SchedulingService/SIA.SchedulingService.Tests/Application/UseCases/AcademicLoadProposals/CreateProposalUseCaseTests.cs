@@ -21,13 +21,12 @@ public sealed class CreateProposalUseCaseTests
     var useCase = new CreateProposalUseCase(dataStore);
     var request = new CreateProposalRequest
     {
-      TenantId = tenantId,
       EducationalProgramId = educationalProgramId,
       AcademicPeriodId = academicPeriodId,
       DivisionHeadId = divisionHeadId
     };
 
-    var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+    var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
     Assert.NotEqual(Guid.Empty, response.Id);
     Assert.Equal(tenantId, response.TenantId);
@@ -56,14 +55,13 @@ public sealed class CreateProposalUseCaseTests
     var useCase = new CreateProposalUseCase(dataStore);
     var request = new CreateProposalRequest
     {
-      TenantId = Guid.NewGuid(),
       EducationalProgramId = Guid.NewGuid(),
       AcademicPeriodId = Guid.NewGuid(),
       DivisionHeadId = Guid.NewGuid()
     };
 
     await Assert.ThrowsAsync<ProposalAlreadyExistsException>(() =>
-      useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+      useCase.ExecuteAsync(Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
 
     Assert.Null(dataStore.AddedProposal);
     Assert.Null(dataStore.AddedCreatedEvent);
