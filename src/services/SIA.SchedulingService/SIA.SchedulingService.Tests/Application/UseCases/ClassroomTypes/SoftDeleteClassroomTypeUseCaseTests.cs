@@ -19,10 +19,8 @@ public sealed class SoftDeleteClassroomTypeUseCaseTests
         var dataStore = new FakeClassroomTypeDataStore(existingType);
         var useCase = new SoftDeleteClassroomTypeUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingType.Id, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, existingType.Id, correlationId, CancellationToken.None);
 
-        Assert.False(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
         Assert.NotNull(dataStore.DeletedType);
         Assert.False(dataStore.DeletedType.Status);
         Assert.NotNull(dataStore.DeletedEvent);

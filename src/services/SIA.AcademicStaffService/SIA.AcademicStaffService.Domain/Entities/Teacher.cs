@@ -11,7 +11,8 @@ public sealed class Teacher
         Guid personId,
         string professionalProfile,
         string contractType,
-        int contractHours)
+        int contractHours,
+        Guid? programId = null)
     {
         if (tenantId == Guid.Empty)
         {
@@ -44,6 +45,7 @@ public sealed class Teacher
         ProfessionalProfile = professionalProfile.Trim();
         ContractType = contractType.Trim();
         ContractHours = contractHours;
+        ProgramId = programId;
         Status = true;
         CreatedAtUtc = DateTime.UtcNow;
     }
@@ -54,6 +56,7 @@ public sealed class Teacher
     public string ProfessionalProfile { get; private set; } = string.Empty;
     public string ContractType { get; private set; } = string.Empty;
     public int ContractHours { get; private set; }
+    public Guid? ProgramId { get; private set; }
     public bool Status { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
@@ -94,6 +97,12 @@ public sealed class Teacher
         ProfessionalProfile = professionalProfile.Trim();
         ContractType = contractType.Trim();
         ContractHours = contractHours;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void AssignProgram(Guid? programId)
+    {
+        ProgramId = programId;
         UpdatedAtUtc = DateTime.UtcNow;
     }
 }

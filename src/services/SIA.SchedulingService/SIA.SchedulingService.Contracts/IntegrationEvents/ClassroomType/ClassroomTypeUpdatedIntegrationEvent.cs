@@ -1,16 +1,15 @@
-﻿
-namespace SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
+﻿namespace SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
 
-public sealed class ClassroomTypeUpdatedIntegrationEvent
+public sealed record ClassroomTypeUpdatedIntegrationEvent
 {
-    public Guid EventId { get; init; }
-    public Guid CorrelationId { get; init; }
-    public DateTime OccurredAtUtc { get; init; }
-    public Guid TenantId { get; init; }
-    public Guid ClassroomTypeId { get; init; }
-    public string Code { get; init; } = string.Empty;
-    public string Name { get; init; } = string.Empty;
-    public string Description { get; init; } = string.Empty;
-    public bool Status { get; init; }
-    public int Version { get; init; }
+    public required Guid EventId { get; init; }
+    public required Guid CorrelationId { get; init; }
+    public required DateTime OccurredAtUtc { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid ClassroomTypeId { get; init; }
+    public required string Code { get; init; }
+    public required string Name { get; init; }
+    public required string Description { get; init; }
+    public required bool Status { get; init; }
+    public required int Version { get; init; }
 }

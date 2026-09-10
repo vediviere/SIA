@@ -14,7 +14,7 @@ public sealed class SoftDeleteClassroomTypeUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<SoftDeleteClassroomTypeResponse> ExecuteAsync(
+    public async Task ExecuteAsync(
         Guid tenantId,
         Guid classroomTypeId,
         Guid correlationId,
@@ -41,13 +41,5 @@ public sealed class SoftDeleteClassroomTypeUseCase
         };
 
         await _dataStore.SoftDeleteClassroomTypeWithOutboxAsync(classroomType, integrationEvent, cancellationToken);
-
-        return new SoftDeleteClassroomTypeResponse
-        {
-            Id = classroomType.Id,
-            Status = classroomType.Status,
-            UpdatedAtUtc = classroomType.UpdatedAtUtc,
-            CorrelationId = correlationId
-        };
     }
 }

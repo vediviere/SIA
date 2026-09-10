@@ -92,5 +92,14 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
 
             return result;
         }
+
+        public async Task<StudyPlan?> GetActiveByProgramIdAsync(Guid tenantId, Guid educationalProgramId, CancellationToken cancellationToken)
+        {
+            return await _dbContext.StudyPlans
+                .AsNoTracking()
+                .Where(x => x.TenantId == tenantId && x.EducationalProgramId == educationalProgramId && x.Status == true)
+                .OrderByDescending(x => x.EffectiveFrom)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }

@@ -4,13 +4,13 @@ using System.Text;
 
 namespace SIA.SchedulingService.Application.DTOs.ClassroomTypes;
 
-public sealed class ClassroomTypeFilter
+public sealed record ClassroomTypeFilter
 {
-    public Guid TenantId { get; set; }
-    public string? Name { get; set; }
-    public string? Description { get; set; }
-    public string? Code { get; set; }
-    public bool? Status { get; set; }
-    public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
+    public required Guid TenantId { get; init; }
+    public string? Name { get; init; }
+    public string? Description { get; init; }
+    public string? Code { get; init; }
+    public bool? Status { get; init; }
+    public int Page { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

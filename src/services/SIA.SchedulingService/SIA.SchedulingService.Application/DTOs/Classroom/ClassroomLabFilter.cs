@@ -1,13 +1,13 @@
 ﻿namespace SIA.SchedulingService.Application.DTOs.Classrooms;
 
-public sealed class ClassroomLabFilter
+public sealed record ClassroomLabFilter
 {
-    public Guid TenantId { get; set; }
-    public Guid? BuildingId { get; set; }
-    public Guid? ClassroomTypeId { get; set; }
-    public string? Code { get; set; }
-    public string? Name { get; set; }
-    public bool? Status { get; set; }
-    public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
+    public required Guid TenantId { get; init; }
+    public Guid? BuildingId { get; init; }
+    public Guid? ClassroomTypeId { get; init; }
+    public string? Code { get; init; }
+    public string? Name { get; init; }
+    public bool? Status { get; init; }
+    public int Page { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

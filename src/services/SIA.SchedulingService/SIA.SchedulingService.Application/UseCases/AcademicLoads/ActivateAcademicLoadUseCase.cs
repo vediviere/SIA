@@ -1,5 +1,5 @@
-﻿
 using SIA.SchedulingService.Application.Common.Exceptions;
+using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
 
@@ -7,33 +7,40 @@ namespace SIA.SchedulingService.Application.UseCases.AcademicLoads;
 
 public sealed class ActivateAcademicLoadUseCase
 {
-    private readonly IAcademicLoadDataStore _dataStore;
+  private readonly IAcademicLoadDataStore _dataStore;
+  private readonly ProposalValidator _proposalValidator;
 
-    public ActivateAcademicLoadUseCase(IAcademicLoadDataStore dataStore)
+  public ActivateAcademicLoadUseCase(IAcademicLoadDataStore dataStore, ProposalValidator proposalValidator)
+  {
+    _dataStore = dataStore;
+    _proposalValidator = proposalValidator;
+  }
+
+  public async Task ExecuteAsync(Guid tenantId, Guid id, Guid correlationId, CancellationToken cancellationToken)
+  {
+    var academicLoad = await _dataStore.GetByIdAsync(tenantId, id, cancellationToken);
+
+    if (academicLoad is null)
     {
-        _dataStore = dataStore;
+      throw new AcademicLoadNotFoundException(id);
     }
 
-    public async Task ExecuteAsync(Guid tenantId, Guid id, Guid correlationId, CancellationToken cancellationToken)
+    await _proposalValidator.EnsureEditableAsync(academicLoad.TenantId, academicLoad.ProposalId, academicLoad.AcademicPeriodId, cancellationToken);
+
+    academicLoad.Activate();
+
+    var integrationEvent = new AcademicLoadActivatedIntegrationEvent
     {
-        var academicLoad = await _dataStore.GetByIdAsync(tenantId, id, cancellationToken);
-        if (academicLoad is null)
-        {
-            throw new AcademicLoadNotFoundException(id);
-        }
-        academicLoad.Activate();
+      EventId = Guid.NewGuid(),
+      CorrelationId = correlationId,
+      OccurredAtUtc = academicLoad.UpdatedAtUtc!.Value,
+      TenantId = academicLoad.TenantId,
+      ProposalId = academicLoad.ProposalId,
+      AcademicLoadId = academicLoad.Id,
+      Status = academicLoad.Status,
+      Version = 1
+    };
 
-        var integrationEvent = new AcademicLoadActivatedIntegrationEvent
-        {
-            EventId = Guid.NewGuid(),
-            CorrelationId = correlationId,
-            OccurredAtUtc = academicLoad.UpdatedAtUtc!.Value,
-            TenantId = academicLoad.TenantId,
-            AcademicLoadId = academicLoad.Id,
-            Status = academicLoad.Status,
-            Version = 1
-        };
-
-        await _dataStore.ActivateAcademicLoadWithOutboxAsync(academicLoad, integrationEvent, cancellationToken);
-    }
+    await _dataStore.ActivateAcademicLoadWithOutboxAsync(academicLoad, integrationEvent, cancellationToken);
+  }
 }

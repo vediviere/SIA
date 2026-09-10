@@ -17,7 +17,7 @@ public sealed class SoftDeleteSupportActivityUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<SoftDeleteSupportActivityResponse> ExecuteAsync(
+    public async Task ExecuteAsync(
         Guid tenantId,
         Guid supportActivityId,
         Guid correlationId,
@@ -44,13 +44,5 @@ public sealed class SoftDeleteSupportActivityUseCase
         };
 
         await _dataStore.SoftDeleteSupportActivityWithOutboxAsync(supportActivity, integrationEvent, cancellationToken);
-
-        return new SoftDeleteSupportActivityResponse
-        {
-            Id = supportActivity.Id,
-            Status = supportActivity.Status,
-            UpdatedAtUtc = supportActivity.UpdatedAtUtc,
-            CorrelationId = correlationId
-        };
     }
 }

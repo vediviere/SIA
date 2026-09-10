@@ -17,4 +17,9 @@ public sealed class AcademicLoadQueries : IAcademicLoadQueries
     {
         return _dbContext.AcademicLoad.FirstOrDefaultAsync(academicLoad => academicLoad.TenantId == tenantId && academicLoad.Id == academicLoadId, cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection<AcademicLoad>> GetActiveByTeacherAndPeriodAsync(Guid tenantId, Guid teacherId, Guid academicPeriodId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.AcademicLoad.AsNoTracking().Where(x => x.TenantId == tenantId && x.TeacherId == teacherId && x.AcademicPeriodId == academicPeriodId && x.Status).ToListAsync(cancellationToken);
+    }
 }

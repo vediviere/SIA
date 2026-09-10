@@ -21,10 +21,8 @@ public sealed class RestoreSupportActivityUseCaseTests
         var dataStore = new FakeSupportActivityDataStore(existingActivity);
         var useCase = new RestoreSupportActivityUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(tenantId, existingActivity.Id, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, existingActivity.Id, correlationId, CancellationToken.None);
 
-        Assert.True(response.Status);
-        Assert.Equal(correlationId, response.CorrelationId);
         Assert.NotNull(dataStore.RestoredActivity);
         Assert.True(dataStore.RestoredActivity.Status);
         Assert.NotNull(dataStore.RestoredEvent);

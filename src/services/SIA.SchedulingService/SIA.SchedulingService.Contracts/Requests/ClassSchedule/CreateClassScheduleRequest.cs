@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace SIA.SchedulingService.Contracts.Requests.ClassSchedule;
 
-namespace SIA.SchedulingService.Contracts.Requests.ClassSchedule;
-
-public sealed class CreateClassScheduleRequest
+public sealed record CreateClassScheduleRequest
 {
-    public Guid TenantId { get; init; }
-    public Guid OfferingId { get; init; }
-    public Guid ClassroomLabId { get; init; }
-    public Guid AcademicPeriodId { get; init; }
-    public string Day { get; init; } = string.Empty;
-    public DateTime StartTime { get; init; }
-    public DateTime EndTime { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid OfferingId { get; init; }
+    public required Guid ClassroomLabId { get; init; }
+    public required Guid AcademicPeriodId { get; init; }
+    public required string Day { get; init; }
+    public required DateTime StartTime { get; init; }
+    public required DateTime EndTime { get; init; }
 }

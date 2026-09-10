@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace SIA.SchedulingService.Contracts.Requests.ClassSchedule;
 
-namespace SIA.SchedulingService.Contracts.Requests.ClassSchedule;
-
-public sealed class UpdateClassScheduleRequest
+public sealed record UpdateClassScheduleRequest
 {
-    public string Day { get; init; } = string.Empty;
-    public DateTime StartTime { get; init; }
-    public DateTime EndTime { get; init; }
+    public required string Day { get; init; }
+    public required DateTime StartTime { get; init; }
+    public required DateTime EndTime { get; init; }
 }

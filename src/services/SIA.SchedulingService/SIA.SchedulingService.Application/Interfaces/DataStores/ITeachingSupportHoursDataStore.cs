@@ -1,14 +1,14 @@
-﻿using SIA.SchedulingService.Contracts.IntegrationEvents;
+using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Domain.Entities;
 
 namespace SIA.SchedulingService.Application.Interfaces.DataStores;
 
 public interface ITeachingSupportHoursDataStore
 {
-    Task<bool> ExistsByActivityAndAcademicLoadAsync(Guid activityId, Guid academicLoadId, CancellationToken cancellationToken);
-    Task AddTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, TeachingSupportHoursCreatedIntegrationEvent integrationEvent,  CancellationToken cancellationToken);
-    Task<TeachingSupportHour?> GetByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken);
-    Task UpdateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, TeachingSupportHoursUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
-    Task DeactivateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, TeachingSupportHoursDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
-    Task ActivateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, TeachingSupportHoursActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
+  Task<bool> ExistsByActivityAndAcademicLoadAsync(Guid tenantId, Guid activityId, Guid academicLoadId, CancellationToken cancellationToken);
+  Task AddTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
+  Task<TeachingSupportHour?> GetByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken);
+  Task UpdateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
+  Task DeactivateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
+  Task ActivateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 }

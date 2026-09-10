@@ -51,4 +51,14 @@ public sealed class TeacherQueries : ITeacherQueries
         return await query.OrderBy(x => x.ContractType)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection<Teacher>> GetCandidatesAsync(CandidateTeacherFilter filter, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Teachers
+            .AsNoTracking()
+            .Where(x => x.TenantId == filter.TenantId && x.Status)
+            .OrderBy(x => x.ProgramId == null)
+            .ThenBy(x => x.ProfessionalProfile)
+            .ToListAsync(cancellationToken);
+    }
 }
