@@ -16,6 +16,9 @@ public sealed class SchoolControlDbContext : DbContext
   public DbSet<SubjectReference> SubjectReferences =>
       Set<SubjectReference>();
 
+  public DbSet<Student> Students =>
+    Set<Student>();
+
   public DbSet<InboxMessage> InboxMessages =>
       Set<InboxMessage>();
 

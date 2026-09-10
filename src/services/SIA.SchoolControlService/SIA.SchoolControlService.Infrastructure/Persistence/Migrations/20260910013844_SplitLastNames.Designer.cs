@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SIA.SchoolControlService.Infrastructure.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using SIA.SchoolControlService.Infrastructure.Persistence.Contexts;
 namespace SIA.SchoolControlService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SchoolControlDbContext))]
-    partial class SchoolControlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260910013844_SplitLastNames")]
+    partial class SplitLastNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

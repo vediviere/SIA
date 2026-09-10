@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SIA.SchoolControlService.Infrastructure.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using SIA.SchoolControlService.Infrastructure.Persistence.Contexts;
 namespace SIA.SchoolControlService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(SchoolControlDbContext))]
-    partial class SchoolControlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260907212447_AddStudents")]
+    partial class AddStudents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,15 +39,10 @@ namespace SIA.SchoolControlService.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("MaternalLastName")
+                    b.Property<string>("LastNames")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PaternalLastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");

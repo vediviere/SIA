@@ -1,4 +1,4 @@
-﻿using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities;
 namespace SIA.SchedulingService.Tests.Domain.Entities;
 
 public sealed class TeachingSupportHourTest
@@ -17,7 +17,7 @@ public sealed class TeachingSupportHourTest
         Assert.Equal(academicLoadId, teachingSupportHour.AcademicLoadId);
         Assert.Equal(10, teachingSupportHour.Hours);
         Assert.True(teachingSupportHour.Status);
-        Assert.NotNull(teachingSupportHour.CreatedAtUtc);
+        Assert.NotEqual(default, teachingSupportHour.CreatedAtUtc);
         Assert.Null(teachingSupportHour.UpdatedAtUtc);
     }
 
@@ -54,7 +54,7 @@ public sealed class TeachingSupportHourTest
         teachingSupportHour.Update(20);
 
         Assert.Equal(20, teachingSupportHour.Hours);
-        Assert.NotNull(teachingSupportHour.UpdatedAtUtc);
+        Assert.NotEqual(default, teachingSupportHour.UpdatedAtUtc);
     }
     [Fact]
     public void Update_CeroHours_ArgumentOutOfRangeException()
@@ -75,7 +75,7 @@ public sealed class TeachingSupportHourTest
         var teachingSupportHour = new TeachingSupportHour(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 10);
         teachingSupportHour.Deactivate();
         Assert.False(teachingSupportHour.Status);
-        Assert.NotNull(teachingSupportHour.UpdatedAtUtc);
+        Assert.NotEqual(default, teachingSupportHour.UpdatedAtUtc);
     }
     [Fact]
     public void Activate_StatusTrue()
@@ -85,6 +85,6 @@ public sealed class TeachingSupportHourTest
 
         teachingSupportHour.Activate();
         Assert.True(teachingSupportHour.Status);
-        Assert.NotNull(teachingSupportHour.UpdatedAtUtc);
+        Assert.NotEqual(default, teachingSupportHour.UpdatedAtUtc);
     }
 }
