@@ -1,80 +1,105 @@
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Application.Interfaces.Queries;
+using SIA.AcademicService.Application.UseCases.AcademicContext;
 using SIA.AcademicService.Application.UseCases.AcademicPeriods;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
+using SIA.AcademicService.Application.UseCases.ServiceComplementaries;
 using SIA.AcademicService.Application.UseCases.StudyPlans;
 using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
 using SIA.AcademicService.Application.UseCases.Subjects;
-using SIA.AcademicService.Application.UseCases.ServiceComplementaries;
-using SIA.AcademicService.Application.UseCases.AcademicContext;
+using SIA.AcademicService.Contracts.IntegrationEvents;
+using SIA.AcademicService.Contracts.IntegrationEvents.AcademicPeriods;
+using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
+using SIA.AcademicService.Contracts.IntegrationEvents.ServiceComplementaries;
+using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlans;
+using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
+using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.DataStores;
 using SIA.AcademicService.Infrastructure.Persistence.Queries;
-using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 using SIA.BuildingBlocks.Messaging.Outbox;
-using SIA.AcademicService.Contracts.IntegrationEvents;
-using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
-using SIA.AcademicService.Contracts.IntegrationEvents.AcademicPeriods;
-using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
-using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlans;
-using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
-using SIA.AcademicService.Contracts.IntegrationEvents.ServiceComplementaries;
-
+using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Token:Issuer"],
+            ValidAudience = builder.Configuration["Token:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Convert.FromBase64String(builder.Configuration["Token:SigningKey"] ?? throw new InvalidOperationException("Falta Token.")))
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddSingleton(TimeProvider.System);
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+
+        document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Token JWT. Escribe el token directamente sin la palabra 'Bearer'."
+        };
+
+        document.Security ??= new List<OpenApiSecurityRequirement>();
+        document.Security.Add(new OpenApiSecurityRequirement
+        {
+            { new OpenApiSecuritySchemeReference("Bearer", document), new List<string>() }
+        });
+
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.AddDbContext<AcademicDbContext>(options =>
 {
-  var connectionString = builder.Configuration
-      .GetConnectionString("AcademicDatabase");
-
-  options.UseSqlServer(connectionString, sqlOptions =>
-  {
-    sqlOptions.EnableRetryOnFailure();
-  });
-
+    var connectionString = builder.Configuration.GetConnectionString("AcademicDatabase");
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure();
+    });
 });
 
 builder.Services.AddMassTransit(configurator =>
 {
-  configurator.UsingRabbitMq((context, rabbitMq) =>
-  {
-    var host = builder.Configuration["RabbitMq:Host"]
-     ?? throw new InvalidOperationException(
-         "No se configuró RabbitMq:Host.");
+    configurator.UsingRabbitMq((context, rabbitMq) =>
+    {
+        var host = builder.Configuration["RabbitMq:Host"] ?? throw new InvalidOperationException("No se configuró RabbitMq:Host.");
+        var virtualHost = builder.Configuration["RabbitMq:VirtualHost"] ?? throw new InvalidOperationException("No se configuró RabbitMq:VirtualHost.");
+        var username = builder.Configuration["RabbitMq:Username"] ?? throw new InvalidOperationException("No se configuró RabbitMq:Username.");
+        var password = builder.Configuration["RabbitMq:Password"] ?? throw new InvalidOperationException("No se configuró RabbitMq:Password.");
 
-    var virtualHost = builder.Configuration["RabbitMq:VirtualHost"]
-        ?? throw new InvalidOperationException(
-            "No se configuró RabbitMq:VirtualHost.");
-
-    var username = builder.Configuration["RabbitMq:Username"]
-        ?? throw new InvalidOperationException(
-            "No se configuró RabbitMq:Username.");
-
-    var password = builder.Configuration["RabbitMq:Password"]
-        ?? throw new InvalidOperationException(
-            "No se configuró RabbitMq:Password.");
-
-    rabbitMq.Host(
-        host,
-        virtualHost,
-        hostConfigurator =>
+        rabbitMq.Host(host, virtualHost, hostConfigurator =>
         {
-          hostConfigurator.Username(username);
-          hostConfigurator.Password(password);
+            hostConfigurator.Username(username);
+            hostConfigurator.Password(password);
         });
-  });
+    });
 });
 
 var outboxOptions = new OutboxOptions();
@@ -189,18 +214,17 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-  app.MapOpenApi();
-
-  app.UseSwaggerUI(options =>
-  {
-    options.SwaggerEndpoint(
-        "/openapi/v1.json",
-        "SIA AcademicService API v1");
-  });
+    app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "SIA AcademicService API v1");
+    });
 }
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.MapGet("/health", () =>
@@ -210,7 +234,7 @@ app.MapGet("/health", () =>
     service = "SIA.AcademicService.Api",
     status = "Healthy"
   });
-});
+}).AllowAnonymous();
 
 app.UseSiaExceptionHandling();
 

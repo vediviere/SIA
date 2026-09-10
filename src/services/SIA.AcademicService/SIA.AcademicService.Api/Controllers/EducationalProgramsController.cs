@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicService.Application.DTOs.EducationalProgram;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
@@ -10,7 +11,7 @@ namespace SIA.AcademicService.Api.Controllers;
 
 [ApiController]
 [Route("api/EducationalPrograms")]
-
+[Authorize]
 public sealed class EducationalProgramsController : ControllerBase
 {
     private readonly CreateEducationalProgramsUseCase _createEducationalProgramsUseCase;

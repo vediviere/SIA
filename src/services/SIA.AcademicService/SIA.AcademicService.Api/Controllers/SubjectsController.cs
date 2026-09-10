@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicService.Application.Common.Exceptions;
 using SIA.AcademicService.Application.DTOs.Subjects;
@@ -11,6 +12,7 @@ namespace SIA.AcademicService.Api.Controllers;
 
 [ApiController]
 [Route("api/subjects")]
+[Authorize]
 public sealed class SubjectsController : ControllerBase
 {
   private readonly CreateSubjectUseCase _createSubjectUseCase;

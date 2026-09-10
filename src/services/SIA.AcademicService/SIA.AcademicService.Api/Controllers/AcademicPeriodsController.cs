@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicService.Application.DTOs.AcademicPeriod;
 using SIA.AcademicService.Application.UseCases.AcademicPeriods;
 
@@ -9,6 +10,7 @@ namespace SIA.AcademicService.Api.Controllers;
 
 [ApiController]
 [Route("api/academic-periods")]
+[Authorize]
 public sealed class AcademicPeriodsController : ControllerBase
 {
     private readonly CreateAcademicPeriodsUseCase _createAcademicPeriodsUseCase;
