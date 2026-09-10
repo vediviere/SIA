@@ -8,7 +8,6 @@ public sealed class AcademicOfferingDto
   public Guid SubjectId { get; init; }
   public Guid AcademicLoadId { get; init; }
   public string OfferingStatus { get; init; } = string.Empty;
-  public int ClassHours { get; init; }
   public bool Status { get; init; }
   public DateTime CreatedAtUtc { get; init; }
   public DateTime? UpdatedAtUtc { get; init; }
