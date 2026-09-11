@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicStaffService.Application.DTOs.Professors;
+using SIA.AcademicStaffService.Application.Interfaces;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.Professors;
 using SIA.AcademicStaffService.Contracts.Requests.Professors;
@@ -8,6 +10,7 @@ using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/teachers")]
 public sealed class TeachersController : ControllerBase
@@ -17,19 +20,22 @@ public sealed class TeachersController : ControllerBase
     private readonly ActivateTeacherUseCase _activateProfessorUseCase;
     private readonly DeactivateTeacherUseCase _deactivateProfessorUseCase;
     private readonly ITeacherQueries _professorQueries;
+    private readonly ITenantContext _tenantContext;
 
     public TeachersController(
         CreateTeacherUseCase createProfessorUseCase,
         UpdateTeacherUseCase updateProfessorUseCase,
         ActivateTeacherUseCase activateProfessorUseCase,
         DeactivateTeacherUseCase deactivateProfessorUseCase,
-        ITeacherQueries professorQueries)
+        ITeacherQueries professorQueries,
+        ITenantContext tenantContext)
     {
         _createProfessorUseCase = createProfessorUseCase;
         _updateProfessorUseCase = updateProfessorUseCase;
         _activateProfessorUseCase = activateProfessorUseCase;
         _deactivateProfessorUseCase = deactivateProfessorUseCase;
         _professorQueries = professorQueries;
+        _tenantContext = tenantContext;
     }
 
     [HttpGet("Filter")]
@@ -38,7 +44,7 @@ public sealed class TeachersController : ControllerBase
     {
         var secureFilter = new TeacherFilter
         {
-            TenantId = filter.TenantId,
+            TenantId = _tenantContext.TenantId,
             PersonId = filter.PersonId,
             ContractType = filter.ContractType,
             Status = filter.Status,
@@ -50,11 +56,12 @@ public sealed class TeachersController : ControllerBase
         return Ok(professors);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(Teacher), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Teacher>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<Teacher>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var professor = await _professorQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (professor == null)
@@ -72,24 +79,24 @@ public sealed class TeachersController : ControllerBase
     public async Task<ActionResult<CreateTeacherResponse>> CreateAsync([FromBody] CreateTeacherRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
-        Response.Headers.Append(
-            "X-Correlation-Id",
-            correlationId.ToString());
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createProfessorUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var response = await _createProfessorUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateTeacherResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateTeacherResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateTeacherRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateTeacherResponse>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateTeacherRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -103,12 +110,13 @@ public sealed class TeachersController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/activate")]
+    [HttpPatch("{id:guid}/activate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ActivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> ActivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -117,12 +125,13 @@ public sealed class TeachersController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}/deactivate")]
+    [HttpDelete("{id:guid}/deactivate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -133,10 +142,9 @@ public sealed class TeachersController : ControllerBase
 
     [HttpGet("candidates")]
     [ProducesResponseType(typeof(IReadOnlyCollection<CandidateTeacherResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<CandidateTeacherResponse>>> GetCandidatesAsync(
-    [FromQuery] Guid tenantId,
-    CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyCollection<CandidateTeacherResponse>>> GetCandidatesAsync(CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var teachers = await _professorQueries.GetCandidatesAsync(
             new CandidateTeacherFilter { TenantId = tenantId },
             cancellationToken);

@@ -16,9 +16,8 @@ public sealed class CreateCoordinatorUseCaseTests
         var dataStore = new FakeCoordinatorDataStore();
         var useCase = new CreateCoordinatorUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(new CreateCoordinatorRequest
+        var response = await useCase.ExecuteAsync(tenantId, new CreateCoordinatorRequest
         {
-            TenantId = tenantId,
             PersonId = personId
         }, correlationId, CancellationToken.None);
 
@@ -38,12 +37,12 @@ public sealed class CreateCoordinatorUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WhenPersonAlreadyCoordinator_ShouldThrowConflict()
     {
+        var tenantId = Guid.NewGuid();
         var dataStore = new FakeCoordinatorDataStore { PersonAlreadyCoordinatorResult = true };
         var useCase = new CreateCoordinatorUseCase(dataStore);
 
-        await Assert.ThrowsAsync<DuplicateCoordinatorException>(() => useCase.ExecuteAsync(new CreateCoordinatorRequest
+        await Assert.ThrowsAsync<DuplicateCoordinatorException>(() => useCase.ExecuteAsync(tenantId, new CreateCoordinatorRequest
         {
-            TenantId = Guid.NewGuid(),
             PersonId = Guid.NewGuid()
         }, Guid.NewGuid(), CancellationToken.None));
 

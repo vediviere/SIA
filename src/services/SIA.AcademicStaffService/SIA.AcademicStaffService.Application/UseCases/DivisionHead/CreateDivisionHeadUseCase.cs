@@ -17,12 +17,13 @@ public sealed class CreateDivisionHeadUseCase
     }
 
     public async Task<CreateDivisionHeadResponse> ExecuteAsync(
+        Guid tenantId,
         CreateDivisionHeadRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var personAlreadyManagesProgram = await _dataStore.PersonAlreadyManagesProgramAsync(
-            request.TenantId,
+            tenantId,
             request.ProgramId,
             request.PersonId,
             cancellationToken);
@@ -33,7 +34,7 @@ public sealed class CreateDivisionHeadUseCase
         }
 
         var divisionManager = new DivisionHead(
-            request.TenantId,
+            tenantId,
             request.ProgramId,
             request.PersonId);
 

@@ -2,7 +2,6 @@
 
 public sealed record CreateDivisionHeadRequest
 {
-    public required Guid TenantId { get; init; }
 
     public required Guid ProgramId { get; init; }
 

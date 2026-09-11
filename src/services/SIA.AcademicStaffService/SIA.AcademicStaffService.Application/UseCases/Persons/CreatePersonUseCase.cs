@@ -17,6 +17,7 @@ public sealed class CreatePersonUseCase
     }
 
     public async Task<CreatePersonResponse> ExecuteAsync(
+        Guid tenantId,
         CreatePersonRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
@@ -33,7 +34,8 @@ public sealed class CreatePersonUseCase
         }
 
         var person = new Person(
-            request.TenantId,
+
+            tenantId,
             normalizedEmployeeNumber,
             request.FirstName,
             request.PaternalLastName,

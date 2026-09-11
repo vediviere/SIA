@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicStaffService.Application.DTOs.Persons;
+using SIA.AcademicStaffService.Application.Interfaces;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.Persons;
 using SIA.AcademicStaffService.Contracts.Requests.Persons;
@@ -8,6 +10,7 @@ using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/persons")]
 public sealed class PersonsController : ControllerBase
@@ -17,19 +20,22 @@ public sealed class PersonsController : ControllerBase
     private readonly ActivatePersonUseCase _activatePersonUseCase;
     private readonly DeactivatePersonUseCase _deactivatePersonUseCase;
     private readonly IPersonQueries _personQueries;
+    private readonly ITenantContext _tenantContext;
 
     public PersonsController(
         CreatePersonUseCase createPersonUseCase,
         UpdatePersonUseCase updatePersonUseCase,
         ActivatePersonUseCase activatePersonUseCase,
         DeactivatePersonUseCase deactivatePersonUseCase,
-        IPersonQueries personQueries)
+        IPersonQueries personQueries,
+        ITenantContext tenantContext)
     {
         _createPersonUseCase = createPersonUseCase;
         _updatePersonUseCase = updatePersonUseCase;
         _activatePersonUseCase = activatePersonUseCase;
         _deactivatePersonUseCase = deactivatePersonUseCase;
         _personQueries = personQueries;
+        _tenantContext = tenantContext;
     }
 
     [HttpGet("Filter")]
@@ -38,7 +44,7 @@ public sealed class PersonsController : ControllerBase
     {
         var secureFilter = new PersonFilter
         {
-            TenantId = filter.TenantId,
+            TenantId = _tenantContext.TenantId,
             EmployeeNumber = filter.EmployeeNumber,
             FirstName = filter.FirstName,
             PaternalLastName = filter.PaternalLastName,
@@ -51,11 +57,12 @@ public sealed class PersonsController : ControllerBase
         return Ok(persons);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(Person), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Person>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<Person>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var person = await _personQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (person == null)
@@ -73,23 +80,23 @@ public sealed class PersonsController : ControllerBase
     public async Task<ActionResult<CreatePersonResponse>> CreateAsync([FromBody] CreatePersonRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
-        Response.Headers.Append(
-            "X-Correlation-Id",
-            correlationId.ToString());
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createPersonUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var response = await _createPersonUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdatePersonResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<UpdatePersonResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdatePersonRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdatePersonResponse>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdatePersonRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -103,12 +110,13 @@ public sealed class PersonsController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/activate")]
+    [HttpPatch("{id:guid}/activate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ActivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> ActivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -117,12 +125,13 @@ public sealed class PersonsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}/deactivate")]
+    [HttpDelete("{id:guid}/deactivate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 

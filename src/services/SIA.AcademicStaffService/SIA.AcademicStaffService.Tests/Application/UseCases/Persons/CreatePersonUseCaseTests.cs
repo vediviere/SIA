@@ -15,9 +15,8 @@ public sealed class CreatePersonUseCaseTests
         var dataStore = new FakePersonDataStore();
         var useCase = new CreatePersonUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(new CreatePersonRequest
+        var response = await useCase.ExecuteAsync(tenantId, new CreatePersonRequest
         {
-            TenantId = tenantId,
             EmployeeNumber = " EMP-0001 ",
             FirstName = "Ana",
             PaternalLastName = "García",
@@ -44,12 +43,12 @@ public sealed class CreatePersonUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WhenEmployeeNumberExists_ShouldThrowConflict()
     {
+        var tenantId = Guid.NewGuid();
         var dataStore = new FakePersonDataStore { EmployeeNumberExistsResult = true };
         var useCase = new CreatePersonUseCase(dataStore);
 
-        await Assert.ThrowsAsync<DuplicatePersonEmployeeNumberException>(() => useCase.ExecuteAsync(new CreatePersonRequest
+        await Assert.ThrowsAsync<DuplicatePersonEmployeeNumberException>(() => useCase.ExecuteAsync(tenantId, new CreatePersonRequest
         {
-            TenantId = Guid.NewGuid(),
             EmployeeNumber = "EMP-0001",
             FirstName = "Ana",
             PaternalLastName = "García",

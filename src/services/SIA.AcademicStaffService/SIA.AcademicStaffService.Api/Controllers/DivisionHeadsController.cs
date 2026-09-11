@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicStaffService.Application.DTOs.DivisionManagers;
+using SIA.AcademicStaffService.Application.Interfaces;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.DivisionManagers;
 using SIA.AcademicStaffService.Contracts.Requests.DivisionManagers;
@@ -8,6 +10,7 @@ using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/division-heads")]
 public sealed class DivisionHeadsController : ControllerBase
@@ -16,17 +19,20 @@ public sealed class DivisionHeadsController : ControllerBase
     private readonly ActivateDivisionHeadUseCase _activateDivisionManagerUseCase;
     private readonly DeactivateDivisionHeadUseCase _deactivateDivisionManagerUseCase;
     private readonly IDivisionHeadQueries _divisionManagerQueries;
+    private readonly ITenantContext _tenantContext;
 
     public DivisionHeadsController(
         CreateDivisionHeadUseCase createDivisionManagerUseCase,
         ActivateDivisionHeadUseCase activateDivisionManagerUseCase,
         DeactivateDivisionHeadUseCase deactivateDivisionManagerUseCase,
-        IDivisionHeadQueries divisionManagerQueries)
+        IDivisionHeadQueries divisionManagerQueries,
+        ITenantContext tenantContext)
     {
         _createDivisionManagerUseCase = createDivisionManagerUseCase;
         _activateDivisionManagerUseCase = activateDivisionManagerUseCase;
         _deactivateDivisionManagerUseCase = deactivateDivisionManagerUseCase;
         _divisionManagerQueries = divisionManagerQueries;
+        _tenantContext = tenantContext;
     }
 
     [HttpGet("Filter")]
@@ -35,7 +41,7 @@ public sealed class DivisionHeadsController : ControllerBase
     {
         var secureFilter = new DivisionHeadFilter
         {
-            TenantId = filter.TenantId,
+            TenantId = _tenantContext.TenantId,
             ProgramId = filter.ProgramId,
             PersonId = filter.PersonId,
             Status = filter.Status,
@@ -47,11 +53,12 @@ public sealed class DivisionHeadsController : ControllerBase
         return Ok(divisionManagers);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(DivisionHead), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DivisionHead>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<DivisionHead>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var divisionManager = await _divisionManagerQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (divisionManager == null)
@@ -69,22 +76,22 @@ public sealed class DivisionHeadsController : ControllerBase
     public async Task<ActionResult<CreateDivisionHeadResponse>> CreateAsync([FromBody] CreateDivisionHeadRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
-        Response.Headers.Append(
-            "X-Correlation-Id",
-            correlationId.ToString());
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createDivisionManagerUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var response = await _createDivisionManagerUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/activate")]
+    [HttpPatch("{id:guid}/activate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ActivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> ActivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -93,12 +100,13 @@ public sealed class DivisionHeadsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}/deactivate")]
+    [HttpDelete("{id:guid}/deactivate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 

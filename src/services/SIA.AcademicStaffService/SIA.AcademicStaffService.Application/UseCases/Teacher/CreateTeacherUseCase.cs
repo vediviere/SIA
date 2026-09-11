@@ -17,12 +17,13 @@ public sealed class CreateTeacherUseCase
     }
 
     public async Task<CreateTeacherResponse> ExecuteAsync(
+        Guid tenantId,
         CreateTeacherRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var personAlreadyProfessor = await _dataStore.PersonAlreadyProfessorAsync(
-            request.TenantId,
+            tenantId,
             request.PersonId,
             cancellationToken);
 
@@ -32,7 +33,7 @@ public sealed class CreateTeacherUseCase
         }
 
         var professor = new Teacher(
-            request.TenantId,
+            tenantId,
             request.PersonId,
             request.ProfessionalProfile,
             request.ContractType,

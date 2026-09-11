@@ -17,12 +17,13 @@ public sealed class CreateCoordinatorUseCase
     }
 
     public async Task<CreateCoordinatorResponse> ExecuteAsync(
+        Guid tenantId,
         CreateCoordinatorRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var personAlreadyCoordinator = await _dataStore.PersonAlreadyCoordinatorAsync(
-            request.TenantId,
+            tenantId,
             request.PersonId,
             cancellationToken);
 
@@ -32,7 +33,7 @@ public sealed class CreateCoordinatorUseCase
         }
 
         var coordinator = new Coordinator(
-            request.TenantId,
+            tenantId,
             request.PersonId);
 
         var integrationEvent = new CoordinatorCreatedIntegrationEvent
