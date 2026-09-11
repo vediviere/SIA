@@ -1,5 +1,10 @@
 ﻿using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using SIA.AcademicStaffService.Api.Security;
+using SIA.AcademicStaffService.Application.Interfaces;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.Coordinators;
@@ -20,10 +25,58 @@ using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddOpenApi();
+var signingKey = builder.Configuration["Token:SigningKey"]
+    ?? throw new InvalidOperationException("Token:SigningKey no está configurado.");
+var signingKeyBytes = Convert.FromBase64String(signingKey);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.MapInboundClaims = false;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Token:Issuer"],
+            ValidAudience = builder.Configuration["Token:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
+            NameClaimType = "email",
+            RoleClaimType = "role",
+            ClockSkew = TimeSpan.FromSeconds(30)
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+
+        document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Token JWT. Escribe el token directamente sin la palabra 'Bearer'."
+        };
+
+        document.Security ??= new List<OpenApiSecurityRequirement>();
+        document.Security.Add(new OpenApiSecurityRequirement
+        {
+            { new OpenApiSecuritySchemeReference("Bearer", document), new List<string>() }
+        });
+
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.AddDbContext<AcademicStaffDbContext>(options =>
 {
@@ -119,6 +172,9 @@ builder.Services.AddScoped<DeactivateCoordinatorUseCase>();
 
 builder.Services.AddSiaExceptionHandling();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ITenantContext, TenantContext>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -129,11 +185,13 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint(
             "/openapi/v1.json",
-            "SIA AcademicStaffService API v1");
+            "SIA.AcademicStaffService.Api");
     });
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
@@ -144,7 +202,7 @@ app.MapGet("/health", () =>
         service = "SIA.AcademicStaffService.Api",
         status = "Healthy"
     });
-});
+}).AllowAnonymous();
 
 app.UseSiaExceptionHandling();
 

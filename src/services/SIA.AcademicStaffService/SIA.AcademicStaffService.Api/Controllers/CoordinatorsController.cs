@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SIA.AcademicStaffService.Application.DTOs.Coordinators;
+using SIA.AcademicStaffService.Application.Interfaces;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.Coordinators;
 using SIA.AcademicStaffService.Contracts.Requests.Coordinators;
@@ -8,6 +10,7 @@ using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/coordinators")]
 public sealed class CoordinatorsController : ControllerBase
@@ -16,17 +19,20 @@ public sealed class CoordinatorsController : ControllerBase
     private readonly ActivateCoordinatorUseCase _activateCoordinatorUseCase;
     private readonly DeactivateCoordinatorUseCase _deactivateCoordinatorUseCase;
     private readonly ICoordinatorQueries _coordinatorQueries;
+    private readonly ITenantContext _tenantContext;
 
     public CoordinatorsController(
         CreateCoordinatorUseCase createCoordinatorUseCase,
         ActivateCoordinatorUseCase activateCoordinatorUseCase,
         DeactivateCoordinatorUseCase deactivateCoordinatorUseCase,
-        ICoordinatorQueries coordinatorQueries)
+        ICoordinatorQueries coordinatorQueries,
+        ITenantContext tenantContext)
     {
         _createCoordinatorUseCase = createCoordinatorUseCase;
         _activateCoordinatorUseCase = activateCoordinatorUseCase;
         _deactivateCoordinatorUseCase = deactivateCoordinatorUseCase;
         _coordinatorQueries = coordinatorQueries;
+        _tenantContext = tenantContext;
     }
 
     [HttpGet("Filter")]
@@ -35,7 +41,7 @@ public sealed class CoordinatorsController : ControllerBase
     {
         var secureFilter = new CoordinatorFilter
         {
-            TenantId = filter.TenantId,
+            TenantId = _tenantContext.TenantId,
             PersonId = filter.PersonId,
             Status = filter.Status,
             Page = filter.Page,
@@ -46,11 +52,12 @@ public sealed class CoordinatorsController : ControllerBase
         return Ok(coordinators);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(Coordinator), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Coordinator>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<Coordinator>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var coordinator = await _coordinatorQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (coordinator == null)
@@ -68,22 +75,22 @@ public sealed class CoordinatorsController : ControllerBase
     public async Task<ActionResult<CreateCoordinatorResponse>> CreateAsync([FromBody] CreateCoordinatorRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
-        Response.Headers.Append(
-            "X-Correlation-Id",
-            correlationId.ToString());
+        Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createCoordinatorUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var response = await _createCoordinatorUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/activate")]
+    [HttpPatch("{id:guid}/activate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ActivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> ActivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -92,12 +99,13 @@ public sealed class CoordinatorsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}/deactivate")]
+    [HttpDelete("{id:guid}/deactivate")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
+        var tenantId = _tenantContext.TenantId;
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 

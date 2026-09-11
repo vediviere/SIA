@@ -17,9 +17,8 @@ public sealed class CreateDivisionHeadUseCaseTests
         var dataStore = new FakeDivisionHeadDataStore();
         var useCase = new CreateDivisionHeadUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(new CreateDivisionHeadRequest
+        var response = await useCase.ExecuteAsync(tenantId, new CreateDivisionHeadRequest
         {
-            TenantId = tenantId,
             ProgramId = programId,
             PersonId = personId
         }, correlationId, CancellationToken.None);
@@ -41,12 +40,12 @@ public sealed class CreateDivisionHeadUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WhenPersonAlreadyManagesProgram_ShouldThrowConflict()
     {
+        var tenantId = Guid.NewGuid();
         var dataStore = new FakeDivisionHeadDataStore { PersonAlreadyManagesProgramResult = true };
         var useCase = new CreateDivisionHeadUseCase(dataStore);
 
-        await Assert.ThrowsAsync<DuplicateDivisionHeadException>(() => useCase.ExecuteAsync(new CreateDivisionHeadRequest
+        await Assert.ThrowsAsync<DuplicateDivisionHeadException>(() => useCase.ExecuteAsync(tenantId, new CreateDivisionHeadRequest
         {
-            TenantId = Guid.NewGuid(),
             ProgramId = Guid.NewGuid(),
             PersonId = Guid.NewGuid()
         }, Guid.NewGuid(), CancellationToken.None));

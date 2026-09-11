@@ -16,9 +16,8 @@ public sealed class CreateTeacherUseCaseTests
         var dataStore = new FakeTeacherDataStore();
         var useCase = new CreateTeacherUseCase(dataStore);
 
-        var response = await useCase.ExecuteAsync(new CreateTeacherRequest
+        var response = await useCase.ExecuteAsync(tenantId, new CreateTeacherRequest
         {
-            TenantId = tenantId,
             PersonId = personId,
             ProfessionalProfile = "Ingeniero de Software",
             ContractType = "Tiempo completo",
@@ -42,12 +41,12 @@ public sealed class CreateTeacherUseCaseTests
     [Fact]
     public async Task ExecuteAsync_WhenPersonAlreadyProfessor_ShouldThrowConflict()
     {
+        var tenantId = Guid.NewGuid();
         var dataStore = new FakeTeacherDataStore { PersonAlreadyProfessorResult = true };
         var useCase = new CreateTeacherUseCase(dataStore);
 
-        await Assert.ThrowsAsync<DuplicateTeacherException>(() => useCase.ExecuteAsync(new CreateTeacherRequest
+        await Assert.ThrowsAsync<DuplicateTeacherException>(() => useCase.ExecuteAsync(tenantId, new CreateTeacherRequest
         {
-            TenantId = Guid.NewGuid(),
             PersonId = Guid.NewGuid(),
             ProfessionalProfile = "Ingeniero de Software",
             ContractType = "Tiempo completo",
