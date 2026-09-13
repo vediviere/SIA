@@ -19,7 +19,6 @@ public sealed class CreateAcademicPeriodsUseCase
     public async Task<CreateAcademicPeriodResponse> ExecuteAsync(Guid tenantId, CreateAcademicPeriodRequest request, Guid correlationId, CancellationToken cancellationToken)
     {
         var normalizedCode = request.Code.Trim().ToUpperInvariant();
-
         var codeExists = await _dataStore.AcademicPeriodCodeExistsAsync(tenantId, normalizedCode, cancellationToken);
 
         if (codeExists)
@@ -28,21 +27,21 @@ public sealed class CreateAcademicPeriodsUseCase
         }
 
         var academicPeriod = new AcademicPeriod(
-                tenantId,
-                normalizedCode,
-                request.Name,
-                request.StartDate,
-                request.EndDate,
-                request.AcademicLoadProcessStartDate,
-                request.AcademicLoadProcessEndDate,
-                request.EnrollmentProcessStartDate,
-                request.EnrollmentProcessEndDate,
-                request.PlanningSubmissionDate,
-                request.FirstPartialGradeReportDate,
-                request.SecondPartialGradeReportDate,
-                request.ThirdPartialGradeReportDate,
-                request.FinalMinutesSubmissionDate);
-
+            tenantId,
+            normalizedCode,
+            request.Name,
+            request.StartDate,
+            request.EndDate,
+            request.AcademicLoadProcessStartDate,
+            request.AcademicLoadProcessEndDate,
+            request.EnrollmentProcessStartDate,
+            request.EnrollmentProcessEndDate,
+            request.PlanningSubmissionDate,
+            request.FirstPartialGradeReportDate,
+            request.SecondPartialGradeReportDate,
+            request.ThirdPartialGradeReportDate,
+            request.FinalMinutesSubmissionDate);
+        
         var integrationEvent = new AcademicPeriodCreatedIntegrationEvent
         {
             EventId = Guid.NewGuid(),

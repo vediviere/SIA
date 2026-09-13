@@ -35,13 +35,13 @@ public sealed class CreateSubjectUseCase
         }
 
         var subject = new Subject(
-                tenantId,
-                normalizedCode,
-                request.Name,
-                request.Semester,
-                request.TheoryHours,
-                request.PracticeHours,
-                request.Credits);
+            tenantId,
+            normalizedCode,
+            request.Name,
+            request.Semester,
+            request.TheoryHours,
+            request.PracticeHours,
+            request.Credits);
 
         var integrationEvent = new SubjectCreatedIntegrationEvent
         {
