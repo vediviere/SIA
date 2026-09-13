@@ -25,11 +25,11 @@ public sealed class StudyPlanSubjectQueries : IStudyPlanSubjectQueries
                                 cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<StudyPlanSubject>> SearchAsync(StudyPlanSubjectFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<StudyPlanSubject>> SearchAsync(Guid tenantId, StudyPlanSubjectFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<StudyPlanSubject> query = _dbContext.StudyPlanSubjects
                                     .AsNoTracking()
-                                    .Where(x => x.TenantId == filter.TenantId);
+                                    .Where(x => x.TenantId == tenantId); 
 
         if (filter.StudyPlanId.HasValue)
         {

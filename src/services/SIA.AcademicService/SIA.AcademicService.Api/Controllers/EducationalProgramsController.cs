@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Api.Extensions;
 using SIA.AcademicService.Application.DTOs.EducationalProgram;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.EducationalProgramsUseCase;
@@ -21,7 +22,7 @@ public sealed class EducationalProgramsController : ControllerBase
     private readonly RestoreEducationalProgramsUseCase _restoreUseCase;
 
     public EducationalProgramsController(
-        CreateEducationalProgramsUseCase createEducationalProgramsUseCase, 
+        CreateEducationalProgramsUseCase createEducationalProgramsUseCase,
         IEducationalProgramQueries queries,
         UpdateEducationalProgramsUseCase updateUseCase,
         DeactivateEducationalProgramsUseCase deactivateUseCase,
@@ -42,7 +43,10 @@ public sealed class EducationalProgramsController : ControllerBase
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
-        var response = await _createEducationalProgramsUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+
+        var tenantId = User.GetTenantId();
+        var response = await _createEducationalProgramsUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
+
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
@@ -52,78 +56,74 @@ public sealed class EducationalProgramsController : ControllerBase
         [FromQuery] EducationalProgramFilter filter,
         CancellationToken cancellationToken)
     {
-        var secureFilter = new EducationalProgramFilter
-        {
-            TenantId = filter.TenantId,
-            Code = filter.Code,
-            Name = filter.Name,
-            Level = filter.Level,
-            Status = filter.Status,
-            Page = filter.Page,
-            PageSize = filter.PageSize
-        };
-
-        var programs = await _queries.SearchAsync(secureFilter, cancellationToken);
+        var tenantId = User.GetTenantId();
+        var programs = await _queries.SearchAsync(tenantId, filter, cancellationToken);
         return Ok(programs);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(EducationalProgram), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<EducationalProgram>> GetByIdAsync(
-        [FromRoute] Guid tenantId,
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
+        var tenantId = User.GetTenantId();
+
         var result = await _queries.GetByIdAsync(tenantId, id, cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateEducationalProgramsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<UpdateEducationalProgramsResponse>> UpdateAsync(
-        [FromRoute] Guid tenantId,
         [FromRoute] Guid id,
         [FromBody] UpdateEducationalProgramsRequest request,
         CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
+
         var response = await _updateUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
         return Ok(response);
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeactivateAsync(
-        [FromRoute] Guid tenantId,
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
+
         await _deactivateUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
+    [HttpPatch("{id:guid}/restore")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RestoreAsync(
-        [FromRoute] Guid tenantId,
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
+
         await _restoreUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
         return NoContent();
     }
-
 
     private Guid ResolveCorrelationId()
     {
@@ -137,4 +137,3 @@ public sealed class EducationalProgramsController : ControllerBase
         return Guid.NewGuid();
     }
 }
-    

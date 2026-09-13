@@ -21,7 +21,6 @@ public class CreateStudyPlanSubjectUseCaseTests
 
         var request = new CreateStudyPlanSubjectRequest
         {
-            TenantId = tenantId,
             StudyPlanId = studyPlanId,
             SubjectId = subjectId,
             Semester = 3,
@@ -45,7 +44,7 @@ public class CreateStudyPlanSubjectUseCaseTests
         var useCase = new CreateStudyPlanSubjectUseCase(dataStore.Object);
 
         // Act
-        var response = await useCase.ExecuteAsync(request,correlationId,CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         Assert.NotEqual(Guid.Empty, response.Id);
@@ -78,7 +77,6 @@ public class CreateStudyPlanSubjectUseCaseTests
 
         var request = new CreateStudyPlanSubjectRequest
         {
-            TenantId = tenantId,
             StudyPlanId = studyPlanId,
             SubjectId = subjectId,
             Semester = 3,
@@ -98,7 +96,7 @@ public class CreateStudyPlanSubjectUseCaseTests
 
         // Act & Assert
         await Assert.ThrowsAsync<DuplicateStudyPlanSubjectException>(() =>
-            useCase.ExecuteAsync(request,correlationId,CancellationToken.None)
+            useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None)
         );
 
         dataStore.Verify(
@@ -120,7 +118,6 @@ public class CreateStudyPlanSubjectUseCaseTests
 
         var request = new CreateStudyPlanSubjectRequest
         {
-            TenantId = tenantId,
             StudyPlanId = studyPlanId,
             SubjectId = subjectId,
             Semester = 3,
@@ -145,7 +142,7 @@ public class CreateStudyPlanSubjectUseCaseTests
         var useCase = new CreateStudyPlanSubjectUseCase(dataStore.Object);
 
         // Act
-        await useCase.ExecuteAsync(request,correlationId,CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         dataStore.Verify(

@@ -25,12 +25,11 @@ public sealed class SubjectQueries : ISubjectQueries
                                 cancellationToken);
     }
 
-
-    public async Task<IReadOnlyCollection<Subject>> SearchAsync(SubjectFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Subject>> SearchAsync(Guid tenantId, SubjectFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<Subject> query = _dbContext.Subjects
                                     .AsNoTracking()
-                                    .Where(x => x.TenantId == filter.TenantId);
+                                    .Where(x => x.TenantId == tenantId);
 
         if (!string.IsNullOrWhiteSpace(filter.Code))
         {
@@ -60,4 +59,3 @@ public sealed class SubjectQueries : ISubjectQueries
                             .ToListAsync(cancellationToken);
     }
 }
-   

@@ -19,7 +19,6 @@ public class CreateEducationalProgramsUseCaseTests
 
         var request = new CreateEducationalProgramsRequest
         {
-            TenantId = tenantId,
             Code = "  ing001  ",
             Name = " Ingeniería en Sistemas ",
             Level = " Licenciatura "
@@ -40,7 +39,7 @@ public class CreateEducationalProgramsUseCaseTests
         var useCase = new CreateEducationalProgramsUseCase(dataStore.Object);
 
         // Act
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         Assert.NotEqual(Guid.Empty, response.Id);
@@ -92,7 +91,6 @@ public class CreateEducationalProgramsUseCaseTests
 
         var request = new CreateEducationalProgramsRequest
         {
-            TenantId = tenantId,
             Code = "  ing-2026  ",
             Name = "Ingeniería",
             Level = "Licenciatura"
@@ -113,7 +111,7 @@ public class CreateEducationalProgramsUseCaseTests
         var useCase = new CreateEducationalProgramsUseCase(dataStore.Object);
 
         // Act
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         Assert.Equal("ING-2026", response.Code);
@@ -144,7 +142,6 @@ public class CreateEducationalProgramsUseCaseTests
 
         var request = new CreateEducationalProgramsRequest
         {
-            TenantId = tenantId,
             Code = "  ing001  ",
             Name = "Ingeniería en Sistemas",
             Level = "Licenciatura"
@@ -161,7 +158,7 @@ public class CreateEducationalProgramsUseCaseTests
 
         // Act & Assert
         await Assert.ThrowsAsync<DuplicateEducationalProgramCodeException>(() =>
-            useCase.ExecuteAsync(request,correlationId,CancellationToken.None)
+            useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None)
         );
 
         dataStore.Verify(

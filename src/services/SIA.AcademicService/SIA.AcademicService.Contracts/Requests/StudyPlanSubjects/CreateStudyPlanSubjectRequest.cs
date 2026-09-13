@@ -4,7 +4,6 @@ namespace SIA.AcademicService.Contracts.Requests.StudyPlanSubjects;
 
 public sealed record CreateStudyPlanSubjectRequest
 {
-    public required Guid TenantId { get; init; }
     public required Guid StudyPlanId { get; init; }
     public required Guid SubjectId { get; init; }
     public required int Semester { get; init; }

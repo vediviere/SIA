@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using SIA.AcademicService.Api.OpenApi;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.AcademicContext;
@@ -53,27 +54,8 @@ builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services.AddOpenApi(options =>
 {
-    options.AddDocumentTransformer((document, context, cancellationToken) =>
-    {
-        document.Components ??= new OpenApiComponents();
-        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
-
-        document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
-        {
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT",
-            Description = "Token JWT. Escribe el token directamente sin la palabra 'Bearer'."
-        };
-
-        document.Security ??= new List<OpenApiSecurityRequirement>();
-        document.Security.Add(new OpenApiSecurityRequirement
-        {
-            { new OpenApiSecuritySchemeReference("Bearer", document), new List<string>() }
-        });
-
-        return Task.CompletedTask;
-    });
+    options.AddDocumentTransformer<BearerSchemeTransformer>();
+    options.AddOperationTransformer<AuthOperationTransformer>();
 });
 
 builder.Services.AddDbContext<AcademicDbContext>(options =>

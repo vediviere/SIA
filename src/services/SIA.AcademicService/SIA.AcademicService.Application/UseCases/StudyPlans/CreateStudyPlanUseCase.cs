@@ -16,17 +16,17 @@ public sealed class CreateStudyPlanUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<CreateStudyPlanResponse> ExecuteAsync(CreateStudyPlanRequest request, Guid correlationId, CancellationToken cancellationToken)
+    public async Task<CreateStudyPlanResponse> ExecuteAsync(Guid tenantId, CreateStudyPlanRequest request, Guid correlationId, CancellationToken cancellationToken)
     {
         var normalizedCode = request.Code.Trim().ToUpperInvariant();
 
-        var codeExists = await _dataStore.StudyPlanCodeExistsAsync(request.TenantId, normalizedCode, cancellationToken);
+        var codeExists = await _dataStore.StudyPlanCodeExistsAsync(tenantId, normalizedCode, cancellationToken);
         if (codeExists)
         {
             throw new DuplicateStudyPlanCodeException(normalizedCode);
         }
 
-        var studyPlan = new StudyPlan(request.TenantId, request.EducationalProgramId, normalizedCode, request.Name, request.Version, request.EffectiveFrom);
+        var studyPlan = new StudyPlan(tenantId, request.EducationalProgramId, normalizedCode, request.Name, request.Version, request.EffectiveFrom);
 
         var integrationEvent = new StudyPlanCreatedIntegrationEvent
         {

@@ -4,9 +4,8 @@ using System.Text;
 
 namespace SIA.AcademicService.Application.DTOs.EducationalProgram
 {
-    public sealed class EducationalProgramFilter
+    public sealed record EducationalProgramFilter
     {
-        public Guid TenantId { get; init; }
 
         public string? Code { get; init; }
 

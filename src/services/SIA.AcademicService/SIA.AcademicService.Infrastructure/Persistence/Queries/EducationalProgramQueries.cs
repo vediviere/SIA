@@ -3,9 +3,6 @@ using SIA.AcademicService.Application.DTOs.EducationalProgram;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Domain.Entities;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Queries
 {
@@ -28,11 +25,11 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                                         cancellationToken);
         }
 
-        public async Task<IReadOnlyCollection<EducationalProgram>> SearchAsync(EducationalProgramFilter filter, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<EducationalProgram>> SearchAsync(Guid tenantId, EducationalProgramFilter filter, CancellationToken cancellationToken)
         {
             IQueryable<EducationalProgram> query = _dbContext.EducationalPrograms
                                      .AsNoTracking()
-                                     .Where(x => x.TenantId == filter.TenantId);
+                                     .Where(x => x.TenantId == tenantId); 
 
             if (!string.IsNullOrWhiteSpace(filter.Code))
             {
@@ -51,8 +48,7 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
 
             if (filter.Status.HasValue)
             {
-                query = query.Where(
-                                x => x.Status == filter.Status.Value);
+                query = query.Where(x => x.Status == filter.Status.Value);
             }
 
             query = query.Skip((filter.Page - 1) * filter.PageSize)

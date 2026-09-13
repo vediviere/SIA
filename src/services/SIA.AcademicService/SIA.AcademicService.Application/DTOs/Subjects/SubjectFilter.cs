@@ -1,8 +1,7 @@
 ﻿namespace SIA.AcademicService.Application.DTOs.Subjects;
 
-public sealed class SubjectFilter
+public sealed record SubjectFilter
 {
-    public Guid TenantId { get; init; }
 
     public string? Code { get; init; }
 

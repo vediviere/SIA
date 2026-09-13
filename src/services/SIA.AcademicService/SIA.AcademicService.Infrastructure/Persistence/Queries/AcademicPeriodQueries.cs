@@ -3,9 +3,6 @@ using SIA.AcademicService.Application.DTOs.AcademicPeriod;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Domain.Entities;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Queries
 {
@@ -28,11 +25,11 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                                         cancellationToken);
         }
 
-        public async Task<IReadOnlyCollection<AcademicPeriod>> SearchAsync(AcademicPeriodFilter filter, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<AcademicPeriod>> SearchAsync(Guid tenantId, AcademicPeriodFilter filter, CancellationToken cancellationToken)
         {
             IQueryable<AcademicPeriod> query = _dbContext.AcademicPeriods
                                                     .AsNoTracking()
-                                                    .Where(x => x.TenantId == filter.TenantId);
+                                                    .Where(x => x.TenantId == tenantId); 
 
             if (!string.IsNullOrWhiteSpace(filter.Code))
             {

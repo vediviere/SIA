@@ -20,9 +20,9 @@ public sealed class PatchAcademicPeriodUseCase
   {
     var academicPeriod = await _dataStore.GetByIdAsync(id, cancellationToken);
 
-    if (academicPeriod is null)
+    if (academicPeriod is null || academicPeriod.TenantId != tenantId)
     {
-      throw new AcademicPeriodNotFoundException(id);
+        throw new AcademicPeriodNotFoundException(id);
     }
 
     var normalizedCode = request.Code.Trim().ToUpperInvariant();

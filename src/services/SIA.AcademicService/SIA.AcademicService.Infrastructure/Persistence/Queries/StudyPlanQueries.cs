@@ -3,9 +3,6 @@ using SIA.AcademicService.Application.DTOs.StudyPlan;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Domain.Entities;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIA.AcademicService.Infrastructure.Persistence.Queries
 {
@@ -28,11 +25,11 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                                         cancellationToken);
         }
 
-        public async Task<IReadOnlyCollection<StudyPlan>> SearchAsync(StudyPlanFilter filter, CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<StudyPlan>> SearchAsync(Guid tenantId, StudyPlanFilter filter, CancellationToken cancellationToken)
         {
             IQueryable<StudyPlan> query = _dbContext.StudyPlans
                                      .AsNoTracking()
-                                     .Where(x => x.TenantId == filter.TenantId);
+                                     .Where(x => x.TenantId == tenantId); 
 
             if (filter.EducationalProgramId.HasValue)
             {
@@ -75,7 +72,7 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                 join s in _dbContext.Subjects on sps.SubjectId equals s.Id
                 where sps.TenantId == tenantId
                       && sps.StudyPlanId == studyPlanId
-                      && sps.Status 
+                      && sps.Status
                 select new StudyPlanSubjectDto
                 {
                     TenantId = sps.TenantId,

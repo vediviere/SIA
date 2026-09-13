@@ -25,7 +25,6 @@ public class SearchAcademicPeriodsUseCaseTests
 
         var filter = new AcademicPeriodFilter
         {
-            TenantId = tenantId,
             Code = "2026-1",
             Name = "Periodo 2026-1",
             Status = true,
@@ -47,11 +46,12 @@ public class SearchAcademicPeriodsUseCaseTests
         };
 
         _queriesMock.Setup(x => x.SearchAsync(
+                tenantId,
                 filter,
                 It.IsAny<CancellationToken>())).ReturnsAsync(academicPeriods);
 
         // Act
-        var result = await _useCase.ExecuteAsync(filter, CancellationToken.None);
+        var result = await _useCase.ExecuteAsync(tenantId, filter, CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);
@@ -84,6 +84,7 @@ public class SearchAcademicPeriodsUseCaseTests
 
         _queriesMock.Verify(
             x => x.SearchAsync(
+                tenantId,
                 filter,
                 It.IsAny<CancellationToken>()),
             Times.Once);
@@ -93,19 +94,21 @@ public class SearchAcademicPeriodsUseCaseTests
     public async Task ExecuteAsync_WhenNoAcademicPeriodsExist_ShouldReturnEmptyCollection()
     {
         // Arrange
+        var tenantId = Guid.NewGuid();
+
         var filter = new AcademicPeriodFilter
         {
-            TenantId = Guid.NewGuid(),
             Page = 1,
             PageSize = 10
         };
 
         _queriesMock.Setup(x => x.SearchAsync(
+                tenantId,
                 filter,
                 It.IsAny<CancellationToken>())).ReturnsAsync(Array.Empty<AcademicPeriod>());
 
         // Act
-        var result = await _useCase.ExecuteAsync(filter, CancellationToken.None);
+        var result = await _useCase.ExecuteAsync(tenantId, filter, CancellationToken.None);
 
         // Assert
         Assert.NotNull(result);
@@ -113,6 +116,7 @@ public class SearchAcademicPeriodsUseCaseTests
 
         _queriesMock.Verify(
             x => x.SearchAsync(
+                tenantId,
                 filter,
                 It.IsAny<CancellationToken>()),
             Times.Once);
@@ -122,24 +126,24 @@ public class SearchAcademicPeriodsUseCaseTests
     public async Task ExecuteAsync_ShouldPassCancellationTokenToQuery()
     {
         // Arrange
-        var filter = new AcademicPeriodFilter
-        {
-            TenantId = Guid.NewGuid()
-        };
+        var tenantId = Guid.NewGuid();
+        var filter = new AcademicPeriodFilter();
 
         using var cancellationTokenSource = new CancellationTokenSource();
         var cancellationToken = cancellationTokenSource.Token;
 
         _queriesMock.Setup(x => x.SearchAsync(
+                tenantId,
                 filter,
                 cancellationToken)).ReturnsAsync(Array.Empty<AcademicPeriod>());
 
         // Act
-        await _useCase.ExecuteAsync(filter, cancellationToken);
+        await _useCase.ExecuteAsync(tenantId, filter, cancellationToken);
 
         // Assert
         _queriesMock.Verify(
             x => x.SearchAsync(
+                tenantId,
                 filter,
                 cancellationToken),
             Times.Once);

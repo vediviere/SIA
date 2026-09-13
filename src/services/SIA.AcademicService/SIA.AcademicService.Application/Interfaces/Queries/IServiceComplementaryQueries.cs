@@ -11,6 +11,6 @@ namespace SIA.AcademicService.Application.Interfaces.Queries
     {
         Task<ServiceComplementary?> GetByIdAsync(Guid tenantId, Guid serviceComplementaryId, CancellationToken cancellationToken);
 
-        Task<IReadOnlyCollection<ServiceComplementary>> SearchAsync(ServiceComplementaryFilter filter, CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<ServiceComplementary>> SearchAsync(Guid tenantId, ServiceComplementaryFilter filter, CancellationToken cancellationToken);
     }
 }
