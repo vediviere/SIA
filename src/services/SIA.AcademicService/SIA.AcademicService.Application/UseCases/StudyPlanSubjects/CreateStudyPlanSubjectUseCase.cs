@@ -17,12 +17,13 @@ public sealed class CreateStudyPlanSubjectUseCase
     }
 
     public async Task<CreateStudyPlanSubjectResponse> ExecuteAsync(
+        Guid tenantId,
         CreateStudyPlanSubjectRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var relationExists = await _dataStore.StudyPlanSubjectExistsAsync(
-            request.TenantId,
+            tenantId,
             request.StudyPlanId,
             request.SubjectId,
             cancellationToken);
@@ -33,7 +34,7 @@ public sealed class CreateStudyPlanSubjectUseCase
         }
 
         var studyPlanSubject = new StudyPlanSubject(
-            request.TenantId,
+            tenantId,
             request.StudyPlanId,
             request.SubjectId,
             request.Semester,

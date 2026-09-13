@@ -19,7 +19,6 @@ public class CreateSubjectUseCaseTests
 
         var request = new CreateSubjectRequest
         {
-            TenantId = tenantId,
             Code = "MAT-001",
             Name = "Matemáticas",
             Semester = 1,
@@ -38,7 +37,7 @@ public class CreateSubjectUseCaseTests
         var useCase = new CreateSubjectUseCase(dataStoreMok.Object);
 
         // Act
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         Assert.NotEqual(Guid.Empty, response.Id);
@@ -67,7 +66,6 @@ public class CreateSubjectUseCaseTests
 
         var request = new CreateSubjectRequest
         {
-            TenantId = tenantId,
             Code = "MAT-001",
             Name = "Matemáticas",
             Semester = 1,
@@ -87,7 +85,7 @@ public class CreateSubjectUseCaseTests
 
         // Act & Assert
         await Assert.ThrowsAsync<DuplicateSubjectCodeException>(() =>
-            useCase.ExecuteAsync(request,correlationId,CancellationToken.None)
+            useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None)
         );
 
         dataStoreMock.Verify(
@@ -96,7 +94,5 @@ public class CreateSubjectUseCaseTests
                 It.IsAny<SubjectCreatedIntegrationEvent>(),
                 It.IsAny<CancellationToken>()),
             Times.Never);
-
     }
-    
 }

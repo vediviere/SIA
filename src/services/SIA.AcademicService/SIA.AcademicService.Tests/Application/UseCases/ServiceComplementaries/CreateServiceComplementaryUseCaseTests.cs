@@ -19,7 +19,6 @@ public class CreateServiceComplementaryUseCaseTests
 
         var request = new CreateServiceComplementaryRequest
         {
-            TenantId = tenantId,
             StudyPlanId = studyPlanId,
             Type = true,
             Credit = 4
@@ -35,7 +34,7 @@ public class CreateServiceComplementaryUseCaseTests
         var useCase = new CreateServiceComplementaryUseCase(dataStore.Object);
 
         // Act
-        var response = await useCase.ExecuteAsync(request,correlationId,CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         Assert.NotEqual(Guid.Empty, response.Id);
@@ -65,7 +64,6 @@ public class CreateServiceComplementaryUseCaseTests
 
         var request = new CreateServiceComplementaryRequest
         {
-            TenantId = tenantId,
             StudyPlanId = studyPlanId,
             Type = true,
             Credit = 4
@@ -81,7 +79,7 @@ public class CreateServiceComplementaryUseCaseTests
         var useCase = new CreateServiceComplementaryUseCase(dataStore.Object);
 
         // Act
-        await useCase.ExecuteAsync(request,correlationId,CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         dataStore.Verify(

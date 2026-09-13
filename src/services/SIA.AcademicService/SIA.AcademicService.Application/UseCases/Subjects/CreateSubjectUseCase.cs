@@ -17,6 +17,7 @@ public sealed class CreateSubjectUseCase
     }
 
     public async Task<CreateSubjectResponse> ExecuteAsync(
+        Guid tenantId,
         CreateSubjectRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
@@ -24,23 +25,23 @@ public sealed class CreateSubjectUseCase
         var normalizedCode = request.Code.Trim().ToUpperInvariant();
 
         var codeExists = await _dataStore.SubjectCodeExistsAsync(
-            request.TenantId,
+            tenantId,
             normalizedCode,
             cancellationToken);
 
         if (codeExists)
         {
-          throw new DuplicateSubjectCodeException(normalizedCode);
+            throw new DuplicateSubjectCodeException(normalizedCode);
         }
 
-    var subject = new Subject(
-            request.TenantId,
-            normalizedCode,
-            request.Name,
-            request.Semester,
-            request.TheoryHours,
-            request.PracticeHours,
-            request.Credits);
+        var subject = new Subject(
+                tenantId,
+                normalizedCode,
+                request.Name,
+                request.Semester,
+                request.TheoryHours,
+                request.PracticeHours,
+                request.Credits);
 
         var integrationEvent = new SubjectCreatedIntegrationEvent
         {

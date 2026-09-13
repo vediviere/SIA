@@ -4,9 +4,8 @@ using System.Text;
 
 namespace SIA.AcademicService.Application.DTOs.ServiceComplementaries;
 
-public sealed class ServiceComplementaryFilter
+public sealed record ServiceComplementaryFilter
 {
-    public Guid TenantId { get; init; }
 
     public Guid? StudyPlanId { get; init; }
 

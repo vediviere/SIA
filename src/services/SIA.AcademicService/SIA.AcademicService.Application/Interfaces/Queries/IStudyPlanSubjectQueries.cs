@@ -7,6 +7,6 @@ namespace SIA.AcademicService.Application.Interfaces.Queries
 
     {
         Task<StudyPlanSubject?> GetByIdAsync(Guid tenantId, Guid studyPlanSubjectId, CancellationToken cancellationToken);
-        Task<IReadOnlyCollection<StudyPlanSubject>> SearchAsync(StudyPlanSubjectFilter filter, CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<StudyPlanSubject>> SearchAsync(Guid tenantId, StudyPlanSubjectFilter filter, CancellationToken cancellationToken);
     }
 }

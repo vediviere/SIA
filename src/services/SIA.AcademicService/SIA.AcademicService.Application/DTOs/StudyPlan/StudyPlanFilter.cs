@@ -4,9 +4,8 @@ using System.Text;
 
 namespace SIA.AcademicService.Application.DTOs.StudyPlan
 {
-    public sealed class StudyPlanFilter
+    public sealed record StudyPlanFilter
     {
-        public Guid TenantId { get; init; }
 
         public Guid? EducationalProgramId { get; init; }
 

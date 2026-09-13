@@ -4,7 +4,6 @@ using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Domain.Entities;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 
-
 namespace SIA.AcademicService.Infrastructure.Persistence.Queries;
 
 public sealed class ServiceComplementaryQueries : IServiceComplementaryQueries
@@ -26,11 +25,11 @@ public sealed class ServiceComplementaryQueries : IServiceComplementaryQueries
                                 cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<ServiceComplementary>> SearchAsync(ServiceComplementaryFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<ServiceComplementary>> SearchAsync(Guid tenantId, ServiceComplementaryFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<ServiceComplementary> query = _dbContext.ServiceComplementaries
                                     .AsNoTracking()
-                                    .Where(x => x.TenantId == filter.TenantId);
+                                    .Where(x => x.TenantId == tenantId); 
 
         if (filter.StudyPlanId.HasValue)
         {

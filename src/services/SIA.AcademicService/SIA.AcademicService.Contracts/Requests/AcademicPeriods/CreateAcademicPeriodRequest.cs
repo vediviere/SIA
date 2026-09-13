@@ -2,8 +2,6 @@
 
 public sealed record CreateAcademicPeriodRequest
 {
-    public required Guid TenantId { get; init; }
-
     public required string Code { get; init; }
 
     public required string Name { get; init; }

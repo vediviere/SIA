@@ -16,18 +16,18 @@ public sealed class CreateEducationalProgramsUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<CreateEducationalProgramsResponse> ExecuteAsync(CreateEducationalProgramsRequest request, Guid correlationId, CancellationToken cancellationToken)
+    public async Task<CreateEducationalProgramsResponse> ExecuteAsync(Guid tenantId, CreateEducationalProgramsRequest request, Guid correlationId, CancellationToken cancellationToken)
     {
         var normalizedCode = request.Code.Trim().ToUpperInvariant();
 
-        var codeExists = await _dataStore.EducationalProgramCodeExistsAsync(request.TenantId, normalizedCode, cancellationToken);
+        var codeExists = await _dataStore.EducationalProgramCodeExistsAsync(tenantId, normalizedCode, cancellationToken);
 
         if (codeExists)
         {
             throw new DuplicateEducationalProgramCodeException(normalizedCode);
         }
 
-        var educationalPrograms = new EducationalProgram(request.TenantId, normalizedCode, request.Name, request.Level);
+        var educationalPrograms = new EducationalProgram(tenantId, normalizedCode, request.Name, request.Level);
 
         var integrationEvent = new EducationalProgramCreatedIntegrationEvent
         {
@@ -36,7 +36,7 @@ public sealed class CreateEducationalProgramsUseCase
             OccurredAtUtc = educationalPrograms.CreatedAtUtc,
             TenantId = educationalPrograms.TenantId,
             EducationalProgramId = educationalPrograms.Id,
-            Code =educationalPrograms.Code,
+            Code = educationalPrograms.Code,
             Name = educationalPrograms.Name,
             Level = educationalPrograms.Level,
             Status = educationalPrograms.Status,

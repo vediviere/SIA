@@ -28,24 +28,22 @@ public sealed class GetAcademicContextUseCase
     }
 
     public async Task<GetAcademicContextResponse> ExecuteAsync(
+        Guid tenantId,
         GetAcademicContextRequest request,
         CancellationToken cancellationToken)
     {
-        // Consultamos el periodo escolar activo
-        var activePeriod = await _academicPeriodQueries.GetActivePeriodAsync(request.TenantId, cancellationToken);
+        var activePeriod = await _academicPeriodQueries.GetActivePeriodAsync(tenantId, cancellationToken);
         if (activePeriod is null)
         {
             throw new AcademicPeriodNotFoundException(Guid.Empty);
         }
 
-        // Determinamos si está dentro de la planeación
         var currentDate = DateOnly.FromDateTime(_timeProvider.GetUtcNow().UtcDateTime);
         bool isWithinWindow = currentDate >= activePeriod.AcademicLoadProcessStartDate &&
                               currentDate <= activePeriod.AcademicLoadProcessEndDate;
 
-        // Consultamos el Programa Educativo
         var program = await _educationalProgramQueries.GetByIdAsync(
-            request.TenantId,
+            tenantId,
             request.EducationalProgramId,
             cancellationToken);
 
@@ -54,9 +52,8 @@ public sealed class GetAcademicContextUseCase
             throw new EducationalProgramNotFoundException(request.EducationalProgramId);
         }
 
-        // Consultamos el Plan de Estudios activo del programa
         var studyPlan = await _studyPlanQueries.GetActiveByProgramIdAsync(
-            request.TenantId,
+            tenantId,
             request.EducationalProgramId,
             cancellationToken);
 
@@ -65,9 +62,8 @@ public sealed class GetAcademicContextUseCase
             throw new StudyPlanNotFoundException(Guid.Empty);
         }
 
-        // Consultamos las materias de ese plan de estudios
         var subjects = await _studyPlanQueries.GetSubjectsByStudyPlanAsync(
-            request.TenantId,
+            tenantId,
             studyPlan.Id,
             cancellationToken);
 

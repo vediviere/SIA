@@ -16,7 +16,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
         {
             var tenantId = Guid.NewGuid();
             var programId = Guid.NewGuid();
-            var request = new GetAcademicContextRequest { TenantId = tenantId, EducationalProgramId = programId };
+            var request = new GetAcademicContextRequest { EducationalProgramId = programId };
 
             var fakePeriodQueries = new FakeAcademicPeriodQueries(tenantId, new DateOnly(2026, 8, 10), new DateOnly(2026, 8, 20));
             var fakeProgramQueries = new FakeEducationalProgramQueries(tenantId, programId);
@@ -30,7 +30,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
                 fakePlanQueries,
                 fakeTimeProvider);
 
-            var response = await useCase.ExecuteAsync(request, CancellationToken.None);
+            var response = await useCase.ExecuteAsync(tenantId, request, CancellationToken.None);
 
             Assert.NotNull(response);
             Assert.True(response.IsWithinPlanningWindow);
@@ -42,7 +42,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
         {
             var tenantId = Guid.NewGuid();
             var programId = Guid.NewGuid();
-            var request = new GetAcademicContextRequest { TenantId = tenantId, EducationalProgramId = programId };
+            var request = new GetAcademicContextRequest { EducationalProgramId = programId };
 
             var fakePeriodQueries = new FakeAcademicPeriodQueries(tenantId, new DateOnly(2026, 8, 10), new DateOnly(2026, 8, 20));
             var fakeProgramQueries = new FakeEducationalProgramQueries(tenantId, programId);
@@ -56,7 +56,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
                 fakePlanQueries,
                 fakeTimeProvider);
 
-            var response = await useCase.ExecuteAsync(request, CancellationToken.None);
+            var response = await useCase.ExecuteAsync(tenantId, request, CancellationToken.None);
 
             Assert.NotNull(response);
             Assert.False(response.IsWithinPlanningWindow);
@@ -65,7 +65,8 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
         [Fact]
         public async Task ExecuteAsync_WhenNoActiveAcademicPeriod_ShouldThrowAcademicPeriodNotFoundException()
         {
-            var request = new GetAcademicContextRequest { TenantId = Guid.NewGuid(), EducationalProgramId = Guid.NewGuid() };
+            var tenantId = Guid.NewGuid();
+            var request = new GetAcademicContextRequest { EducationalProgramId = Guid.NewGuid() };
             var fakePeriodQueries = new FakeAcademicPeriodQueries(Guid.NewGuid(), new DateOnly(), new DateOnly());
 
             var useCase = new GetAcademicContextUseCase(
@@ -74,7 +75,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
                 new FakeStudyPlanQueries(Guid.NewGuid(), Guid.NewGuid()),
                 new FakeTimeProvider(DateTime.UtcNow));
 
-            await Assert.ThrowsAsync<AcademicPeriodNotFoundException>(() => useCase.ExecuteAsync(request, CancellationToken.None));
+            await Assert.ThrowsAsync<AcademicPeriodNotFoundException>(() => useCase.ExecuteAsync(tenantId, request, CancellationToken.None));
         }
 
         [Fact]
@@ -82,7 +83,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
         {
             var correctTenantId = Guid.NewGuid();
             var wrongTenantId = Guid.NewGuid();
-            var request = new GetAcademicContextRequest { TenantId = wrongTenantId, EducationalProgramId = Guid.NewGuid() };
+            var request = new GetAcademicContextRequest { EducationalProgramId = Guid.NewGuid() };
 
             var fakePeriodQueries = new FakeAcademicPeriodQueries(correctTenantId, new DateOnly(), new DateOnly());
 
@@ -92,14 +93,14 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
                 new FakeStudyPlanQueries(Guid.NewGuid(), Guid.NewGuid()),
                 new FakeTimeProvider(DateTime.UtcNow));
 
-            await Assert.ThrowsAsync<AcademicPeriodNotFoundException>(() => useCase.ExecuteAsync(request, CancellationToken.None));
+            await Assert.ThrowsAsync<AcademicPeriodNotFoundException>(() => useCase.ExecuteAsync(wrongTenantId, request, CancellationToken.None));
         }
 
         [Fact]
         public async Task ExecuteAsync_WhenEducationalProgramNotFound_ShouldThrowEducationalProgramNotFoundException()
         {
             var tenantId = Guid.NewGuid();
-            var request = new GetAcademicContextRequest { TenantId = tenantId, EducationalProgramId = Guid.NewGuid() };
+            var request = new GetAcademicContextRequest { EducationalProgramId = Guid.NewGuid() };
             var fakePeriodQueries = new FakeAcademicPeriodQueries(tenantId, new DateOnly(), new DateOnly());
             var fakeProgramQueries = new FakeEducationalProgramQueries(tenantId, Guid.NewGuid());
 
@@ -109,7 +110,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
                 new FakeStudyPlanQueries(tenantId, Guid.NewGuid()),
                 new FakeTimeProvider(DateTime.UtcNow));
 
-            await Assert.ThrowsAsync<EducationalProgramNotFoundException>(() => useCase.ExecuteAsync(request, CancellationToken.None));
+            await Assert.ThrowsAsync<EducationalProgramNotFoundException>(() => useCase.ExecuteAsync(tenantId, request, CancellationToken.None));
         }
 
         [Fact]
@@ -117,7 +118,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
         {
             var tenantId = Guid.NewGuid();
             var programId = Guid.NewGuid();
-            var request = new GetAcademicContextRequest { TenantId = tenantId, EducationalProgramId = programId };
+            var request = new GetAcademicContextRequest { EducationalProgramId = programId };
             var fakePeriodQueries = new FakeAcademicPeriodQueries(tenantId, new DateOnly(), new DateOnly());
             var fakeProgramQueries = new FakeEducationalProgramQueries(tenantId, programId);
             var fakePlanQueries = new FakeStudyPlanQueries(tenantId, Guid.NewGuid());
@@ -128,7 +129,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
                 fakePlanQueries,
                 new FakeTimeProvider(DateTime.UtcNow));
 
-            await Assert.ThrowsAsync<StudyPlanNotFoundException>(() => useCase.ExecuteAsync(request, CancellationToken.None));
+            await Assert.ThrowsAsync<StudyPlanNotFoundException>(() => useCase.ExecuteAsync(tenantId, request, CancellationToken.None));
         }
 
         private sealed class FakeAcademicPeriodQueries : IAcademicPeriodQueries
@@ -157,7 +158,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
             }
 
             public Task<AcademicPeriod?> GetByIdAsync(Guid tenantId, Guid academicPeriodId, CancellationToken cancellationToken) => throw new NotImplementedException();
-            public Task<IReadOnlyCollection<AcademicPeriod>> SearchAsync(AcademicPeriodFilter filter, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public Task<IReadOnlyCollection<AcademicPeriod>> SearchAsync(Guid tenantId, AcademicPeriodFilter filter, CancellationToken cancellationToken) => throw new NotImplementedException();
         }
 
         private sealed class FakeEducationalProgramQueries : IEducationalProgramQueries
@@ -178,8 +179,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
 
                 return Task.FromResult<EducationalProgram?>(new EducationalProgram(tenantId, "CODE", "Name", "Level"));
             }
-
-            public Task<IReadOnlyCollection<EducationalProgram>> SearchAsync(EducationalProgramFilter filter, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public Task<IReadOnlyCollection<EducationalProgram>> SearchAsync(Guid tenantId, EducationalProgramFilter filter, CancellationToken cancellationToken) => throw new NotImplementedException();
         }
 
         private sealed class FakeStudyPlanQueries : IStudyPlanQueries
@@ -206,7 +206,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.AcademicContext
             }
 
             public Task<StudyPlan?> GetByIdAsync(Guid tenantId, Guid studyPlanId, CancellationToken cancellationToken) => throw new NotImplementedException();
-            public Task<IReadOnlyCollection<StudyPlan>> SearchAsync(StudyPlanFilter filter, CancellationToken cancellationToken) => throw new NotImplementedException();
+            public Task<IReadOnlyCollection<StudyPlan>> SearchAsync(Guid tenantId, StudyPlanFilter filter, CancellationToken cancellationToken) => throw new NotImplementedException();
         }
 
         private sealed class FakeTimeProvider : TimeProvider

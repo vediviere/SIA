@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Api.Extensions;
 using SIA.AcademicService.Application.DTOs.AcademicPeriod;
 using SIA.AcademicService.Application.UseCases.AcademicPeriods;
-
 using SIA.AcademicService.Contracts.Requests.AcademicPeriods;
 using SIA.AcademicService.Contracts.Responses.AcademicPeriods;
 
@@ -27,7 +27,7 @@ public sealed class AcademicPeriodsController : ControllerBase
         PatchAcademicPeriodUseCase patchAcademicPeriodUseCase,
         DeactivateAcademicPeriodUseCase deactivateAcademicPeriodUseCase,
         ActivateAcademicPeriodUseCase activateAcademicPeriodUseCase,
-        SearchAcademicPeriodsUseCase SearchAcademicPeriodsUseCase,
+        SearchAcademicPeriodsUseCase searchAcademicPeriodsUseCase,
         GetAcademicPeriodByIdUseCase getAcademicPeriodByIdUseCase)
     {
         _createAcademicPeriodsUseCase = createAcademicPeriodsUseCase;
@@ -35,7 +35,7 @@ public sealed class AcademicPeriodsController : ControllerBase
         _patchAcademicPeriodUseCase = patchAcademicPeriodUseCase;
         _deactivateAcademicPeriodUseCase = deactivateAcademicPeriodUseCase;
         _activateAcademicPeriodUseCase = activateAcademicPeriodUseCase;
-        _searchAcademicPeriodsUseCase = SearchAcademicPeriodsUseCase;
+        _searchAcademicPeriodsUseCase = searchAcademicPeriodsUseCase;
         _getAcademicPeriodByIdUseCase = getAcademicPeriodByIdUseCase;
     }
 
@@ -46,68 +46,72 @@ public sealed class AcademicPeriodsController : ControllerBase
     public async Task<ActionResult<CreateAcademicPeriodResponse>> CreateAsync([FromBody] CreateAcademicPeriodRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createAcademicPeriodsUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var tenantId = User.GetTenantId();
+        var response = await _createAcademicPeriodsUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateAcademicPeriodResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateAcademicPeriodResponse>> UpdateAsync([FromRoute] Guid id, [FromRoute] Guid tenantId, [FromBody] UpdateAcademicPeriodRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateAcademicPeriodResponse>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateAcademicPeriodRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
 
         var response = await _updateAcademicPeriodUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
 
         return Ok(response);
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}")]
+    [HttpPatch("{id:guid}")]
     [ProducesResponseType(typeof(PatchAcademicPeriodResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<PatchAcademicPeriodResponse>> PatchAsync([FromRoute] Guid id,[FromRoute] Guid tenantId, [FromBody] PatchAcademicPeriodRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<PatchAcademicPeriodResponse>> PatchAsync([FromRoute] Guid id, [FromBody] PatchAcademicPeriodRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
 
         var response = await _patchAcademicPeriodUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
 
         return Ok(response);
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(typeof(DeactivateAcademicPeriodResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DeactivateAcademicPeriodResponse>> DeactivateAsync([FromRoute] Guid id,[FromRoute] Guid tenantId, CancellationToken cancellationToken)
+    public async Task<ActionResult<DeactivateAcademicPeriodResponse>> DeactivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
 
         await _deactivateAcademicPeriodUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
+    [HttpPatch("{id:guid}/restore")]
     [ProducesResponseType(typeof(ActivateAcademicPeriodResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ActivateAcademicPeriodResponse>> ActivateAsync([FromRoute] Guid id,[FromRoute] Guid tenantId,CancellationToken cancellationToken)
+    public async Task<ActionResult<ActivateAcademicPeriodResponse>> ActivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
 
         var respuesta = await _activateAcademicPeriodUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
@@ -116,18 +120,20 @@ public sealed class AcademicPeriodsController : ControllerBase
 
     [HttpGet("Filter")]
     [ProducesResponseType(typeof(IReadOnlyCollection<AcademicPeriodDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<AcademicPeriodDto>>> SearchAsync([FromQuery] AcademicPeriodFilter filter,CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyCollection<AcademicPeriodDto>>> SearchAsync([FromQuery] AcademicPeriodFilter filter, CancellationToken cancellationToken)
     {
-        var response = await _searchAcademicPeriodsUseCase.ExecuteAsync(filter, cancellationToken);
-
+        var tenantId = User.GetTenantId();
+        var response = await _searchAcademicPeriodsUseCase.ExecuteAsync(tenantId, filter, cancellationToken);
         return Ok(response);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(AcademicPeriodDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<AcademicPeriodDto>> GetByIdAsync([FromRoute] Guid id,[FromRoute] Guid tenantId, CancellationToken cancellationToken)
+    public async Task<ActionResult<AcademicPeriodDto>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = User.GetTenantId();
+
         var response = await _getAcademicPeriodByIdUseCase.ExecuteAsync(tenantId, id, cancellationToken);
 
         return Ok(response);

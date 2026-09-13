@@ -19,12 +19,13 @@ public sealed class CreateServiceComplementaryUseCase
     }
 
     public async Task<CreateServiceComplementaryResponse> ExecuteAsync(
+        Guid tenantId,
         CreateServiceComplementaryRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var serviceComplementary = new ServiceComplementary(
-            request.TenantId,
+            tenantId,
             request.StudyPlanId,
             request.Type,
             request.Credit);

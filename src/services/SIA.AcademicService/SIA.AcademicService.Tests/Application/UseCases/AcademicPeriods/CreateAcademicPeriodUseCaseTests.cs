@@ -19,7 +19,6 @@ public class CreateAcademicPeriodsUseCaseTests
 
         var request = new CreateAcademicPeriodRequest
         {
-            TenantId = tenantId,
             Code = "2026-1",
             Name = "Periodo Enero-Junio 2026",
             StartDate = new DateOnly(2026, 1, 1),
@@ -52,7 +51,7 @@ public class CreateAcademicPeriodsUseCaseTests
         var useCase = new CreateAcademicPeriodsUseCase(dataStore.Object);
 
         // Act
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         Assert.NotEqual(Guid.Empty, response.Id);
@@ -79,7 +78,6 @@ public class CreateAcademicPeriodsUseCaseTests
 
         var request = new CreateAcademicPeriodRequest
         {
-            TenantId = tenantId,
             Code = "  periodo-2026-a  ",
             Name = "Periodo Enero-Junio 2026",
             StartDate = new DateOnly(2026, 1, 1),
@@ -110,7 +108,7 @@ public class CreateAcademicPeriodsUseCaseTests
         var useCase = new CreateAcademicPeriodsUseCase(dataStore.Object);
 
         // Act
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         Assert.Equal("PERIODO-2026-A", response.Code);
@@ -132,7 +130,6 @@ public class CreateAcademicPeriodsUseCaseTests
 
         var request = new CreateAcademicPeriodRequest
         {
-            TenantId = tenantId,
             Code = "2026-1",
             Name = "Periodo Enero-Junio 2026",
             StartDate = new DateOnly(2026, 1, 1),
@@ -159,7 +156,7 @@ public class CreateAcademicPeriodsUseCaseTests
 
         // Act & Assert
         await Assert.ThrowsAsync<DuplicateAcademicPeriodCodeException>(
-            () => useCase.ExecuteAsync(request, correlationId, CancellationToken.None)
+            () => useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None)
         );
 
         dataStore.Verify(
@@ -179,7 +176,6 @@ public class CreateAcademicPeriodsUseCaseTests
 
         var request = new CreateAcademicPeriodRequest
         {
-            TenantId = tenantId,
             Code = "2026-1",
             Name = "Periodo Enero-Junio 2026",
             StartDate = new DateOnly(2026, 1, 1),
@@ -212,7 +208,7 @@ public class CreateAcademicPeriodsUseCaseTests
         var useCase = new CreateAcademicPeriodsUseCase(dataStore.Object);
 
         // Act
-        await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         // Assert
         dataStore.Verify(

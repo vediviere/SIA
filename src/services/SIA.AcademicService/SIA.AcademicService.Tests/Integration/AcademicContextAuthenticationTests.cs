@@ -38,8 +38,6 @@ public class AcademicContextAuthenticationTests : IClassFixture<WebApplicationFa
     {
         var client = _factory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/academic-context/educational-programs/{Guid.NewGuid()}");
-        request.Headers.Add("tenantid", Guid.NewGuid().ToString());
-
         var response = await client.SendAsync(request);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -50,19 +48,38 @@ public class AcademicContextAuthenticationTests : IClassFixture<WebApplicationFa
     {
         var client = _factory.CreateClient();
         var request = new HttpRequestMessage(HttpMethod.Get, $"/api/academic-context/educational-programs/{Guid.NewGuid()}");
-        request.Headers.Add("tenantid", Guid.NewGuid().ToString());
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GenerateValidToken());
+        var tenantId = Guid.NewGuid();
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GenerateValidToken(tenantId));
 
         var response = await client.SendAsync(request);
 
         Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    private string GenerateValidToken()
+    [Fact]
+    public async Task Get_WithCrossTenantAccess_ShouldReturnNotFound()
+    {
+        var client = _factory.CreateClient();
+        var legitimateTenantId = Guid.NewGuid();
+        var alienEducationalProgramId = Guid.NewGuid();
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/api/academic-context/educational-programs/{alienEducationalProgramId}");
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GenerateValidToken(legitimateTenantId));
+
+        var response = await client.SendAsync(request);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    private string GenerateValidToken(Guid tenantId)
     {
         var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(_testKeyBase64));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-        var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, "test-user") };
+
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, "test-user"),
+            new Claim("tenant_id", tenantId.ToString())
+        };
 
         var token = new JwtSecurityToken(
             issuer: "test-issuer",

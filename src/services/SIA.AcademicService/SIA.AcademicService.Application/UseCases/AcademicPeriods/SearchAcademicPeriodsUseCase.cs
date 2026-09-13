@@ -1,5 +1,4 @@
-﻿
-using SIA.AcademicService.Application.DTOs.AcademicPeriod;
+﻿using SIA.AcademicService.Application.DTOs.AcademicPeriod;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Contracts.Responses.AcademicPeriods;
 using SIA.AcademicService.Domain.Entities;
@@ -15,9 +14,9 @@ public sealed class SearchAcademicPeriodsUseCase
         _queries = queries;
     }
 
-    public async Task<IReadOnlyCollection<AcademicPeriodDto>> ExecuteAsync(AcademicPeriodFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<AcademicPeriodDto>> ExecuteAsync(Guid tenantId, AcademicPeriodFilter filter, CancellationToken cancellationToken)
     {
-        var academicPeriods = await _queries.SearchAsync(filter, cancellationToken);
+        var academicPeriods = await _queries.SearchAsync(tenantId, filter, cancellationToken);
 
         return academicPeriods.Select(academicPeriod => new AcademicPeriodDto
         {
@@ -41,5 +40,4 @@ public sealed class SearchAcademicPeriodsUseCase
             UpdatedAtUtc = academicPeriod.UpdatedAtUtc
         }).ToList();
     }
-
 }

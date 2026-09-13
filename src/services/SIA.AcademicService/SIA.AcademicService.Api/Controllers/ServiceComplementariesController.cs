@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Api.Extensions;
 using SIA.AcademicService.Application.Common.Exceptions;
 using SIA.AcademicService.Application.DTOs.ServiceComplementaries;
 using SIA.AcademicService.Application.Interfaces.Queries;
@@ -39,25 +40,18 @@ public sealed class ServiceComplementariesController : ControllerBase
     [ProducesResponseType(typeof(IReadOnlyCollection<ServiceComplementary>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyCollection<ServiceComplementary>>> SearchAsync([FromQuery] ServiceComplementaryFilter filter, CancellationToken cancellationToken)
     {
-        var secureFilter = new ServiceComplementaryFilter
-        {
-            TenantId = filter.TenantId,
-            StudyPlanId = filter.StudyPlanId,
-            Type = filter.Type,
-            Status = filter.Status,
-            Page = filter.Page,
-            PageSize = filter.PageSize
-        };
-
-        var results = await _queries.SearchAsync(secureFilter, cancellationToken);
+        var tenantId = User.GetTenantId();
+        var results = await _queries.SearchAsync(tenantId, filter, cancellationToken);
         return Ok(results);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ServiceComplementary), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ServiceComplementary>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ServiceComplementary>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = User.GetTenantId();
+
         var result = await _queries.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (result == null)
@@ -75,24 +69,25 @@ public sealed class ServiceComplementariesController : ControllerBase
     public async Task<ActionResult<CreateServiceComplementaryResponse>> CreateAsync([FromBody] CreateServiceComplementaryRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var tenantId = User.GetTenantId();
+        var response = await _createUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateServiceComplementaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateServiceComplementaryResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateServiceComplementaryRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateServiceComplementaryResponse>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateServiceComplementaryRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
 
         var response = await _updateUseCase.ExecuteAsync(
             tenantId,
@@ -104,28 +99,30 @@ public sealed class ServiceComplementariesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> SoftDeleteAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SoftDeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
 
         await _softDeleteUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
+    [HttpPatch("{id:guid}/restore")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RestoreAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> RestoreAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
-
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
 
         await _restoreUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 

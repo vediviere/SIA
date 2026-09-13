@@ -1,7 +1,6 @@
 ﻿namespace SIA.AcademicService.Contracts.Requests.EducationalProgramsRequest;
-public sealed class CreateEducationalProgramsRequest
+public sealed record CreateEducationalProgramsRequest
 {
-    public required Guid TenantId { get; set; }
 
     public required string Code { get; set; }
 

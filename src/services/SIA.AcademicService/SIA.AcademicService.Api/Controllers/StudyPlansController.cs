@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIA.AcademicService.Api.Extensions;
 using SIA.AcademicService.Application.DTOs.StudyPlan;
 using SIA.AcademicService.Application.Interfaces.Queries;
 using SIA.AcademicService.Application.UseCases.StudyPlans;
@@ -42,7 +43,10 @@ public sealed class StudyPlansController : ControllerBase
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
-        var response = await _createUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+
+        var tenantId = User.GetTenantId();
+        var response = await _createUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
+
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
@@ -52,63 +56,63 @@ public sealed class StudyPlansController : ControllerBase
         [FromQuery] StudyPlanFilter filter,
         CancellationToken cancellationToken)
     {
-        var secureFilter = new StudyPlanFilter
-        {
-            TenantId = filter.TenantId,
-            EducationalProgramId = filter.EducationalProgramId,
-            Code = filter.Code,
-            Name = filter.Name,
-            Version = filter.Version,
-            Status = filter.Status,
-            Page = filter.Page,
-            PageSize = filter.PageSize
-        };
-
-        var results = await _queries.SearchAsync(secureFilter, cancellationToken);
+        var tenantId = User.GetTenantId();
+        var results = await _queries.SearchAsync(tenantId, filter, cancellationToken);
         return Ok(results);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(StudyPlan), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<StudyPlan>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<StudyPlan>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = User.GetTenantId();
+
         var result = await _queries.GetByIdAsync(tenantId, id, cancellationToken);
         return result is null ? NotFound() : Ok(result);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateStudyPlanResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<UpdateStudyPlanResponse>> UpdateAsync(
-        [FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateStudyPlanRequest request, CancellationToken cancellationToken)
+        [FromRoute] Guid id, [FromBody] UpdateStudyPlanRequest request, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
+
         var response = await _updateUseCase.ExecuteAsync(tenantId, id, request, correlationId, cancellationToken);
         return Ok(response);
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeactivateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
+
         await _deactivateUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
+    [HttpPatch("{id:guid}/restore")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RestoreAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> RestoreAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+        var tenantId = User.GetTenantId();
+
         await _restoreUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
         return NoContent();
     }

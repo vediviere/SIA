@@ -1,9 +1,8 @@
 ﻿
 namespace SIA.AcademicService.Application.DTOs.AcademicPeriod
 {
-    public sealed class AcademicPeriodFilter
+    public sealed record AcademicPeriodFilter
     {
-        public Guid TenantId { get; init; }
 
         public string? Code { get; init; }
 
