@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/deploy/" />
-  <Folder Name="/docs/" />
+  <Folder Name="/docs/">
+    <File Path="PLAN-02-integration-test.md" />
+  </Folder>
   <Folder Name="/docs/onboarding/">
     <File Path="docs/onboarding/LOCAL_PORTS.md" />
     <File Path="docs/onboarding/TEAM_WORK_RULES.md" />
