@@ -1,4 +1,4 @@
-﻿using MassTransit;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -194,15 +194,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapGet("/health", () =>
-{
-    return Results.Ok(new
-    {
-        service = "SIA.AcademicStaffService.Api",
-        status = "Healthy"
-    });
-}).AllowAnonymous();
 
 app.UseSiaExceptionHandling();
 

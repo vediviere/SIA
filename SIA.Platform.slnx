@@ -27,6 +27,7 @@
   </Folder>
   <Folder Name="/src/gateways/">
     <Project Path="src/gateways/SIA.IntegrationGateway/SIA.IntegrationGateway.csproj" />
+    <Project Path="src/gateways/SIA.PublicGateway.Tests/SIA.PublicGateway.Tests.csproj" />
     <Project Path="src/gateways/SIA.PublicGateway/SIA.PublicGateway.csproj" />
   </Folder>
   <Folder Name="/src/services/" />
