@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SIA.SchedulingService.Application.DTOs.Group;
 using SIA.SchedulingService.Application.UseCases.Groups;
-using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
 using SIA.SchedulingService.Contracts.Requests.Group;
 using SIA.SchedulingService.Contracts.Responses.Group;
 

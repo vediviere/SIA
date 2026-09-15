@@ -7,7 +7,7 @@ namespace SIA.SchedulingService.Application.Interfaces.DataStores;
 public interface IAcademicOfferingDataStore
 {
   Task<bool> ExistsByGroupAndSubjectAsync(Guid tenantId, Guid groupId, Guid subjectId, CancellationToken cancellationToken);
-  Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingCreatedIntegrationEvet integrationEvent, CancellationToken cancellationToken);
+  Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
   Task<AcademicOffering?> GetByIdAsync(Guid tenantId, Guid offeringId, CancellationToken cancellationToken);
   Task UpdateAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
   Task DeactivateAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken);

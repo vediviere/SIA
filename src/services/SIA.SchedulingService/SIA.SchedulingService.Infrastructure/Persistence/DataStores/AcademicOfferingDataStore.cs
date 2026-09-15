@@ -27,7 +27,7 @@ public sealed class AcademicOfferingDataStore : IAcademicOfferingDataStore
       cancellationToken);
   }
 
-  public async Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingCreatedIntegrationEvet integrationEvent, CancellationToken cancellationToken)
+  public async Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     var payload = JsonSerializer.Serialize(integrationEvent);
     var eventType = SchedulingIntegrationEventTypes.AcademicOfferingCreatedV1;

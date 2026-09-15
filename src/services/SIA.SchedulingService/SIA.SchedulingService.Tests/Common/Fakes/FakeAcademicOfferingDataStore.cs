@@ -16,7 +16,7 @@ public sealed class FakeAcademicOfferingDataStore : IAcademicOfferingDataStore
   public bool ExistsResult { get; set; }
   public AcademicOffering? AddedAcademicOffering { get; private set; }
   public AcademicOffering? UpdatedAcademicOffering { get; private set; }
-  public AcademicOfferingCreatedIntegrationEvet? AddedCreatedEvent { get; private set; }
+  public AcademicOfferingCreatedIntegrationEvent? AddedCreatedEvent { get; private set; }
   public AcademicOfferingUpdatedIntegrationEvent? AddedUpdatedEvent { get; private set; }
   public AcademicOfferingActivatedIntegrationEvent? AddedActivatedEvent { get; private set; }
   public AcademicOfferingDeactivatedIntegrationEvent? AddedDeactivatedEvent { get; private set; }
@@ -25,7 +25,7 @@ public sealed class FakeAcademicOfferingDataStore : IAcademicOfferingDataStore
 
   public Task<bool> ExistsByGroupAndSubjectAsync(Guid tenantId, Guid groupId, Guid subjectId, CancellationToken cancellationToken) => Task.FromResult(ExistsResult);
   public Task<AcademicOffering?> GetByIdAsync(Guid tenantId, Guid offeringId, CancellationToken cancellationToken) => Task.FromResult(_offeringReturn);
-  public Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingCreatedIntegrationEvet integrationEvent, CancellationToken cancellationToken)
+  public Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     AddedAcademicOffering = academicOffering;
     AddedCreatedEvent = integrationEvent;

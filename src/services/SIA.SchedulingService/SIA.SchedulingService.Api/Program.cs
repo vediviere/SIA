@@ -19,21 +19,11 @@ using SIA.SchedulingService.Application.UseCases.SupportActivities;
 using SIA.SchedulingService.Application.UseCases.SupportSchedules;
 using SIA.SchedulingService.Application.UseCases.Teachers;
 using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
-using SIA.SchedulingService.Contracts.IntegrationEvents;
-using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
-using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoadProposal;
-using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
-using SIA.SchedulingService.Contracts.IntegrationEvents.Building;
-using SIA.SchedulingService.Contracts.IntegrationEvents.Classrooms;
-using SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
-using SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
-using SIA.SchedulingService.Contracts.IntegrationEvents.Group;
-using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
-using SIA.SchedulingService.Contracts.IntegrationEvents.SupportSchedules;
 using SIA.SchedulingService.Infrastructure.ExternalServices;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
+using SIA.SchedulingService.Infrastructure.MessageBus;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -154,66 +144,7 @@ var outboxOptions = new OutboxOptions();
 builder.Configuration.GetSection("Outbox").Bind(outboxOptions);
 builder.Services.AddSingleton(outboxOptions);
 
-builder.Services.AddSingleton(new OutboxEventRegistry()
-    .Register<AcademicLoadDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadDeactivatedV1)
-    .Register<AcademicLoadActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadActivatedV1)
-
-    .Register<AcademicOfferingCreatedIntegrationEvet>(SchedulingIntegrationEventTypes.AcademicOfferingCreatedV1)
-    .Register<AcademicOfferingUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicOfferingStatusUpdatedV1)
-    .Register<AcademicOfferingDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicOfferingDeactivatedV1)
-    .Register<AcademicOfferingActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicOfferingActivatedV1)
-
-    .Register<BuildingCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.BuildingCreatedV1)
-    .Register<BuildingUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.BuildingUpdatedV1)
-    .Register<BuildingDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.BuildingDeactivatedV1)
-    .Register<BuildingActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.BuildingActivatedV1)
-
-    .Register<GroupCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.GroupCreatedV1)
-    .Register<GroupUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.GroupUpdatedV1)
-    .Register<GroupDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.GroupDeactivatedV1)
-    .Register<GroupActivateIntegrationEvent>(SchedulingIntegrationEventTypes.GroupActivatedV1)
-
-    .Register<TeachingSupportHoursCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursCreatedV1)
-    .Register<TeachingSupportHoursUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursUpdatedV1)
-    .Register<TeachingSupportHoursDeactivatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursDeactivatedV1)
-    .Register<TeachingSupportHoursActivatedIntegrationEvent>(SchedulingIntegrationEventTypes.TeachingSupportHoursActivatedV1)
-
-    // SupportActivity
-    .Register<SupportActivityCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportActivityCreatedV1)
-    .Register<SupportActivityUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportActivityUpdatedV1)
-    .Register<SupportActivityDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportActivityDeletedV1)
-    .Register<SupportActivityRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.SupportActivityRestoredV1)
-
-    // ClassSchedule
-    .Register<ClassScheduleCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassScheduleCreatedV1)
-    .Register<ClassScheduleUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassScheduleUpdatedV1)
-    .Register<ClassScheduleDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassScheduleDeletedV1)
-    .Register<ClassScheduleRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.ClassScheduleRestoredV1)
-
-    // SupportSchedule
-    .Register<SupportScheduleCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportScheduleCreatedV1)
-    .Register<SupportScheduleUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportScheduleUpdatedV1)
-    .Register<SupportScheduleDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.SupportScheduleDeletedV1)
-    .Register<SupportScheduleRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.SupportScheduleRestoredV1)
-
-    // ClassroomLab
-    .Register<ClassroomLabCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomLabCreatedV1)
-    .Register<ClassroomLabUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomLabUpdatedV1)
-    .Register<ClassroomLabDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomLabDeletedV1)
-    .Register<ClassroomLabRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomLabRestoredV1)
-
-    // ClassroomType
-    .Register<ClassroomTypeCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeCreatedV1)
-    .Register<ClassroomTypeUpdatedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeUpdatedV1)
-    .Register<ClassroomTypeDeletedIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeDeletedV1)
-    .Register<ClassroomTypeRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeRestoredV1)
-
-    // Proposal
-    .Register<ProposalCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ProposalCreatedV1)
-    .Register<AcademicLoadCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadCreatedV1)
-
-    .Register<ProposalSubmittedForReviewIntegrationEvent>(SchedulingIntegrationEventTypes.ProposalSubmittedForReviewV1)
-);
+builder.Services.AddSingleton(SchedulingOutboxRegistry.Create());
 
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
 builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
