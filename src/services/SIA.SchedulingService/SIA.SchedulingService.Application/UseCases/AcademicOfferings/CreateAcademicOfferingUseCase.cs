@@ -47,7 +47,7 @@ public sealed class CreateAcademicOfferingUseCase
 
     await _classHoursCalculator.RecalculateAsync(academicLoad, academicOffering, cancellationToken);
 
-    var integrationEvent = new AcademicOfferingCreatedIntegrationEvet
+    var integrationEvent = new AcademicOfferingCreatedIntegrationEvent
     {
       EventId = Guid.NewGuid(),
       CorrelationId = correlationId,

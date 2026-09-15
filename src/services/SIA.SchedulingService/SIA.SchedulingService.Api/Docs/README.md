@@ -265,12 +265,10 @@ Los eventos de integración actuales utilizan versión `v1`.
 
 ### AcademicOffering
 
-* `AcademicOfferingCreatedIntegrationEvet.v1`
+* `AcademicOfferingCreatedIntegrationEvent.v1`
 * `AcademicOfferingUpdatedIntegrationEvent.v1`
 * `AcademicOfferingActivatedIntegrationEvent.v1`
 * `AcademicOfferingDeactivatedIntegrationEvent.v1`
-
-> Nota: el contrato actual de creación de oferta está implementado como `AcademicOfferingCreatedIntegrationEvet`. El nombre se conserva aquí para reflejar exactamente la implementación existente.
 
 ### ClassroomType
 

@@ -1,7 +1,8 @@
-﻿using SIA.SchedulingService.Application.Interfaces.Queries;
+using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.DTOs.Group;
 using SIA.SchedulingService.Application.Common.Exceptions;
-namespace SIA.SchedulingService.Contracts.IntegrationEvents.Group;
+
+namespace SIA.SchedulingService.Application.UseCases.Groups;
 
 public sealed class GetGroupByIdUseCase
 {

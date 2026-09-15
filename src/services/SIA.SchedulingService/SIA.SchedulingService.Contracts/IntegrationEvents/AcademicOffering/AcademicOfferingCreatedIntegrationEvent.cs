@@ -1,7 +1,7 @@
 
 namespace SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
 
-public sealed class AcademicOfferingCreatedIntegrationEvet
+public sealed class AcademicOfferingCreatedIntegrationEvent
 {
   public required Guid EventId { get; init; }
   public required Guid CorrelationId { get; init; }
