@@ -2,7 +2,6 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using SIA.AcademicService.Api.OpenApi;
 using SIA.AcademicService.Application.Interfaces.DataStores;
 using SIA.AcademicService.Application.Interfaces.Queries;
@@ -13,16 +12,10 @@ using SIA.AcademicService.Application.UseCases.ServiceComplementaries;
 using SIA.AcademicService.Application.UseCases.StudyPlans;
 using SIA.AcademicService.Application.UseCases.StudyPlanSubjects;
 using SIA.AcademicService.Application.UseCases.Subjects;
-using SIA.AcademicService.Contracts.IntegrationEvents;
-using SIA.AcademicService.Contracts.IntegrationEvents.AcademicPeriods;
-using SIA.AcademicService.Contracts.IntegrationEvents.EducationalPrograms;
-using SIA.AcademicService.Contracts.IntegrationEvents.ServiceComplementaries;
-using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlans;
-using SIA.AcademicService.Contracts.IntegrationEvents.StudyPlanSubjects;
-using SIA.AcademicService.Contracts.IntegrationEvents.Subjects;
 using SIA.AcademicService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicService.Infrastructure.Persistence.DataStores;
 using SIA.AcademicService.Infrastructure.Persistence.Queries;
+using SIA.AcademicService.Infrastructure.MessageBus;
 using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 
@@ -88,37 +81,7 @@ var outboxOptions = new OutboxOptions();
 builder.Configuration.GetSection("Outbox").Bind(outboxOptions);
 builder.Services.AddSingleton(outboxOptions);
 
-builder.Services.AddSingleton(new OutboxEventRegistry()
-    .Register<SubjectCreatedIntegrationEvent>(AcademicIntegrationEventTypes.SubjectCreatedV1)
-    .Register<SubjectUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.SubjectUpdatedV1)
-    .Register<SubjectDeletedIntegrationEvent>(AcademicIntegrationEventTypes.SubjectDeletedV1)
-    .Register<SubjectRestoredIntegrationEvent>(AcademicIntegrationEventTypes.SubjectRestoredV1)
-
-    .Register<AcademicPeriodCreatedIntegrationEvent>(AcademicIntegrationEventTypes.AcademicPeriodCreatedV1)
-    .Register<AcademicPeriodUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.AcademicPeriodUpdatedV1)
-    .Register<AcademicPeriodDeactivatedIntegrationEvent>(AcademicIntegrationEventTypes.AcademicPeriodDeactivatedV1)
-    .Register<AcademicPeriodActivatedIntegrationEvent>(AcademicIntegrationEventTypes.AcademicPeriodActivatedV1)
-
-    .Register<EducationalProgramCreatedIntegrationEvent>(AcademicIntegrationEventTypes.EducationalProgramCreatedV1)
-    .Register<EducationalProgramUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.EducationalProgramUpdatedV1)
-    .Register<EducationalProgramDeactivatedIntegrationEvent>(AcademicIntegrationEventTypes.EducationalProgramDeactivatedV1)
-    .Register<EducationalProgramRestoredIntegrationEvent>(AcademicIntegrationEventTypes.EducationalProgramRestoredV1)
-
-    .Register<StudyPlanCreatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanCreatedV1)
-    .Register<StudyPlanUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanUpdatedV1)
-    .Register<StudyPlanDeactivatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanDeactivatedV1)
-    .Register<StudyPlanRestoredIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanRestoredV1)
-
-    .Register<StudyPlanSubjectCreatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanSubjectCreatedV1)
-    .Register<StudyPlanSubjectUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanSubjectUpdatedV1)
-    .Register<StudyPlanSubjectDeletedIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanSubjectDeletedV1)
-    .Register<StudyPlanSubjectRestoredIntegrationEvent>(AcademicIntegrationEventTypes.StudyPlanSubjectRestoredV1)
-
-    .Register<ServiceComplementaryCreatedIntegrationEvent>(AcademicIntegrationEventTypes.ServiceComplementaryCreatedV1)
-    .Register<ServiceComplementaryUpdatedIntegrationEvent>(AcademicIntegrationEventTypes.ServiceComplementaryUpdatedV1)
-    .Register<ServiceComplementaryDeletedIntegrationEvent>(AcademicIntegrationEventTypes.ServiceComplementaryDeletedV1)
-    .Register<ServiceComplementaryRestoredIntegrationEvent>(AcademicIntegrationEventTypes.ServiceComplementaryRestoredV1));
-
+builder.Services.AddSingleton(AcademicOutboxRegistry.Create());
 
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
 builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
