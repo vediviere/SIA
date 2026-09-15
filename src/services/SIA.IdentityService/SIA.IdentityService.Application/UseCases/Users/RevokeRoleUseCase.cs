@@ -1,5 +1,6 @@
 using SIA.IdentityService.Application.Common.Exceptions;
 using SIA.IdentityService.Application.Interfaces.DataStores;
+using SIA.IdentityService.Contracts.Enums;
 using SIA.IdentityService.Contracts.IntegrationEvents.Users;
 
 namespace SIA.IdentityService.Application.UseCases.Users;
@@ -15,16 +16,16 @@ public sealed class RevokeRoleUseCase
     _roleDataStore = roleDataStore;
   }
 
-  public async Task ExecuteAsync(Guid userId, string roleCode, Guid tenantId, Guid administratorUserId, Guid correlationId, CancellationToken cancellationToken)
+  public async Task ExecuteAsync(Guid userId, RoleCode roleCode, Guid tenantId, Guid administratorUserId, Guid correlationId, CancellationToken cancellationToken)
   {
     if (userId == Guid.Empty)
     {
       throw new ArgumentException("El usuario es obligatorio.", nameof(userId));
     }
 
-    if (string.IsNullOrWhiteSpace(roleCode))
+    if (!Enum.IsDefined(roleCode))
     {
-      throw new ArgumentException("El rol es obligatorio.", nameof(roleCode));
+      throw new ArgumentException("El rol no es válido.", nameof(roleCode));
     }
 
     if (tenantId == Guid.Empty)
@@ -49,7 +50,7 @@ public sealed class RevokeRoleUseCase
       throw new UserNotFoundException();
     }
 
-    var normalizedRoleCode = roleCode.Trim();
+    var normalizedRoleCode = roleCode.ToString();
     var role = await _roleDataStore.GetRoleByCodeAsync(normalizedRoleCode, cancellationToken);
 
     if (role is null)

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
 using SIA.IdentityService.Application.UseCases.Users;
+using SIA.IdentityService.Contracts.Enums;
 using SIA.IdentityService.Contracts.Requests.Users;
 using SIA.IdentityService.Contracts.Responses.Users;
 using SIA.IdentityService.Domain.Enums;
@@ -158,7 +159,7 @@ public sealed class UsersController : ControllerBase
   [ProducesResponseType(StatusCodes.Status403Forbidden)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status409Conflict)]
-  public async Task<IActionResult> RevokeRole(Guid userId, string roleCode, CancellationToken cancellationToken)
+  public async Task<IActionResult> RevokeRole(Guid userId, RoleCode roleCode, CancellationToken cancellationToken)
   {
     var administratorUserId = GetAuthenticatedUserId();
     var tenantId = GetTenantId();

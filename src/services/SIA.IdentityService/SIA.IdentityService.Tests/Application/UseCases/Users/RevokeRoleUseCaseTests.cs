@@ -3,6 +3,7 @@ using SIA.IdentityService.Application.Interfaces.DataStores;
 using SIA.IdentityService.Application.UseCases.Users;
 using SIA.IdentityService.Domain.Entities;
 using SIA.IdentityService.Tests.Common.Fakes;
+using SIA.IdentityService.Contracts.Enums;
 
 namespace SIA.IdentityService.Tests.Application.UseCases.Users;
 
@@ -12,7 +13,7 @@ public sealed class RevokeRoleUseCaseTests
   public async Task ExecuteAsync_WithActiveRole_ShouldRevokeRole()
   {
     var user = new User(Guid.NewGuid(), "user@institucion.edu.mx", "hash");
-    var role = new Role("CareerHead", "Jefe de carrera");
+    var role = new Role(RoleCode.DivisionHead.ToString(), "Jefe de división");
     var userRole = new UserRole(user.Id, role.Id);
 
     var userDataStore = new FakeUserDataStore(user) { ActiveUserRole = userRole };
@@ -20,7 +21,7 @@ public sealed class RevokeRoleUseCaseTests
 
     await useCase.ExecuteAsync(
       user.Id,
-      "CareerHead",
+      RoleCode.DivisionHead,
       user.TenantId,
       Guid.NewGuid(),
       Guid.NewGuid(),
@@ -34,12 +35,12 @@ public sealed class RevokeRoleUseCaseTests
   public async Task ExecuteAsync_WithoutActiveRole_ShouldThrowConflict()
   {
     var user = new User(Guid.NewGuid(), "user@institucion.edu.mx", "hash");
-    var role = new Role("CareerHead", "Jefe de carrera");
+    var role = new Role(RoleCode.DivisionHead.ToString(), "Jefe de división");
     var useCase = new RevokeRoleUseCase(new FakeUserDataStore(user), new FakeRoleDataStore(role));
 
     await Assert.ThrowsAsync<RoleRevocationException>(() => useCase.ExecuteAsync(
       user.Id,
-      "CareerHead",
+      RoleCode.DivisionHead,
       user.TenantId,
       Guid.NewGuid(),
       Guid.NewGuid(),
@@ -54,7 +55,7 @@ public sealed class RevokeRoleUseCaseTests
 
     await Assert.ThrowsAsync<UserNotFoundException>(() => useCase.ExecuteAsync(
       user.Id,
-      "CareerHead",
+      RoleCode.DivisionHead,
       Guid.NewGuid(),
       Guid.NewGuid(),
       Guid.NewGuid(),
@@ -69,7 +70,7 @@ public sealed class RevokeRoleUseCaseTests
 
     await Assert.ThrowsAsync<RoleNotFoundException>(() => useCase.ExecuteAsync(
       user.Id,
-      "Unknown",
+      RoleCode.Coordinator,
       user.TenantId,
       Guid.NewGuid(),
       Guid.NewGuid(),
