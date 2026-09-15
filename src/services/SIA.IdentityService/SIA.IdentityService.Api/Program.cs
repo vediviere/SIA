@@ -8,9 +8,9 @@ using SIA.IdentityService.Api.OpenApi;
 using SIA.IdentityService.Application.Interfaces.DataStores;
 using SIA.IdentityService.Application.Interfaces.Security;
 using SIA.IdentityService.Application.UseCases.Users;
-using SIA.IdentityService.Contracts.IntegrationEvents.Users;
 using SIA.IdentityService.Infrastructure.Persistence.Contexts;
 using SIA.IdentityService.Infrastructure.Persistence.DataStores;
+using SIA.IdentityService.Infrastructure.MessageBus;
 using SIA.IdentityService.Infrastructure.Security;
 using SIA.IdentityService.Application.Interfaces.Tenancy;
 using SIA.IdentityService.Infrastructure.Tenancy;
@@ -153,11 +153,7 @@ var outboxOptions = new OutboxOptions();
 builder.Configuration.GetSection("Outbox").Bind(outboxOptions);
 builder.Services.AddSingleton(outboxOptions);
 
-builder.Services.AddSingleton(new OutboxEventRegistry()
-  .Register<UserCreatedIntegrationEvent>(UserIntegrationEventTypes.UserCreatedV1)
-  .Register<UserRoleAssignedIntegrationEvent>(UserIntegrationEventTypes.UserRoleAssignedV1)
-  .Register<UserRoleRevokedIntegrationEvent>(UserIntegrationEventTypes.UserRoleRevokedV1)
-  .Register<PasswordChangedIntegrationEvent>(UserIntegrationEventTypes.PasswordChangedV1));
+builder.Services.AddSingleton(IdentityOutboxRegistry.Create());
 
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
 builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
