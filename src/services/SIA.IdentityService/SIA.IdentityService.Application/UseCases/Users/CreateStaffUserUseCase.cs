@@ -1,6 +1,7 @@
 using SIA.IdentityService.Application.Common.Exceptions;
 using SIA.IdentityService.Application.Interfaces.DataStores;
 using SIA.IdentityService.Application.Interfaces.Security;
+using SIA.IdentityService.Contracts.Enums;
 using SIA.IdentityService.Contracts.IntegrationEvents.Users;
 using SIA.IdentityService.Contracts.Requests.Users;
 using SIA.IdentityService.Contracts.Responses.Users;
@@ -48,16 +49,16 @@ public sealed class CreateStaffUserUseCase
       throw new ArgumentException("La contraseña provisional es obligatoria.", nameof(request.TemporaryPassword));
     }
 
-    if (string.IsNullOrWhiteSpace(request.RoleCode))
+    if (!Enum.IsDefined(request.RoleCode))
     {
-      throw new ArgumentException("El rol es obligatorio.", nameof(request.RoleCode));
+      throw new ArgumentException("El rol no es válido.", nameof(request.RoleCode));
     }
 
     var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
-    var roleCode = request.RoleCode.Trim();
+    var roleCode = request.RoleCode.ToString();
 
-    if (string.Equals(roleCode, "Student", StringComparison.OrdinalIgnoreCase))
+    if (request.RoleCode == RoleCode.Student)
     {
       throw new InvalidStaffRoleException(roleCode);
     }

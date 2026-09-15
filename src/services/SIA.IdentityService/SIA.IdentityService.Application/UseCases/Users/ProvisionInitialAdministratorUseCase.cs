@@ -1,7 +1,7 @@
 using SIA.IdentityService.Application.Common.Exceptions;
 using SIA.IdentityService.Application.Interfaces.DataStores;
 using SIA.IdentityService.Application.Interfaces.Security;
-
+using SIA.IdentityService.Contracts.Enums;
 using SIA.IdentityService.Contracts.IntegrationEvents.Users;
 using SIA.IdentityService.Contracts.Responses.Users;
 
@@ -11,8 +11,6 @@ namespace SIA.IdentityService.Application.UseCases.Users;
 
 public sealed class ProvisionInitialAdministratorUseCase
 {
-  private const string AdministratorRoleCode = "Administrator";
-
   private readonly IUserDataStore _userDataStore;
   private readonly IRoleDataStore _roleDataStore;
   private readonly IPasswordHasher _passwordHasher;
@@ -47,12 +45,13 @@ public sealed class ProvisionInitialAdministratorUseCase
     }
 
     var normalizedEmail = email.Trim().ToLowerInvariant();
+    var administratorRoleCode = RoleCode.Administrator.ToString();
 
-    var role = await _roleDataStore.GetRoleByCodeAsync(AdministratorRoleCode, cancellationToken);
+    var role = await _roleDataStore.GetRoleByCodeAsync(administratorRoleCode, cancellationToken);
 
     if (role is null)
     {
-      throw new RoleNotFoundException(AdministratorRoleCode);
+      throw new RoleNotFoundException(administratorRoleCode);
     }
 
     var administratorAlreadyProvisioned = await _userDataStore.HasRoleAssignmentInTenantAsync(tenantId, role.Id, cancellationToken);

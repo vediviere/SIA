@@ -2,6 +2,7 @@ using SIA.IdentityService.Application.Common.Exceptions;
 using SIA.IdentityService.Application.Interfaces.DataStores;
 using SIA.IdentityService.Application.Interfaces.Security;
 using SIA.IdentityService.Application.UseCases.Users;
+using SIA.IdentityService.Contracts.Enums;
 using SIA.IdentityService.Contracts.Requests.Users;
 using SIA.IdentityService.Domain.Entities;
 using SIA.IdentityService.Tests.Common.Fakes;
@@ -16,7 +17,7 @@ public sealed class CreateStaffUserUseCaseTests
     var tenantId = Guid.NewGuid();
     var administratorUserId = Guid.NewGuid();
     var correlationId = Guid.NewGuid();
-    var role = new Role("Teacher", "Docente");
+    var role = new Role(RoleCode.Teacher.ToString(), "Docente");
     var userDataStore = new FakeUserDataStore();
     var useCase = new CreateStaffUserUseCase(userDataStore, new FakeRoleDataStore(role), new FakePasswordHasher());
 
@@ -24,13 +25,13 @@ public sealed class CreateStaffUserUseCaseTests
     {
       Email = " Teacher@Institution.edu.mx ",
       TemporaryPassword = "Temporary123!",
-      RoleCode = "Teacher"
+      RoleCode = RoleCode.Teacher
     }, tenantId, administratorUserId, correlationId, CancellationToken.None);
 
     Assert.Equal(tenantId, response.TenantId);
     Assert.Equal("teacher@institution.edu.mx", response.Email);
     Assert.Equal(role.Id, response.RoleId);
-    Assert.Equal("Teacher", response.RoleCode);
+    Assert.Equal(RoleCode.Teacher.ToString(), response.RoleCode);
     Assert.True(response.MustChangePassword);
     Assert.Equal(correlationId, response.CorrelationId);
     Assert.True(userDataStore.UserWithRoleAdded);
@@ -42,14 +43,14 @@ public sealed class CreateStaffUserUseCaseTests
   public async Task ExecuteAsync_WhenEmailAlreadyExists_ShouldThrowConflict()
   {
     var userDataStore = new FakeUserDataStore { EmailExistsResult = true };
-    var role = new Role("Teacher", "Docente");
+    var role = new Role(RoleCode.Teacher.ToString(), "Docente");
     var useCase = new CreateStaffUserUseCase(userDataStore, new FakeRoleDataStore(role), new FakePasswordHasher());
 
     await Assert.ThrowsAsync<UserEmailAlreadyExistsException>(() => useCase.ExecuteAsync(new CreateStaffUserRequest
     {
       Email = "teacher@institution.edu.mx",
       TemporaryPassword = "Temporary123!",
-      RoleCode = "Teacher"
+      RoleCode = RoleCode.Teacher
     }, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
   }
 
@@ -62,7 +63,7 @@ public sealed class CreateStaffUserUseCaseTests
     {
       Email = "teacher@institution.edu.mx",
       TemporaryPassword = "Temporary123!",
-      RoleCode = "Teacher"
+      RoleCode = RoleCode.Teacher
     }, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
   }
 
@@ -75,7 +76,7 @@ public sealed class CreateStaffUserUseCaseTests
     {
       Email = "student@institution.edu.mx",
       TemporaryPassword = "Temporary123!",
-      RoleCode = "Student"
+      RoleCode = RoleCode.Student
     }, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), CancellationToken.None));
   }
 

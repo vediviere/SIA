@@ -1,6 +1,7 @@
 using SIA.IdentityService.Application.Common.Exceptions;
 using SIA.IdentityService.Application.Interfaces.DataStores;
 using SIA.IdentityService.Application.UseCases.Users;
+using SIA.IdentityService.Contracts.Enums;
 using SIA.IdentityService.Contracts.Requests.Users;
 using SIA.IdentityService.Domain.Entities;
 using SIA.IdentityService.Tests.Common.Fakes;
@@ -13,13 +14,13 @@ public sealed class AssignRoleUseCaseTests
   public async Task ExecuteAsync_WithValidRole_ShouldAssignRole()
   {
     var user = new User(Guid.NewGuid(), "user@institucion.edu.mx", "hash");
-    var role = new Role("Teacher", "Docente");
+    var role = new Role(RoleCode.Teacher.ToString(), "Docente");
     var userDataStore = new FakeUserDataStore(user);
     var useCase = new AssignRoleUseCase(userDataStore, new FakeRoleDataStore(role));
 
     await useCase.ExecuteAsync(
       user.Id,
-      new AssignRoleRequest { RoleCode = "Teacher" },
+      new AssignRoleRequest { RoleCode = RoleCode.Teacher },
       user.TenantId,
       Guid.NewGuid(),
       Guid.NewGuid(),
@@ -32,13 +33,13 @@ public sealed class AssignRoleUseCaseTests
   public async Task ExecuteAsync_WhenRoleAlreadyAssigned_ShouldThrowConflict()
   {
     var user = new User(Guid.NewGuid(), "user@institucion.edu.mx", "hash");
-    var role = new Role("Teacher", "Docente");
+    var role = new Role(RoleCode.Teacher.ToString(), "Docente");
     var userDataStore = new FakeUserDataStore(user) { HasActiveRoleResult = true };
     var useCase = new AssignRoleUseCase(userDataStore, new FakeRoleDataStore(role));
 
     await Assert.ThrowsAsync<RoleAssignmentException>(() => useCase.ExecuteAsync(
       user.Id,
-      new AssignRoleRequest { RoleCode = "Teacher" },
+      new AssignRoleRequest { RoleCode = RoleCode.Teacher },
       user.TenantId,
       Guid.NewGuid(),
       Guid.NewGuid(),
@@ -49,12 +50,12 @@ public sealed class AssignRoleUseCaseTests
   public async Task ExecuteAsync_WhenUserBelongsToAnotherTenant_ShouldThrowNotFound()
   {
     var user = new User(Guid.NewGuid(), "user@institucion.edu.mx", "hash");
-    var role = new Role("Teacher", "Docente");
+    var role = new Role(RoleCode.Teacher.ToString(), "Docente");
     var useCase = new AssignRoleUseCase(new FakeUserDataStore(user), new FakeRoleDataStore(role));
 
     await Assert.ThrowsAsync<UserNotFoundException>(() => useCase.ExecuteAsync(
       user.Id,
-      new AssignRoleRequest { RoleCode = "Teacher" },
+      new AssignRoleRequest { RoleCode = RoleCode.Teacher },
       Guid.NewGuid(),
       Guid.NewGuid(),
       Guid.NewGuid(),
@@ -69,7 +70,7 @@ public sealed class AssignRoleUseCaseTests
 
     await Assert.ThrowsAsync<InvalidStaffRoleException>(() => useCase.ExecuteAsync(
       user.Id,
-      new AssignRoleRequest { RoleCode = "Student" },
+      new AssignRoleRequest { RoleCode = RoleCode.Student },
       user.TenantId,
       Guid.NewGuid(),
       Guid.NewGuid(),

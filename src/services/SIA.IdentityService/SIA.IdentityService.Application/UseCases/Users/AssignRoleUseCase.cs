@@ -1,5 +1,6 @@
 using SIA.IdentityService.Application.Common.Exceptions;
 using SIA.IdentityService.Application.Interfaces.DataStores;
+using SIA.IdentityService.Contracts.Enums;
 using SIA.IdentityService.Contracts.IntegrationEvents.Users;
 using SIA.IdentityService.Contracts.Requests.Users;
 using SIA.IdentityService.Domain.Entities;
@@ -24,9 +25,9 @@ public sealed class AssignRoleUseCase
       throw new ArgumentException("El usuario es obligatorio.", nameof(userId));
     }
 
-    if (string.IsNullOrWhiteSpace(request.RoleCode))
+    if (!Enum.IsDefined(request.RoleCode))
     {
-      throw new ArgumentException("El rol es obligatorio.", nameof(request.RoleCode));
+      throw new ArgumentException("El rol no es válido.", nameof(request.RoleCode));
     }
 
     var user = await _userDataStore.GetUserByIdAsync(userId, cancellationToken);
@@ -36,9 +37,9 @@ public sealed class AssignRoleUseCase
       throw new UserNotFoundException();
     }
 
-    var roleCode = request.RoleCode.Trim();
+    var roleCode = request.RoleCode.ToString();
 
-    if (roleCode.Equals("Student", StringComparison.OrdinalIgnoreCase))
+    if (request.RoleCode == RoleCode.Student)
     {
       throw new InvalidStaffRoleException(roleCode);
     }
