@@ -15,7 +15,7 @@ public sealed class ReviewProcessConfig : IEntityTypeConfiguration<ReviewProcess
 
     builder.HasKey(process => process.Id);
 
-    builder.Property(process => process.Id).ValueGeneratedNever();
+    builder.Property(process => process.Id).HasColumnName("ReviewProcessId").ValueGeneratedNever();
     builder.Property(process => process.TenantId).IsRequired();
     builder.Property(process => process.AcademicLoadProposalId).IsRequired();
     builder.Property(process => process.DivisionHeadId).IsRequired();
@@ -25,6 +25,9 @@ public sealed class ReviewProcessConfig : IEntityTypeConfiguration<ReviewProcess
     builder.Property(process => process.CreatedAtUtc).IsRequired();
     builder.Property(process => process.UpdatedAtUtc);
     builder.Property(process => process.CorrelationId).IsRequired();
+    builder.Property(process => process.DecidedBy);
+    builder.Property(process => process.DecidedAtUtc);
+    builder.Property(process => process.DecisionCorrelationId);
 
     builder.HasIndex(process => new
     {
@@ -40,5 +43,9 @@ public sealed class ReviewProcessConfig : IEntityTypeConfiguration<ReviewProcess
     });
 
     builder.HasIndex(process => process.CorrelationId);
+    builder.HasIndex(process => process.DecisionCorrelationId);
+
+    builder.Navigation(process => process.Observations)
+      .UsePropertyAccessMode(PropertyAccessMode.Field);
   }
 }

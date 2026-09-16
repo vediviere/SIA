@@ -12,7 +12,7 @@ public sealed class InboxMessageConfig : IEntityTypeConfiguration<InboxMessage>
 
     builder.HasKey(message => message.Id);
 
-    builder.Property(message => message.Id).ValueGeneratedNever();
+    builder.Property(message => message.Id).HasColumnName("InboxMessageId").ValueGeneratedNever();
     builder.Property(message => message.EventType).HasMaxLength(200).IsRequired();
     builder.Property(message => message.SourceService).HasMaxLength(150).IsRequired();
     builder.Property(message => message.ReceivedAtUtc).IsRequired();
