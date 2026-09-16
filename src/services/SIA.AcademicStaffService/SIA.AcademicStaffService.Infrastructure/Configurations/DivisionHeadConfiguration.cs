@@ -15,7 +15,7 @@ public sealed class DivisionHeadConfiguration
         builder.HasKey(divisionHead => divisionHead.Id);
 
         builder.Property(divisionHead => divisionHead.Id)
-            .HasColumnName("DivisionId")
+            .HasColumnName("DivisionHeadId")
             .ValueGeneratedNever();
 
         builder.Property(divisionHead => divisionHead.TenantId)
