@@ -10,19 +10,19 @@ public sealed class AcademicLoadTests
   {
     var tenantId = Guid.NewGuid();
     var teacherId = Guid.NewGuid();
-    var divisionId = Guid.NewGuid();
+    var divisionHeadId = Guid.NewGuid();
     var academicPeriodId = Guid.NewGuid();
     var proposedDate = new DateTime(2026, 1, 15);
     var assignmentDate = new DateTime(2026, 1, 20);
 
     var proposalId = Guid.NewGuid();
 
-    var academicLoad = new AcademicLoad(tenantId, proposalId, teacherId, divisionId, academicPeriodId, "OF-2026-001", proposedDate, 10, 5, assignmentDate);
+    var academicLoad = new AcademicLoad(tenantId, proposalId, teacherId, divisionHeadId, academicPeriodId, "OF-2026-001", proposedDate, 10, 5, assignmentDate);
 
     Assert.NotEqual(Guid.Empty, academicLoad.Id);
     Assert.Equal(tenantId, academicLoad.TenantId);
     Assert.Equal(teacherId, academicLoad.TeacherId);
-    Assert.Equal(divisionId, academicLoad.DivisionId);
+    Assert.Equal(divisionHeadId, academicLoad.DivisionHeadId);
     Assert.Equal(academicPeriodId, academicLoad.AcademicPeriodId);
     Assert.Equal("OF-2026-001", academicLoad.OfficialLetterNumber);
     Assert.Equal(proposedDate, academicLoad.ProposedDate);
@@ -54,7 +54,7 @@ public sealed class AcademicLoadTests
   }
 
   [Fact]
-  public void Constructor_EmptyDivisionId_ThrowArgumentException()
+  public void Constructor_EmptyDivisionHeadId_ThrowArgumentException()
   {
     Assert.Throws<ArgumentException>(() => new AcademicLoad(Guid.NewGuid(), Guid.NewGuid(), Guid.Empty, Guid.NewGuid(), Guid.NewGuid(), "OF-2026-001", DateTime.UtcNow, 10, 5, DateTime.UtcNow));
   }
@@ -98,19 +98,19 @@ public sealed class AcademicLoadTests
     var tenantId = Guid.NewGuid();
     var proposalId = Guid.NewGuid();
     var teacherId = Guid.NewGuid();
-    var divisionId = Guid.NewGuid();
+    var divisionHeadId = Guid.NewGuid();
     var academicPeriodId = Guid.NewGuid();
     var newProposedDate = new DateTime(2026, 2, 1);
     var newAssignmentDate = new DateTime(2026, 2, 5);
 
-    var academicLoad = new AcademicLoad(tenantId, proposalId, teacherId, divisionId, academicPeriodId, "OF-2026-001", newProposedDate, 10, 5, newAssignmentDate);
+    var academicLoad = new AcademicLoad(tenantId, proposalId, teacherId, divisionHeadId, academicPeriodId, "OF-2026-001", newProposedDate, 10, 5, newAssignmentDate);
 
     academicLoad.Update("OF-2026-002", newProposedDate, newAssignmentDate);
 
     Assert.Equal(tenantId, academicLoad.TenantId);
     Assert.Equal(proposalId, academicLoad.ProposalId);
     Assert.Equal(teacherId, academicLoad.TeacherId);
-    Assert.Equal(divisionId, academicLoad.DivisionId);
+    Assert.Equal(divisionHeadId, academicLoad.DivisionHeadId);
     Assert.Equal(academicPeriodId, academicLoad.AcademicPeriodId);
     Assert.Equal("OF-2026-002", academicLoad.OfficialLetterNumber);
     Assert.Equal(newProposedDate, academicLoad.ProposedDate);

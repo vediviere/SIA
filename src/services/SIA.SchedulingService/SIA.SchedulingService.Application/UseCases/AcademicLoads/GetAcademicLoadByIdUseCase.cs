@@ -28,7 +28,7 @@ public sealed class GetAcademicLoadByIdUseCase
       TenantId = academicLoad.TenantId,
       ProposalId = academicLoad.ProposalId,
       TeacherId = academicLoad.TeacherId,
-      DivisionId = academicLoad.DivisionId,
+      DivisionHeadId = academicLoad.DivisionHeadId,
       AcademicPeriodId = academicLoad.AcademicPeriodId,
       OfficialLetterNumber = academicLoad.OfficialLetterNumber,
       ProposedDate = academicLoad.ProposedDate,

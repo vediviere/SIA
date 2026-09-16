@@ -7,7 +7,7 @@ public sealed record AcademicLoadDto
   public Guid TenantId { get; init; }
   public Guid ProposalId { get; init; }
   public Guid TeacherId { get; init; }
-  public Guid DivisionId { get; init; }
+  public Guid DivisionHeadId { get; init; }
   public Guid AcademicPeriodId { get; init; }
   public string OfficialLetterNumber { get; init; } = string.Empty;
   public DateTime ProposedDate { get; init; }
