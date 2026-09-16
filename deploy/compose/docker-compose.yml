@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  sia-sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sia_sqlserver_local
+    restart: always
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Sia_Dev_P@ssw0rd
+      - MSSQL_PID=Developer
+    volumes:
+      - sia-sqldata:/var/opt/mssql
+
+  sia-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: sia_rabbitmq_local
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - sia-rabbitmqdata:/var/lib/rabbitmq
+
+volumes:
+  sia-sqldata:
+    name: sia_sqlserver_data
+  sia-rabbitmqdata:
+    name: sia_rabbitmq_data
