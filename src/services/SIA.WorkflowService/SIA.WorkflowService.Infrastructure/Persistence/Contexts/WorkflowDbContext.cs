@@ -1,8 +1,7 @@
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.WorkflowService.Domain.Entities;
 using SIA.WorkflowService.Infrastructure.Persistence.Entities;
-using System.Reflection.Emit;
 
 namespace SIA.WorkflowService.Infrastructure.Persistence.Contexts;
 
@@ -13,7 +12,9 @@ public sealed class WorkflowDbContext : DbContext
   }
 
   public DbSet<ReviewProcess> ReviewProcesses => Set<ReviewProcess>();
+  public DbSet<ReviewObservation> ReviewObservations => Set<ReviewObservation>();
   public DbSet<InboxMessage> InboxMessages => Set<InboxMessage>();
+  public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

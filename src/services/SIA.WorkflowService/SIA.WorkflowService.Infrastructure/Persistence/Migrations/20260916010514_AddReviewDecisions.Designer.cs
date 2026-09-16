@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SIA.WorkflowService.Infrastructure.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using SIA.WorkflowService.Infrastructure.Persistence.Contexts;
 namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(WorkflowDbContext))]
-    partial class WorkflowDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260916010514_AddReviewDecisions")]
+    partial class AddReviewDecisions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,8 +28,7 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SIA.BuildingBlocks.Messaging.Outbox.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("OutboxMessageId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CorrelationId")
                         .HasColumnType("uniqueidentifier");
@@ -73,8 +75,7 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SIA.WorkflowService.Domain.Entities.ReviewObservation", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("ReviewObservationId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CorrelationId")
                         .HasColumnType("uniqueidentifier");
@@ -117,8 +118,7 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SIA.WorkflowService.Domain.Entities.ReviewProcess", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("ReviewProcessId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("AcademicLoadProposalId")
                         .HasColumnType("uniqueidentifier");
@@ -176,8 +176,7 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SIA.WorkflowService.Infrastructure.Persistence.Entities.InboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("InboxMessageId");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CorrelationId")
                         .HasColumnType("uniqueidentifier");

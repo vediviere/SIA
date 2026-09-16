@@ -1,0 +1,94 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SIA.IdentityService.Contracts.Enums;
+using SIA.WorkflowService.Api.Extensions;
+using SIA.WorkflowService.Application.UseCases.ReviewProcesses;
+using SIA.WorkflowService.Contracts.Requests.ReviewProcesses;
+using DomainObservationTarget = SIA.WorkflowService.Domain.Enums.ObservationTarget;
+
+
+namespace SIA.WorkflowService.Api.Controllers;
+
+[ApiController]
+[Route("api/review-processes")]
+[Authorize(Roles = nameof(RoleCode.Coordinator))]
+public sealed class ReviewProcessesController : ControllerBase
+{
+  private readonly ApproveUseCase _approveUseCase;
+  private readonly ReturnUseCase _returnUseCase;
+
+  public ReviewProcessesController(ApproveUseCase approveUseCase, ReturnUseCase returnUseCase)
+  {
+    _approveUseCase = approveUseCase;
+    _returnUseCase = returnUseCase;
+  }
+
+  [HttpPost("{processId:guid}/approve")]
+  [ProducesResponseType(StatusCodes.Status204NoContent)]
+  [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+  [ProducesResponseType(StatusCodes.Status403Forbidden)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  [ProducesResponseType(StatusCodes.Status409Conflict)]
+  public async Task<IActionResult> ApproveAsync([FromRoute] Guid processId, CancellationToken cancellationToken)
+  {
+    var correlationId = ResolveCorrelationId();
+    Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+    var command = new ApproveCommand
+    {
+      ProcessId = processId,
+      TenantId = User.GetTenantId(),
+      DecidedBy = User.GetUserId(),
+      CorrelationId = correlationId
+    };
+
+    await _approveUseCase.ExecuteAsync(command, cancellationToken);
+
+    return NoContent();
+  }
+
+  [HttpPost("{processId:guid}/return")]
+  [ProducesResponseType(StatusCodes.Status204NoContent)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+  [ProducesResponseType(StatusCodes.Status403Forbidden)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  [ProducesResponseType(StatusCodes.Status409Conflict)]
+  public async Task<IActionResult> ReturnAsync([FromRoute] Guid processId, [FromBody] ReturnRequest request, CancellationToken cancellationToken)
+  {
+    var correlationId = ResolveCorrelationId();
+    Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
+
+    var observations = request.Observations?.Select(observation => new ObservationInput
+    {
+      TargetType = (DomainObservationTarget)observation.TargetType,
+      TargetId = observation.TargetId,
+      Description = observation.Description
+    }).ToArray() ?? [];
+
+    var command = new ReturnCommand
+    {
+      ProcessId = processId,
+      TenantId = User.GetTenantId(),
+      DecidedBy = User.GetUserId(),
+      CorrelationId = correlationId,
+      Observations = observations
+    };
+
+    await _returnUseCase.ExecuteAsync(command, cancellationToken);
+
+    return NoContent();
+  }
+
+  private Guid ResolveCorrelationId()
+  {
+    const string headerName = "X-Correlation-Id";
+
+    if (Request.Headers.TryGetValue(headerName, out var value) && Guid.TryParse(value.FirstOrDefault(), out var correlationId))
+    {
+      return correlationId;
+    }
+
+    return Guid.NewGuid();
+  }
+}
