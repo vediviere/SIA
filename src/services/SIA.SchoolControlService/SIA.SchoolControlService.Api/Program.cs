@@ -42,6 +42,7 @@ builder.Services.AddScoped<IStudentQueries, StudentQueries>();
 builder.Services.AddScoped<GetSubjectReferenceUseCase>();
 builder.Services.AddScoped<CreateUseCase>();
 builder.Services.AddScoped<GetByNumberUseCase>();
+builder.Services.AddScoped<LinkUseCase>();
 
 var signingKey = builder.Configuration["Token:SigningKey"]
   ?? throw new InvalidOperationException("Token:SigningKey no está configurado.");
