@@ -72,7 +72,31 @@ public sealed class Student
     CreatedAtUtc = DateTime.UtcNow;
   }
 
+  public bool LinkUser(Guid userId)
+  {
+    if (userId == Guid.Empty)
+    {
+      throw new ArgumentException("El usuario es obligatorio.", nameof(userId));
+    }
+
+    if (UserId == userId)
+    {
+      return false;
+    }
+
+    if (UserId.HasValue)
+    {
+      throw new InvalidOperationException("El estudiante ya está vinculado con otra cuenta.");
+    }
+
+    UserId = userId;
+    UpdatedAtUtc = DateTime.UtcNow;
+
+    return true;
+  }
+
   public Guid Id { get; private set; }
+  public Guid? UserId { get; private set; }
   public Guid TenantId { get; private set; }
   public string StudentNumber { get; private set; } = string.Empty;
   public string FirstName { get; private set; } = string.Empty;

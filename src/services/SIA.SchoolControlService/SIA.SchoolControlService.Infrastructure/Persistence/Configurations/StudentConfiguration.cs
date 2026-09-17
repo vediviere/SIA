@@ -19,6 +19,9 @@ public sealed class StudentConfiguration : IEntityTypeConfiguration<Student>
     builder.Property(student => student.TenantId)
       .IsRequired();
 
+    builder.Property(student => student.UserId)
+      .IsConcurrencyToken();
+
     builder.Property(student => student.StudentNumber)
       .HasMaxLength(Student.StudentNumberMaxLength)
       .IsRequired();
