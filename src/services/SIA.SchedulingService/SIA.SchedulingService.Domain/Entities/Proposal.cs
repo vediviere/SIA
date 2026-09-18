@@ -63,5 +63,25 @@ public sealed class Proposal
         ProposalStatus = ProposalStatus.SubmittedForReview;
         UpdatedAtUtc = DateTime.UtcNow;
     }
+
+    public void Approve()
+    {
+        if (ProposalStatus != ProposalStatus.SubmittedForReview)
+        {
+            throw new InvalidOperationException("Solo una propuesta en revisión puede aprobarse.");
+        }
+        ProposalStatus = ProposalStatus.Approved;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    public void Reject()
+    {
+        if (ProposalStatus != ProposalStatus.SubmittedForReview)
+        {
+            throw new InvalidOperationException("Solo una propuesta en revisión puede regresarse para corrección.");
+        }
+        ProposalStatus = ProposalStatus.Rejected;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
 }
 
