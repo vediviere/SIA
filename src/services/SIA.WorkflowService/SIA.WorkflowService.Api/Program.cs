@@ -13,6 +13,7 @@ using SIA.WorkflowService.Infrastructure.Persistence.Contexts;
 using SIA.WorkflowService.Infrastructure.Persistence.DataStores;
 using SIA.WorkflowService.Api.Security;
 using SIA.WorkflowService.Application.Interfaces;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,18 +22,18 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddOpenApi(options =>
 {
-  options.AddDocumentTransformer<BearerTransformer>();
-  options.AddOperationTransformer<AuthTransformer>();
+    options.AddDocumentTransformer<BearerTransformer>();
+    options.AddOperationTransformer<AuthTransformer>();
 });
 
 builder.Services.AddSiaExceptionHandling();
 
 builder.Services.AddDbContext<WorkflowDbContext>(options =>
 {
-  var connectionString = builder.Configuration.GetConnectionString("WorkflowDatabase")
-    ?? throw new InvalidOperationException("No se configuró la conexión WorkflowDatabase.");
+    var connectionString = builder.Configuration.GetConnectionString("WorkflowDatabase")
+      ?? throw new InvalidOperationException("No se configuró la conexión WorkflowDatabase.");
 
-  options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
+    options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
 });
 
 var signingKey = builder.Configuration["Token:SigningKey"]
@@ -48,26 +49,50 @@ var signingKeyBytes = Convert.FromBase64String(signingKey);
 
 if (signingKeyBytes.Length < 32)
 {
-  throw new InvalidOperationException("Token:SigningKey debe contener al menos 256 bits.");
+    throw new InvalidOperationException("Token:SigningKey debe contener al menos 256 bits.");
 }
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
-  options.MapInboundClaims = false;
+    options.MapInboundClaims = false;
 
-  options.TokenValidationParameters = new TokenValidationParameters
-  {
-    ValidateIssuer = true,
-    ValidateAudience = true,
-    ValidateLifetime = true,
-    ValidateIssuerSigningKey = true,
-    ValidIssuer = issuer,
-    ValidAudience = audience,
-    IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
-    NameClaimType = "email",
-    RoleClaimType = "role",
-    ClockSkew = TimeSpan.FromSeconds(30)
-  };
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
+        NameClaimType = "email",
+        RoleClaimType = "role",
+        ClockSkew = TimeSpan.FromSeconds(30)
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            var userIdValue = context.Principal?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+
+            if (!Guid.TryParse(userIdValue, out var userId) || userId == Guid.Empty)
+            {
+                context.Fail("La identidad no contiene un identificador de usuario válido.");
+                return Task.CompletedTask;
+            }
+
+            var tenantIdValue = context.Principal?.FindFirst("tenant_id")?.Value;
+
+            if (!Guid.TryParse(tenantIdValue, out var tenantId) || tenantId == Guid.Empty)
+            {
+                context.Fail("La identidad no contiene un TenantId válido.");
+                return Task.CompletedTask;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();
@@ -82,33 +107,33 @@ builder.Services.AddScoped<ReturnUseCase>();
 
 builder.Services.AddMassTransit(configurator =>
 {
-  configurator.AddConsumer<SubmittedConsumer>();
+    configurator.AddConsumer<SubmittedConsumer>();
 
-  configurator.UsingRabbitMq((context, rabbitMq) =>
-  {
-    var host = builder.Configuration["RabbitMq:Host"]
-      ?? throw new InvalidOperationException("No se configuró RabbitMq:Host.");
-
-    var virtualHost = builder.Configuration["RabbitMq:VirtualHost"]
-      ?? throw new InvalidOperationException("No se configuró RabbitMq:VirtualHost.");
-
-    var username = builder.Configuration["RabbitMq:Username"]
-      ?? throw new InvalidOperationException("No se configuró RabbitMq:Username.");
-
-    var password = builder.Configuration["RabbitMq:Password"]
-      ?? throw new InvalidOperationException("No se configuró RabbitMq:Password.");
-
-    rabbitMq.Host(host, virtualHost, hostConfigurator =>
+    configurator.UsingRabbitMq((context, rabbitMq) =>
     {
-      hostConfigurator.Username(username);
-      hostConfigurator.Password(password);
-    });
+        var host = builder.Configuration["RabbitMq:Host"]
+        ?? throw new InvalidOperationException("No se configuró RabbitMq:Host.");
 
-    rabbitMq.ReceiveEndpoint("sia-workflow-proposal-submitted-v1", endpoint =>
-    {
-      endpoint.ConfigureConsumer<SubmittedConsumer>(context);
+        var virtualHost = builder.Configuration["RabbitMq:VirtualHost"]
+        ?? throw new InvalidOperationException("No se configuró RabbitMq:VirtualHost.");
+
+        var username = builder.Configuration["RabbitMq:Username"]
+        ?? throw new InvalidOperationException("No se configuró RabbitMq:Username.");
+
+        var password = builder.Configuration["RabbitMq:Password"]
+        ?? throw new InvalidOperationException("No se configuró RabbitMq:Password.");
+
+        rabbitMq.Host(host, virtualHost, hostConfigurator =>
+      {
+          hostConfigurator.Username(username);
+          hostConfigurator.Password(password);
+      });
+
+        rabbitMq.ReceiveEndpoint("sia-workflow-proposal-submitted-v1", endpoint =>
+      {
+          endpoint.ConfigureConsumer<SubmittedConsumer>(context);
+      });
     });
-  });
 });
 
 var outboxOptions = new OutboxOptions();
@@ -124,12 +149,12 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-  app.MapOpenApi();
+    app.MapOpenApi();
 
-  app.UseSwaggerUI(options =>
-  {
-    options.SwaggerEndpoint("/openapi/v1.json", "SIA WorkflowService API v1");
-  });
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "SIA WorkflowService API v1");
+    });
 }
 
 app.UseSiaExceptionHandling();
@@ -141,11 +166,11 @@ app.MapControllers();
 
 app.MapGet("/health", () =>
 {
-  return Results.Ok(new
-  {
-    service = "SIA.WorkflowService.Api",
-    status = "Healthy"
-  });
+    return Results.Ok(new
+    {
+        service = "SIA.WorkflowService.Api",
+        status = "Healthy"
+    });
 });
 
 app.Run();
