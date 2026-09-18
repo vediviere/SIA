@@ -11,6 +11,8 @@ using SIA.WorkflowService.Infrastructure.MessageBus.Consumers.Proposals;
 using SIA.WorkflowService.Infrastructure.MessageBus.Outbox;
 using SIA.WorkflowService.Infrastructure.Persistence.Contexts;
 using SIA.WorkflowService.Infrastructure.Persistence.DataStores;
+using SIA.WorkflowService.Api.Security;
+using SIA.WorkflowService.Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +71,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ITenantContext, TenantContext>();
 
 builder.Services.AddScoped<IReviewStore, ReviewStore>();
 builder.Services.AddScoped<CreateUseCase>();
