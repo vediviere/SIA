@@ -26,14 +26,14 @@ public sealed class ValidateTeacherEligibilityUseCase
         ValidateTeacherEligibilityRequest request,
         CancellationToken cancellationToken)
     {
-        var reasons = new List<EligibilityRejectionReason>();
+        var reasons = new List<TeacherEligibilityFailureReason>();
 
         var teacher = await _academicStaffServiceClient.GetTeacherAsync(
             request.TenantId, request.TeacherId, cancellationToken);
 
         if (teacher is null || !teacher.Status)
         {
-            reasons.Add(EligibilityRejectionReason.TeacherNotAvailable);
+            reasons.Add(TeacherEligibilityFailureReason.TeacherNotAvailable);
 
             return new ValidateTeacherEligibilityResponse
             {
@@ -58,7 +58,7 @@ public sealed class ValidateTeacherEligibilityUseCase
 
             if (availableHours < offering.ClassHours)
             {
-                reasons.Add(EligibilityRejectionReason.InsufficientAvailableHours);
+                reasons.Add(TeacherEligibilityFailureReason.InsufficientAvailableHours);
             }
         }
 
@@ -67,7 +67,7 @@ public sealed class ValidateTeacherEligibilityUseCase
 
         if (group is not null && teacher.ProgramId.HasValue && teacher.ProgramId != group.EducationalProgramId)
         {
-            reasons.Add(EligibilityRejectionReason.InvalidEducationalProgram);
+            reasons.Add(TeacherEligibilityFailureReason.InvalidEducationalProgram);
         }
 
         return new ValidateTeacherEligibilityResponse
