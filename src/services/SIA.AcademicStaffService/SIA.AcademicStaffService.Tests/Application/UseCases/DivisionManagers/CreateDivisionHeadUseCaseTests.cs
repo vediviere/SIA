@@ -1,9 +1,9 @@
 ﻿using SIA.AcademicStaffService.Application.Common.Exceptions;
-using SIA.AcademicStaffService.Application.UseCases.DivisionManagers;
-using SIA.AcademicStaffService.Contracts.Requests.DivisionManagers;
+using SIA.AcademicStaffService.Application.UseCases.DivisionHeads;
+using SIA.AcademicStaffService.Contracts.Requests.DivisionHeads;
 using SIA.AcademicStaffService.Tests.Common.Fakes;
 
-namespace SIA.AcademicStaffService.Tests.Application.UseCases.DivisionManagers;
+namespace SIA.AcademicStaffService.Tests.Application.UseCases.DivisionHeads;
 
 public sealed class CreateDivisionHeadUseCaseTests
 {
@@ -31,7 +31,7 @@ public sealed class CreateDivisionHeadUseCaseTests
         Assert.NotNull(dataStore.AddedDivisionHead);
         Assert.Equal(programId, dataStore.AddedDivisionHead.ProgramId);
         Assert.NotNull(dataStore.AddedEvent);
-        Assert.Equal(dataStore.AddedDivisionHead.Id, dataStore.AddedEvent.DivisionManagerId);
+        Assert.Equal(dataStore.AddedDivisionHead.Id, dataStore.AddedEvent.DivisionHeadId);
         Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
         Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
         Assert.Equal(1, dataStore.AddedEvent.Version);

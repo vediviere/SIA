@@ -1,9 +1,9 @@
 ﻿using SIA.AcademicStaffService.Application.Common.Exceptions;
-using SIA.AcademicStaffService.Application.UseCases.Professors;
+using SIA.AcademicStaffService.Application.UseCases.Teachers;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Tests.Common.Fakes;
 
-namespace SIA.AcademicStaffService.Tests.Application.UseCases.Professors;
+namespace SIA.AcademicStaffService.Tests.Application.UseCases.Teachers;
 
 public sealed class DeactivateTeacherUseCaseTests
 {
@@ -22,13 +22,13 @@ public sealed class DeactivateTeacherUseCaseTests
         Assert.NotNull(dataStore.DeactivatedTeacher);
         Assert.Equal(teacher.Id, dataStore.DeactivatedTeacher.Id);
         Assert.NotNull(dataStore.DeactivatedEvent);
-        Assert.Equal(teacher.Id, dataStore.DeactivatedEvent.ProfessorId);
+        Assert.Equal(teacher.Id, dataStore.DeactivatedEvent.TeacherId);
         Assert.Equal(teacher.TenantId, dataStore.DeactivatedEvent.TenantId);
         Assert.Equal(correlationId, dataStore.DeactivatedEvent.CorrelationId);
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenTeacherNotFound_ShouldThrowNotFound()
+    public async Task ExecuteAsync_WhenNotFound_ShouldThrowNotFound()
     {
         var dataStore = new FakeTeacherDataStore { TeacherById = null };
         var useCase = new DeactivateTeacherUseCase(dataStore);

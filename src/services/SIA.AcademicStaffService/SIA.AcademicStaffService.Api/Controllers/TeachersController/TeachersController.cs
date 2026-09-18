@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIA.AcademicStaffService.Application.DTOs.Professors;
+using SIA.AcademicStaffService.Application.DTOs.Teacher;
 using SIA.AcademicStaffService.Application.Interfaces;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
-using SIA.AcademicStaffService.Application.UseCases.Professors;
-using SIA.AcademicStaffService.Contracts.Requests.Professors;
-using SIA.AcademicStaffService.Contracts.Responses.Professors;
+using SIA.AcademicStaffService.Application.UseCases.Teachers;
+using SIA.AcademicStaffService.Contracts.Requests.Teacher;
+using SIA.AcademicStaffService.Contracts.Responses.Teacher;
 using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
@@ -15,26 +15,26 @@ namespace SIA.AcademicStaffService.Api.Controllers;
 [Route("api/teachers")]
 public sealed class TeachersController : ControllerBase
 {
-    private readonly CreateTeacherUseCase _createProfessorUseCase;
-    private readonly UpdateTeacherUseCase _updateProfessorUseCase;
-    private readonly ActivateTeacherUseCase _activateProfessorUseCase;
-    private readonly DeactivateTeacherUseCase _deactivateProfessorUseCase;
-    private readonly ITeacherQueries _professorQueries;
+    private readonly CreateTeacherUseCase _createTeacherUseCase;
+    private readonly UpdateTeacherUseCase _updateTeacherUseCase;
+    private readonly ActivateTeacherUseCase _activateTeacherUseCase;
+    private readonly DeactivateTeacherUseCase _deactivateTeacherUseCase;
+    private readonly ITeacherQueries _teacherQueries;
     private readonly ITenantContext _tenantContext;
 
     public TeachersController(
-        CreateTeacherUseCase createProfessorUseCase,
-        UpdateTeacherUseCase updateProfessorUseCase,
-        ActivateTeacherUseCase activateProfessorUseCase,
-        DeactivateTeacherUseCase deactivateProfessorUseCase,
-        ITeacherQueries professorQueries,
+        CreateTeacherUseCase createTeacherUseCase,
+        UpdateTeacherUseCase updateTeacherUseCase,
+        ActivateTeacherUseCase activateTeacherUseCase,
+        DeactivateTeacherUseCase deactivateTeacherUseCase,
+        ITeacherQueries teacherQueries,
         ITenantContext tenantContext)
     {
-        _createProfessorUseCase = createProfessorUseCase;
-        _updateProfessorUseCase = updateProfessorUseCase;
-        _activateProfessorUseCase = activateProfessorUseCase;
-        _deactivateProfessorUseCase = deactivateProfessorUseCase;
-        _professorQueries = professorQueries;
+        _createTeacherUseCase = createTeacherUseCase;
+        _updateTeacherUseCase = updateTeacherUseCase;
+        _activateTeacherUseCase = activateTeacherUseCase;
+        _deactivateTeacherUseCase = deactivateTeacherUseCase;
+        _teacherQueries = teacherQueries;
         _tenantContext = tenantContext;
     }
 
@@ -52,8 +52,8 @@ public sealed class TeachersController : ControllerBase
             PageSize = filter.PageSize
         };
 
-        var professors = await _professorQueries.SearchAsync(secureFilter, cancellationToken);
-        return Ok(professors);
+        var teachers = await _teacherQueries.SearchAsync(secureFilter, cancellationToken);
+        return Ok(teachers);
     }
 
     [HttpGet("{id:guid}")]
@@ -62,14 +62,14 @@ public sealed class TeachersController : ControllerBase
     public async Task<ActionResult<Teacher>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId;
-        var professor = await _professorQueries.GetByIdAsync(tenantId, id, cancellationToken);
+        var teacher = await _teacherQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
-        if (professor == null)
+        if (teacher == null)
         {
             return NotFound(new { message = $"No se encontró el profesor con Id {id}." });
         }
 
-        return Ok(professor);
+        return Ok(teacher);
     }
 
     [HttpPost]
@@ -83,7 +83,7 @@ public sealed class TeachersController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createProfessorUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
+        var response = await _createTeacherUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
@@ -100,7 +100,7 @@ public sealed class TeachersController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _updateProfessorUseCase.ExecuteAsync(
+        var response = await _updateTeacherUseCase.ExecuteAsync(
             tenantId,
             id,
             request,
@@ -120,7 +120,7 @@ public sealed class TeachersController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        await _activateProfessorUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+        await _activateTeacherUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
         return NoContent();
     }
@@ -135,7 +135,7 @@ public sealed class TeachersController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        await _deactivateProfessorUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+        await _deactivateTeacherUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
         return NoContent();
     }
@@ -145,7 +145,7 @@ public sealed class TeachersController : ControllerBase
     public async Task<ActionResult<IReadOnlyCollection<CandidateTeacherResponse>>> GetCandidatesAsync(CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId;
-        var teachers = await _professorQueries.GetCandidatesAsync(
+        var teachers = await _teacherQueries.GetCandidatesAsync(
             new CandidateTeacherFilter { TenantId = tenantId },
             cancellationToken);
 

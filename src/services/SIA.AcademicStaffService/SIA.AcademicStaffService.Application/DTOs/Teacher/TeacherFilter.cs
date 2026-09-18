@@ -1,16 +1,11 @@
-﻿namespace SIA.AcademicStaffService.Application.DTOs.Professors;
+﻿namespace SIA.AcademicStaffService.Application.DTOs.Teacher;
 
 public sealed class TeacherFilter
 {
     public Guid TenantId { get; init; }
-
     public Guid? PersonId { get; init; }
-
     public string? ContractType { get; init; }
-
     public bool? Status { get; init; }
-
     public int Page { get; init; } = 1;
-
     public int PageSize { get; init; } = 10;
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SIA.AcademicStaffService.Api.Controllers;
+namespace SIA.AcademicStaffService.Api.Controllers.HealthController;
 
 [AllowAnonymous]
 [ApiController]

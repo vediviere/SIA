@@ -8,7 +8,7 @@ using SIA.AcademicStaffService.Contracts.Requests.Persons;
 using SIA.AcademicStaffService.Contracts.Responses.Persons;
 using SIA.AcademicStaffService.Domain.Entities;
 
-namespace SIA.AcademicStaffService.Api.Controllers;
+namespace SIA.AcademicStaffService.Api.Controllers.PersonsController;
 
 [Authorize]
 [ApiController]
