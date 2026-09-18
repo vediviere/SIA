@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SIA.SchedulingService.Domain.Entities;
-using SIA.BuildingBlocks.Messaging.Outbox;
+using SIA.SchedulingService.Infrastructure.Persistence.Entities;
+using OutboxMessage = SIA.BuildingBlocks.Messaging.Outbox.OutboxMessage;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 
@@ -18,8 +19,9 @@ public sealed class SchedulingDbContext : DbContext
   public DbSet<TeachingSupportHour> TeachingSupportHours => Set<TeachingSupportHour>();
 
 
+  public DbSet<InboxMessage> InboxMessages => Set<InboxMessage>();
   public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
-
+  
 
   public DbSet<ClassroomType> ClassroomTypes => Set<ClassroomType>();
   public DbSet<SupportActivity> SupportActivities => Set<SupportActivity>();

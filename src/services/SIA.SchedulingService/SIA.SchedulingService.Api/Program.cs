@@ -26,6 +26,7 @@ using SIA.SchedulingService.Application.UseCases.Teachers;
 using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 using SIA.SchedulingService.Infrastructure.ExternalServices;
 using SIA.SchedulingService.Infrastructure.MessageBus;
+using SIA.SchedulingService.Infrastructure.MessageBus.Consumers.ReviewProcesses;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
@@ -113,6 +114,9 @@ builder.Services.AddDbContext<SchedulingDbContext>(options =>
 // Configuración de RabbitMQ (Bus de mensajes)
 builder.Services.AddMassTransit(configurator =>
 {
+  configurator.AddConsumer<ApprovedConsumer>();
+  configurator.AddConsumer<CorrectionRequiredConsumer>();
+
   configurator.UsingRabbitMq((context, rabbitMq) =>
   {
     var host = builder.Configuration["RabbitMq:Host"]
@@ -139,6 +143,16 @@ builder.Services.AddMassTransit(configurator =>
             hostConfigurator.Username(username);
             hostConfigurator.Password(password);
           });
+
+      rabbitMq.ReceiveEndpoint("sia-scheduling-proposal-approved-v1", endpoint =>
+      {
+          endpoint.ConfigureConsumer<ApprovedConsumer>(context);
+      });
+
+      rabbitMq.ReceiveEndpoint("sia-scheduling-proposal-correction-required-v1", endpoint =>
+      {
+          endpoint.ConfigureConsumer<CorrectionRequiredConsumer>(context);
+      });
   });
 });
 
@@ -260,6 +274,10 @@ builder.Services.AddScoped<RestoreSupportActivityUseCase>();
 // UseCases: AcademicLoadProposals
 builder.Services.AddScoped<CreateProposalUseCase>();
 builder.Services.AddScoped<SubmitProposalForReviewUseCase>();
+
+// UseCase de propuesta aprobado y para coreccion
+builder.Services.AddScoped<ApplyProposalApprovedUseCase>();
+builder.Services.AddScoped<ApplyProposalRequiresCorrectionUseCase>();
 
 // ExternalServices: AcademicStaffService
 builder.Services.AddHttpClient<IAcademicStaffServiceClient, AcademicStaffServiceClient>(client =>
