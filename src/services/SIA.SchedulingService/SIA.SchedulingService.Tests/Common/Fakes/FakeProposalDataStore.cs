@@ -21,10 +21,6 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   public Proposal? AddedProposal { get; private set; }
   public ProposalCreatedIntegrationEvent? AddedCreatedEvent { get; private set; }
 
-  public int ApplyDecisionCallCount { get; private set; }
-  public Guid? LastAppliedEventId { get; private set; }
-  public Guid? LastAppliedCorrelationId { get; private set; }
-
   public Proposal? SubmittedProposal { get; private set; }
   public ProposalSubmittedForReviewIntegrationEvent? SubmittedIntegrationEvent { get; private set; }
 
@@ -63,10 +59,7 @@ public sealed class FakeProposalDataStore : IProposalDataStore
     return Task.FromResult(HasAcademicLoadsResult);
   }
 
-  public Task SubmitForReviewWithOutboxAsync(
-    Proposal proposal,
-    ProposalSubmittedForReviewIntegrationEvent integrationEvent,
-    CancellationToken cancellationToken)
+  public Task SubmitForReviewWithOutboxAsync(Proposal proposal, ProposalSubmittedForReviewIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     SubmittedProposal = proposal;
     SubmittedIntegrationEvent = integrationEvent;
@@ -81,31 +74,6 @@ public sealed class FakeProposalDataStore : IProposalDataStore
       _processedEventIds.Contains(eventId));
   }
 
-  public Task ApplyDecisionAsync(
-    Proposal proposal,
-    Guid eventId,
-    string eventType,
-    string sourceService,
-    Guid correlationId,
-    CancellationToken cancellationToken)
-  {
-    AppliedDecisionProposal = proposal;
-    AppliedEventId = eventId;
-    AppliedEventType = eventType;
-    AppliedSourceService = sourceService;
-    AppliedCorrelationId = correlationId;
-    AppliedDecisionCount++;
-
-    _processedEventIds.Add(eventId);
-
-    return Task.CompletedTask;
-  }
-
-  public Task<bool> WasProposalDecisionProcessedAsync(Guid eventId, CancellationToken cancellationToken)
-{
-  return Task.FromResult(DecisionProcessedResult || _processedEventIds.Contains(eventId));
-}
-
   public Task ApplyDecisionAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, CancellationToken cancellationToken)
   {
     AppliedDecisionProposal = proposal;
@@ -116,9 +84,6 @@ public sealed class FakeProposalDataStore : IProposalDataStore
     AppliedDecisionCount++;
 
     _processedEventIds.Add(eventId);
-    ApplyDecisionCallCount++;
-    LastAppliedEventId = eventId;
-    LastAppliedCorrelationId = correlationId;
 
     return Task.CompletedTask;
   }
