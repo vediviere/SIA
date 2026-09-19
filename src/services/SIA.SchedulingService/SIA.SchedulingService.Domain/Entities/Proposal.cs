@@ -36,6 +36,7 @@ public sealed class Proposal
     AcademicPeriodId = academicPeriodId;
     DivisionHeadId = divisionHeadId;
     ProposalStatus = ProposalStatus.Draft;
+    ReviewVersion = 0;
     Status = true;
     CreatedAtUtc = DateTime.UtcNow;
   }
@@ -46,25 +47,29 @@ public sealed class Proposal
   public Guid AcademicPeriodId { get; private set; }
   public Guid DivisionHeadId { get; private set; }
   public ProposalStatus ProposalStatus { get; private set; }
+  public int ReviewVersion { get; private set; }
   public bool Status { get; private set; }
   public DateTime CreatedAtUtc { get; private set; }
   public DateTime? UpdatedAtUtc { get; private set; }
 
-    public void SubmitForReview()
+  public void SubmitForReview()
+  {
+    if (!Status)
     {
-        if (!Status)
-        {
-            throw new InvalidOperationException("No se puede enviar a revisión una propuesta inactiva.");
-        }
-        if (ProposalStatus != ProposalStatus.Draft)
-        {
-            throw new InvalidOperationException("Solo una propuesta en estado Borrador puede enviarse a revisión.");
-        }
-        ProposalStatus = ProposalStatus.SubmittedForReview;
-        UpdatedAtUtc = DateTime.UtcNow;
+      throw new InvalidOperationException("No se puede enviar a revisión una propuesta inactiva.");
     }
 
-    public void Approve()
+    if (ProposalStatus != ProposalStatus.Draft && ProposalStatus != ProposalStatus.RequiresCorrection)
+    {
+      throw new InvalidOperationException("Solo una propuesta en borrador o devuelta para corrección puede enviarse a revisión.");
+    }
+
+    ReviewVersion++;
+    ProposalStatus = ProposalStatus.SubmittedForReview;
+    UpdatedAtUtc = DateTime.UtcNow;
+  }
+
+  public void Approve()
     {
         if (ProposalStatus != ProposalStatus.SubmittedForReview)
         {
@@ -74,14 +79,15 @@ public sealed class Proposal
         UpdatedAtUtc = DateTime.UtcNow;
     }
 
-    public void Reject()
+  public void RequireCorrection()
+  {
+    if (ProposalStatus != ProposalStatus.SubmittedForReview)
     {
-        if (ProposalStatus != ProposalStatus.SubmittedForReview)
-        {
-            throw new InvalidOperationException("Solo una propuesta en revisión puede regresarse para corrección.");
-        }
-        ProposalStatus = ProposalStatus.Rejected;
-        UpdatedAtUtc = DateTime.UtcNow;
+      throw new InvalidOperationException("Solo una propuesta en revisión puede devolverse para corrección.");
     }
+
+    ProposalStatus = ProposalStatus.RequiresCorrection;
+    UpdatedAtUtc = DateTime.UtcNow;
+  }
 }
 

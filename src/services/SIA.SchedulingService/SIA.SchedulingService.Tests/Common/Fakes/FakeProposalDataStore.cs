@@ -26,6 +26,14 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   public Proposal? SubmittedProposal { get; private set; }
   public ProposalSubmittedForReviewIntegrationEvent? SubmittedIntegrationEvent { get; private set; }
 
+  public bool DecisionProcessedResult { get; set; }
+  public Proposal? AppliedDecisionProposal { get; private set; }
+  public Guid? AppliedEventId { get; private set; }
+  public string? AppliedEventType { get; private set; }
+  public string? AppliedSourceService { get; private set; }
+  public Guid? AppliedCorrelationId { get; private set; }
+  public int AppliedDecisionCount { get; private set; }
+
   public Task<Proposal?> GetByIdAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
   {
     if (_proposal is null || _proposal.TenantId != tenantId || _proposal.Id != proposalId)
@@ -53,7 +61,7 @@ public sealed class FakeProposalDataStore : IProposalDataStore
     return Task.FromResult(HasAcademicLoadsResult);
   }
 
-  public Task SubmitForReviewWithOutboxAsync(Proposal proposal,ProposalSubmittedForReviewIntegrationEvent integrationEvent,CancellationToken cancellationToken)
+  public Task SubmitForReviewWithOutboxAsync(Proposal proposal, ProposalSubmittedForReviewIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     SubmittedProposal = proposal;
     SubmittedIntegrationEvent = integrationEvent;
@@ -61,16 +69,24 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   }
 
   public Task<bool> WasProposalDecisionProcessedAsync(Guid eventId, CancellationToken cancellationToken)
-  {
-      return Task.FromResult(_processedEventIds.Contains(eventId));
-  }
+{
+  return Task.FromResult(DecisionProcessedResult || _processedEventIds.Contains(eventId));
+}
 
   public Task ApplyDecisionAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, CancellationToken cancellationToken)
   {
-      _processedEventIds.Add(eventId);
-      ApplyDecisionCallCount++;
-      LastAppliedEventId = eventId;
-      LastAppliedCorrelationId = correlationId;
-      return Task.CompletedTask;
+    AppliedDecisionProposal = proposal;
+    AppliedEventId = eventId;
+    AppliedEventType = eventType;
+    AppliedSourceService = sourceService;
+    AppliedCorrelationId = correlationId;
+    AppliedDecisionCount++;
+
+    _processedEventIds.Add(eventId);
+    ApplyDecisionCallCount++;
+    LastAppliedEventId = eventId;
+    LastAppliedCorrelationId = correlationId;
+
+    return Task.CompletedTask;
   }
 }

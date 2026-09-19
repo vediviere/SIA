@@ -30,9 +30,9 @@ public sealed class ProposalValidator
     var proposal = await _dataStore.GetByIdAsync(tenantId, proposalId, cancellationToken);
 
     if (proposal is null ||
-        !proposal.Status ||
-        proposal.ProposalStatus != ProposalStatus.Draft ||
-        proposal.AcademicPeriodId != academicPeriodId)
+    !proposal.Status ||
+    proposal.AcademicPeriodId != academicPeriodId ||
+    proposal.ProposalStatus is not (ProposalStatus.Draft or ProposalStatus.RequiresCorrection))
     {
       throw new ProposalNotEditableException(proposalId);
     }

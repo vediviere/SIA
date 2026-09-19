@@ -1,4 +1,4 @@
-﻿using MassTransit;
+using MassTransit;
 using SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
 using SIA.WorkflowService.Contracts.IntegrationEvents.ReviewProcesses;
 
@@ -7,9 +7,9 @@ namespace SIA.SchedulingService.Infrastructure.MessageBus.Consumers.ReviewProces
 public sealed class ApprovedConsumer : IConsumer<ApprovedEvent>
 {
     private const string SourceService = "SIA.WorkflowService";
-    private readonly ApplyProposalApprovedUseCase _useCase;
+    private readonly ApplyApprovedUseCase _useCase;
 
-    public ApprovedConsumer(ApplyProposalApprovedUseCase useCase)
+    public ApprovedConsumer(ApplyApprovedUseCase useCase)
     {
         _useCase = useCase;
     }

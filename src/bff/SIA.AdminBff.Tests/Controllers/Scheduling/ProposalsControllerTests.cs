@@ -87,6 +87,30 @@ public sealed class ProposalsControllerTests
     Assert.Equal(proposalId, client.ProposalId);
   }
 
+  [Fact]
+  public void FromService_WithRequiresCorrection_ShouldPreserveStatus()
+  {
+    var serviceResponse = new ProposalDto
+    {
+      Id = Guid.NewGuid(),
+      TenantId = Guid.NewGuid(),
+      EducationalProgramId = Guid.NewGuid(),
+      AcademicPeriodId = Guid.NewGuid(),
+      DivisionHeadId = Guid.NewGuid(),
+      ProposalStatus = ProposalStatus.RequiresCorrection,
+      Status = true,
+      CreatedAtUtc = DateTime.UtcNow.AddDays(-1),
+      UpdatedAtUtc = DateTime.UtcNow,
+      CorrelationId = Guid.NewGuid()
+    };
+
+    var response = ProposalResponse.FromService(serviceResponse);
+
+    Assert.Equal(ProposalStatus.RequiresCorrection, response.ProposalStatus);
+    Assert.Equal(serviceResponse.Id, response.Id);
+    Assert.Equal(serviceResponse.CorrelationId, response.CorrelationId);
+  }
+
   private sealed class TenantContextFake : ITenantContext
   {
     public TenantContextFake(Guid tenantId)

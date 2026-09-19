@@ -6,7 +6,7 @@ using SIA.SchedulingService.Tests.Common.Fakes;
 
 namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicLoadProposals;
 
-public sealed class CreateProposalUseCaseTests
+public sealed class ApplyApprovedUseCaseTests
 {
   [Fact]
   public async Task ExecuteAsync_WithValidData_ShouldCreateDraftProposal()
@@ -18,7 +18,7 @@ public sealed class CreateProposalUseCaseTests
     var correlationId = Guid.NewGuid();
 
     var dataStore = new FakeProposalDataStore();
-    var useCase = new CreateProposalUseCase(dataStore);
+    var useCase = new CreateUseCase(dataStore);
     var request = new CreateProposalRequest
     {
       EducationalProgramId = educationalProgramId,
@@ -52,7 +52,7 @@ public sealed class CreateProposalUseCaseTests
     {
       ExistsResult = true
     };
-    var useCase = new CreateProposalUseCase(dataStore);
+    var useCase = new CreateUseCase(dataStore);
     var request = new CreateProposalRequest
     {
       EducationalProgramId = Guid.NewGuid(),
