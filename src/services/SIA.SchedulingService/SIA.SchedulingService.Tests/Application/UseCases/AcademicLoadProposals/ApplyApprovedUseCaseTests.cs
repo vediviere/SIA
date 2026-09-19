@@ -1,7 +1,7 @@
 using SIA.SchedulingService.Application.Common.Exceptions.AcademicLoadProposal;
 using SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
-using SIA.SchedulingService.Contracts.Enums;
-using SIA.SchedulingService.Contracts.Requests.AcademicLoadProposal;
+using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Enums;
 using SIA.SchedulingService.Tests.Common.Fakes;
 
 namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicLoadProposals;
@@ -9,61 +9,88 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicLoadProposals
 public sealed class ApplyApprovedUseCaseTests
 {
   [Fact]
-  public async Task ExecuteAsync_WithValidData_ShouldCreateDraftProposal()
+  public async Task ExecuteAsync_WithValidEvent_ShouldApproveProposal()
   {
     var tenantId = Guid.NewGuid();
-    var educationalProgramId = Guid.NewGuid();
-    var academicPeriodId = Guid.NewGuid();
-    var divisionHeadId = Guid.NewGuid();
-    var correlationId = Guid.NewGuid();
+    var proposal = CreateSubmittedProposal(tenantId);
+    var dataStore = new FakeProposalDataStore(proposal);
+    var useCase = new ApplyApprovedUseCase(dataStore);
 
-    var dataStore = new FakeProposalDataStore();
-    var useCase = new CreateUseCase(dataStore);
-    var request = new CreateProposalRequest
-    {
-      EducationalProgramId = educationalProgramId,
-      AcademicPeriodId = academicPeriodId,
-      DivisionHeadId = divisionHeadId
-    };
+    await useCase.ExecuteAsync(
+      tenantId,
+      proposal.Id,
+      Guid.NewGuid(),
+      "ProposalApprovedIntegrationEvent.v1",
+      "SIA.WorkflowService",
+      Guid.NewGuid(),
+      CancellationToken.None);
 
-    var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
-
-    Assert.NotEqual(Guid.Empty, response.Id);
-    Assert.Equal(tenantId, response.TenantId);
-    Assert.Equal(educationalProgramId, response.EducationalProgramId);
-    Assert.Equal(academicPeriodId, response.AcademicPeriodId);
-    Assert.Equal(divisionHeadId, response.DivisionHeadId);
-    Assert.Equal(ProposalStatus.Draft, response.ProposalStatus);
-    Assert.True(response.Status);
-    Assert.Equal(correlationId, response.CorrelationId);
-
-    Assert.NotNull(dataStore.AddedProposal);
-    Assert.Equal(response.Id, dataStore.AddedProposal.Id);
-    Assert.NotNull(dataStore.AddedCreatedEvent);
-    Assert.Equal(response.Id, dataStore.AddedCreatedEvent.ProposalId);
-    Assert.Equal(ProposalStatus.Draft, dataStore.AddedCreatedEvent.ProposalStatus);
-    Assert.Equal(correlationId, dataStore.AddedCreatedEvent.CorrelationId);
+    Assert.Equal(ProposalStatus.Approved, proposal.ProposalStatus);
+    Assert.Same(proposal, dataStore.AppliedDecisionProposal);
+    Assert.Equal(1, dataStore.AppliedDecisionCount);
   }
 
   [Fact]
-  public async Task ExecuteAsync_WhenProposalExists_ShouldThrowProposalAlreadyExistsException()
+  public async Task ExecuteAsync_WhenProposalDoesNotExist_ShouldThrowProposalNotFoundException()
   {
-    var dataStore = new FakeProposalDataStore
-    {
-      ExistsResult = true
-    };
-    var useCase = new CreateUseCase(dataStore);
-    var request = new CreateProposalRequest
-    {
-      EducationalProgramId = Guid.NewGuid(),
-      AcademicPeriodId = Guid.NewGuid(),
-      DivisionHeadId = Guid.NewGuid()
-    };
+    var dataStore = new FakeProposalDataStore();
+    var useCase = new ApplyApprovedUseCase(dataStore);
 
-    await Assert.ThrowsAsync<ProposalAlreadyExistsException>(() =>
-      useCase.ExecuteAsync(Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+    await Assert.ThrowsAsync<ProposalNotFoundException>(() =>
+      useCase.ExecuteAsync(
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+        Guid.NewGuid(),
+        "ProposalApprovedIntegrationEvent.v1",
+        "SIA.WorkflowService",
+        Guid.NewGuid(),
+        CancellationToken.None));
 
-    Assert.Null(dataStore.AddedProposal);
-    Assert.Null(dataStore.AddedCreatedEvent);
+    Assert.Null(dataStore.AppliedDecisionProposal);
+    Assert.Equal(0, dataStore.AppliedDecisionCount);
+  }
+
+  [Fact]
+  public async Task ExecuteAsync_WhenEventAlreadyProcessed_ShouldNotApplyDecisionTwice()
+  {
+    var tenantId = Guid.NewGuid();
+    var eventId = Guid.NewGuid();
+    var proposal = CreateSubmittedProposal(tenantId);
+    var dataStore = new FakeProposalDataStore(proposal);
+    var useCase = new ApplyApprovedUseCase(dataStore);
+
+    await useCase.ExecuteAsync(
+      tenantId,
+      proposal.Id,
+      eventId,
+      "ProposalApprovedIntegrationEvent.v1",
+      "SIA.WorkflowService",
+      Guid.NewGuid(),
+      CancellationToken.None);
+
+    await useCase.ExecuteAsync(
+      tenantId,
+      proposal.Id,
+      eventId,
+      "ProposalApprovedIntegrationEvent.v1",
+      "SIA.WorkflowService",
+      Guid.NewGuid(),
+      CancellationToken.None);
+
+    Assert.Equal(ProposalStatus.Approved, proposal.ProposalStatus);
+    Assert.Equal(1, dataStore.AppliedDecisionCount);
+  }
+
+  private static Proposal CreateSubmittedProposal(Guid tenantId)
+  {
+    var proposal = new Proposal(
+      tenantId,
+      Guid.NewGuid(),
+      Guid.NewGuid(),
+      Guid.NewGuid());
+
+    proposal.SubmitForReview();
+
+    return proposal;
   }
 }
