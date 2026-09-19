@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents;
-using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionManagers;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionHeads;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 using SIA.BuildingBlocks.Messaging.Outbox;
@@ -28,14 +28,14 @@ public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
             cancellationToken);
     }
 
-    public Task<DivisionHead?> GetDivisionManagerByIdAsync(Guid tenantId, Guid divisionManagerId, CancellationToken cancellationToken)
+    public Task<DivisionHead?> GetDivisionHeadByIdAsync(Guid tenantId, Guid divisionHeadId, CancellationToken cancellationToken)
     {
         return _dbContext.DivisionHeads.FirstOrDefaultAsync(
-            divisionHead => divisionHead.TenantId == tenantId && divisionHead.Id == divisionManagerId,
+            divisionHead => divisionHead.TenantId == tenantId && divisionHead.Id == divisionHeadId,
             cancellationToken);
     }
 
-    public async Task AddDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task AddDivisionHeadWithOutboxAsync(DivisionHead divisionHead, DivisionHeadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
         var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.DivisionHeadCreatedV1, payload, integrationEvent.CorrelationId);
@@ -45,9 +45,7 @@ public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-
-
-    public async Task ActivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task ActivateDivisionHeadWithOutboxAsync(DivisionHead divisionHead, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
         var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.DivisionHeadActivatedV1, payload, integrationEvent.CorrelationId);
@@ -57,7 +55,7 @@ public sealed class DivisionHeadDataStore : IDivisionHeadDataStore
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeactivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task DeactivateDivisionHeadWithOutboxAsync(DivisionHead divisionHead, DivisionHeadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
         var outboxMessage = new OutboxMessage(AcademicStaffIntegrationEventTypes.DivisionHeadDeactivatedV1, payload, integrationEvent.CorrelationId);

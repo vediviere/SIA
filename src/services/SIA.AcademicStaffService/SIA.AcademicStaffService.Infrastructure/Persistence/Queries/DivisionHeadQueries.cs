@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SIA.AcademicStaffService.Application.DTOs.DivisionManagers;
+using SIA.AcademicStaffService.Application.DTOs.DivisionHeads;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
@@ -15,12 +15,12 @@ public sealed class DivisionHeadQueries : IDivisionHeadQueries
         _dbContext = dbContext;
     }
 
-    public async Task<DivisionHead?> GetByIdAsync(Guid tenantId, Guid divisionManagerId, CancellationToken cancellationToken)
+    public async Task<DivisionHead?> GetByIdAsync(Guid tenantId, Guid divisionHeadId, CancellationToken cancellationToken)
     {
         return await _dbContext.DivisionHeads
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                x => x.TenantId == tenantId && x.Id == divisionManagerId,
+                x => x.TenantId == tenantId && x.Id == divisionHeadId,
                 cancellationToken);
     }
 

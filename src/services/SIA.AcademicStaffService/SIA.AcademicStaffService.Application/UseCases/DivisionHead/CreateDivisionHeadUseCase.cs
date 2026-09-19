@@ -1,11 +1,11 @@
 ﻿using SIA.AcademicStaffService.Application.Common.Exceptions;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
-using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionManagers;
-using SIA.AcademicStaffService.Contracts.Requests.DivisionManagers;
-using SIA.AcademicStaffService.Contracts.Responses.DivisionManagers;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionHeads;
+using SIA.AcademicStaffService.Contracts.Requests.DivisionHeads;
+using SIA.AcademicStaffService.Contracts.Responses.DivisionHeads;
 using SIA.AcademicStaffService.Domain.Entities;
 
-namespace SIA.AcademicStaffService.Application.UseCases.DivisionManagers;
+namespace SIA.AcademicStaffService.Application.UseCases.DivisionHeads;
 
 public sealed class CreateDivisionHeadUseCase
 {
@@ -33,7 +33,7 @@ public sealed class CreateDivisionHeadUseCase
             throw new DuplicateDivisionHeadException(request.ProgramId, request.PersonId);
         }
 
-        var divisionManager = new DivisionHead(
+        var divisionHead = new DivisionHead(
             tenantId,
             request.ProgramId,
             request.PersonId);
@@ -42,25 +42,25 @@ public sealed class CreateDivisionHeadUseCase
         {
             EventId = Guid.NewGuid(),
             CorrelationId = correlationId,
-            OccurredAtUtc = divisionManager.CreatedAtUtc,
-            TenantId = divisionManager.TenantId,
-            DivisionManagerId = divisionManager.Id,
-            ProgramId = divisionManager.ProgramId,
-            PersonId = divisionManager.PersonId,
-            Status = divisionManager.Status,
+            OccurredAtUtc = divisionHead.CreatedAtUtc,
+            TenantId = divisionHead.TenantId,
+            DivisionHeadId = divisionHead.Id,
+            ProgramId = divisionHead.ProgramId,
+            PersonId = divisionHead.PersonId,
+            Status = divisionHead.Status,
             Version = 1
         };
 
-        await _dataStore.AddDivisionManagerWithOutboxAsync(divisionManager, integrationEvent, cancellationToken);
+        await _dataStore.AddDivisionHeadWithOutboxAsync(divisionHead, integrationEvent, cancellationToken);
 
         return new CreateDivisionHeadResponse
         {
-            Id = divisionManager.Id,
-            TenantId = divisionManager.TenantId,
-            ProgramId = divisionManager.ProgramId,
-            PersonId = divisionManager.PersonId,
-            Status = divisionManager.Status,
-            CreatedAtUtc = divisionManager.CreatedAtUtc,
+            Id = divisionHead.Id,
+            TenantId = divisionHead.TenantId,
+            ProgramId = divisionHead.ProgramId,
+            PersonId = divisionHead.PersonId,
+            Status = divisionHead.Status,
+            CreatedAtUtc = divisionHead.CreatedAtUtc,
             CorrelationId = correlationId
         };
     }

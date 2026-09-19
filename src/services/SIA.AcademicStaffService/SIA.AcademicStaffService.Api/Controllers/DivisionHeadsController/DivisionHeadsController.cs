@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIA.AcademicStaffService.Application.DTOs.DivisionManagers;
+using SIA.AcademicStaffService.Application.DTOs.DivisionHeads;
 using SIA.AcademicStaffService.Application.Interfaces;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
-using SIA.AcademicStaffService.Application.UseCases.DivisionManagers;
-using SIA.AcademicStaffService.Contracts.Requests.DivisionManagers;
-using SIA.AcademicStaffService.Contracts.Responses.DivisionManagers;
+using SIA.AcademicStaffService.Application.UseCases.DivisionHeads;
+using SIA.AcademicStaffService.Contracts.Requests.DivisionHeads;
+using SIA.AcademicStaffService.Contracts.Responses.DivisionHeads;
 using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
@@ -15,23 +15,23 @@ namespace SIA.AcademicStaffService.Api.Controllers;
 [Route("api/division-heads")]
 public sealed class DivisionHeadsController : ControllerBase
 {
-    private readonly CreateDivisionHeadUseCase _createDivisionManagerUseCase;
-    private readonly ActivateDivisionHeadUseCase _activateDivisionManagerUseCase;
-    private readonly DeactivateDivisionHeadUseCase _deactivateDivisionManagerUseCase;
-    private readonly IDivisionHeadQueries _divisionManagerQueries;
+    private readonly CreateDivisionHeadUseCase _createDivisionHeadUseCase;
+    private readonly ActivateDivisionHeadUseCase _activateDivisionHeadUseCase;
+    private readonly DeactivateDivisionHeadUseCase _deactivateDivisionHeadUseCase;
+    private readonly IDivisionHeadQueries _divisionHeadQueries;
     private readonly ITenantContext _tenantContext;
 
     public DivisionHeadsController(
-        CreateDivisionHeadUseCase createDivisionManagerUseCase,
-        ActivateDivisionHeadUseCase activateDivisionManagerUseCase,
-        DeactivateDivisionHeadUseCase deactivateDivisionManagerUseCase,
-        IDivisionHeadQueries divisionManagerQueries,
+        CreateDivisionHeadUseCase createDivisionHeadUseCase,
+        ActivateDivisionHeadUseCase activateDivisionHeadUseCase,
+        DeactivateDivisionHeadUseCase deactivateDivisionHeadUseCase,
+        IDivisionHeadQueries divisionHeadQueries,
         ITenantContext tenantContext)
     {
-        _createDivisionManagerUseCase = createDivisionManagerUseCase;
-        _activateDivisionManagerUseCase = activateDivisionManagerUseCase;
-        _deactivateDivisionManagerUseCase = deactivateDivisionManagerUseCase;
-        _divisionManagerQueries = divisionManagerQueries;
+        _createDivisionHeadUseCase = createDivisionHeadUseCase;
+        _activateDivisionHeadUseCase = activateDivisionHeadUseCase;
+        _deactivateDivisionHeadUseCase = deactivateDivisionHeadUseCase;
+        _divisionHeadQueries = divisionHeadQueries;
         _tenantContext = tenantContext;
     }
 
@@ -49,8 +49,8 @@ public sealed class DivisionHeadsController : ControllerBase
             PageSize = filter.PageSize
         };
 
-        var divisionManagers = await _divisionManagerQueries.SearchAsync(secureFilter, cancellationToken);
-        return Ok(divisionManagers);
+        var divisionHeads = await _divisionHeadQueries.SearchAsync(secureFilter, cancellationToken);
+        return Ok(divisionHeads);
     }
 
     [HttpGet("{id:guid}")]
@@ -59,14 +59,14 @@ public sealed class DivisionHeadsController : ControllerBase
     public async Task<ActionResult<DivisionHead>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId;
-        var divisionManager = await _divisionManagerQueries.GetByIdAsync(tenantId, id, cancellationToken);
+        var divisionHead = await _divisionHeadQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
-        if (divisionManager == null)
+        if (divisionHead == null)
         {
             return NotFound(new { message = $"No se encontró el responsable de división con Id {id}." });
         }
 
-        return Ok(divisionManager);
+        return Ok(divisionHead);
     }
 
     [HttpPost]
@@ -80,7 +80,7 @@ public sealed class DivisionHeadsController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createDivisionManagerUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
+        var response = await _createDivisionHeadUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
@@ -95,7 +95,7 @@ public sealed class DivisionHeadsController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        await _activateDivisionManagerUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+        await _activateDivisionHeadUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
         return NoContent();
     }
@@ -110,7 +110,7 @@ public sealed class DivisionHeadsController : ControllerBase
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        await _deactivateDivisionManagerUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
+        await _deactivateDivisionHeadUseCase.ExecuteAsync(tenantId, id, correlationId, cancellationToken);
 
         return NoContent();
     }

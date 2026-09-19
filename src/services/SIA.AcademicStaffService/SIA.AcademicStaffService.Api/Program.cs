@@ -8,14 +8,14 @@ using SIA.AcademicStaffService.Application.Interfaces;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.Coordinators;
-using SIA.AcademicStaffService.Application.UseCases.DivisionManagers;
+using SIA.AcademicStaffService.Application.UseCases.DivisionHeads;
 using SIA.AcademicStaffService.Application.UseCases.Persons;
-using SIA.AcademicStaffService.Application.UseCases.Professors;
+using SIA.AcademicStaffService.Application.UseCases.Teachers;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.Coordinators;
-using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionManagers;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionHeads;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.Persons;
-using SIA.AcademicStaffService.Contracts.IntegrationEvents.Professors;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.Teacher;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicStaffService.Infrastructure.Persistence.DataStores;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Queries;
@@ -171,7 +171,6 @@ builder.Services.AddScoped<ActivateCoordinatorUseCase>();
 builder.Services.AddScoped<DeactivateCoordinatorUseCase>();
 
 builder.Services.AddSiaExceptionHandling();
-
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 
@@ -192,9 +191,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.UseSiaExceptionHandling();
 
 app.Run();
