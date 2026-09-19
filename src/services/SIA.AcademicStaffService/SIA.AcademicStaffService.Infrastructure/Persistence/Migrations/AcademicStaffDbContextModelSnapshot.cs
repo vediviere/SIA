@@ -57,7 +57,7 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DivisionId");
+                        .HasColumnName("DivisionHeadId");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");

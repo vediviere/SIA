@@ -8,7 +8,7 @@ public sealed record LoadCreateDto
 
   public required Guid TeacherId { get; init; }
 
-  public required Guid DivisionId { get; init; }
+  public required Guid DivisionHeadId { get; init; }
 
   public required Guid AcademicPeriodId { get; init; }
 

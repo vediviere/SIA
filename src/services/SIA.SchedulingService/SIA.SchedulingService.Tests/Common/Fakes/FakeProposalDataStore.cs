@@ -7,6 +7,7 @@ namespace SIA.SchedulingService.Tests.Common.Fakes;
 public sealed class FakeProposalDataStore : IProposalDataStore
 {
   private readonly Proposal? _proposal;
+  private readonly HashSet<Guid> _processedEventIds = [];
 
   public FakeProposalDataStore(Proposal? proposal = null)
   {
@@ -18,10 +19,14 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   public Proposal? AddedProposal { get; private set; }
   public ProposalCreatedIntegrationEvent? AddedCreatedEvent { get; private set; }
 
+  public int ApplyDecisionCallCount { get; private set; }
+  public Guid? LastAppliedEventId { get; private set; }
+  public Guid? LastAppliedCorrelationId { get; private set; }
+
   public Proposal? SubmittedProposal { get; private set; }
   public ProposalSubmittedForReviewIntegrationEvent? SubmittedIntegrationEvent { get; private set; }
 
-    public Task<Proposal?> GetByIdAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
+  public Task<Proposal?> GetByIdAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
   {
     if (_proposal is null || _proposal.TenantId != tenantId || _proposal.Id != proposalId)
     {
@@ -53,5 +58,19 @@ public sealed class FakeProposalDataStore : IProposalDataStore
     SubmittedProposal = proposal;
     SubmittedIntegrationEvent = integrationEvent;
     return Task.CompletedTask;
+  }
+
+  public Task<bool> WasProposalDecisionProcessedAsync(Guid eventId, CancellationToken cancellationToken)
+  {
+      return Task.FromResult(_processedEventIds.Contains(eventId));
+  }
+
+  public Task ApplyDecisionAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, CancellationToken cancellationToken)
+  {
+      _processedEventIds.Add(eventId);
+      ApplyDecisionCallCount++;
+      LastAppliedEventId = eventId;
+      LastAppliedCorrelationId = correlationId;
+      return Task.CompletedTask;
   }
 }

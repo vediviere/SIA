@@ -4,7 +4,7 @@ public sealed record CreateLoadRequest
 {
   public required Guid TeacherId { get; init; }
 
-  public required Guid DivisionId { get; init; }
+  public required Guid DivisionHeadId { get; init; }
 
   public required Guid AcademicPeriodId { get; init; }
 

@@ -37,7 +37,7 @@ public sealed class LoadsController : ControllerBase
       TenantId = _tenantContext.TenantId,
       ProposalId = proposalId,
       TeacherId = request.TeacherId,
-      DivisionId = request.DivisionId,
+      DivisionHeadId = request.DivisionHeadId,
       AcademicPeriodId = request.AcademicPeriodId,
       OfficialLetterNumber = request.OfficialLetterNumber,
       ProposedDate = request.ProposedDate,

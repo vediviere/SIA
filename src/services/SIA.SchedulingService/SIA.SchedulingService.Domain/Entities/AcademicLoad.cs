@@ -5,7 +5,7 @@ public sealed class AcademicLoad
   private AcademicLoad()
   {
   }
-  public AcademicLoad(Guid tenantId, Guid proposalId, Guid teacherId, Guid divisionId, Guid academicPeriodId, string officialLetterNumber, DateTime proposedDate, int classHours, int supportHours,
+  public AcademicLoad(Guid tenantId, Guid proposalId, Guid teacherId, Guid divisionHeadId, Guid academicPeriodId, string officialLetterNumber, DateTime proposedDate, int classHours, int supportHours,
       DateTime assignmentDate)
   {
     if (tenantId == Guid.Empty)
@@ -23,9 +23,9 @@ public sealed class AcademicLoad
       throw new ArgumentException("El docente es obligatorio.", nameof(teacherId));
     }
 
-    if (divisionId == Guid.Empty)
+    if (divisionHeadId == Guid.Empty)
     {
-      throw new ArgumentException("La división es obligatoria.", nameof(divisionId));
+      throw new ArgumentException("La división es obligatoria.", nameof(divisionHeadId));
     }
 
     if (academicPeriodId == Guid.Empty)
@@ -52,7 +52,7 @@ public sealed class AcademicLoad
     TenantId = tenantId;
     ProposalId = proposalId;
     TeacherId = teacherId;
-    DivisionId = divisionId;
+    DivisionHeadId = divisionHeadId;
     AcademicPeriodId = academicPeriodId;
     OfficialLetterNumber = officialLetterNumber.Trim();
     ProposedDate = proposedDate;
@@ -67,7 +67,7 @@ public sealed class AcademicLoad
   public Guid TenantId { get; private set; }
   public Guid ProposalId { get; private set; }
   public Guid TeacherId { get; private set; }
-  public Guid DivisionId { get; private set; }
+  public Guid DivisionHeadId { get; private set; }
   public Guid AcademicPeriodId { get; private set; }
   public string OfficialLetterNumber { get; private set; } = string.Empty;
   public DateTime ProposedDate { get; private set; }

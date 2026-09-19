@@ -22,10 +22,103 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("SIA.BuildingBlocks.Messaging.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("OutboxMessageId");
+
+                    b.Property<Guid>("CorrelationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeadLetteredAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("LastAttemptAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NextAttemptAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OccurredAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ProcessedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CorrelationId");
+
+                    b.HasIndex("ProcessedAtUtc", "DeadLetteredAtUtc", "NextAttemptAtUtc");
+
+                    b.ToTable("OutboxMessages", (string)null);
+                });
+
+            modelBuilder.Entity("SIA.WorkflowService.Domain.Entities.ReviewObservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ReviewObservationId");
+
+                    b.Property<Guid>("CorrelationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ReviewProcessId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CorrelationId");
+
+                    b.HasIndex("ReviewProcessId");
+
+                    b.HasIndex("TargetType", "TargetId");
+
+                    b.HasIndex("TenantId", "ReviewProcessId");
+
+                    b.ToTable("ReviewObservations", (string)null);
+                });
+
             modelBuilder.Entity("SIA.WorkflowService.Domain.Entities.ReviewProcess", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("ReviewProcessId");
 
                     b.Property<Guid>("AcademicLoadProposalId")
                         .HasColumnType("uniqueidentifier");
@@ -35,6 +128,15 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DecidedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DecidedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("DecisionCorrelationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("DivisionHeadId")
                         .HasColumnType("uniqueidentifier");
@@ -58,6 +160,8 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CorrelationId");
 
+                    b.HasIndex("DecisionCorrelationId");
+
                     b.HasIndex("TenantId", "Status");
 
                     b.HasIndex("TenantId", "AcademicLoadProposalId", "Version")
@@ -72,7 +176,8 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SIA.WorkflowService.Infrastructure.Persistence.Entities.InboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("InboxMessageId");
 
                     b.Property<Guid>("CorrelationId")
                         .HasColumnType("uniqueidentifier");
@@ -106,6 +211,20 @@ namespace SIA.WorkflowService.Infrastructure.Persistence.Migrations
                     b.HasIndex("ProcessedAtUtc");
 
                     b.ToTable("InboxMessages", (string)null);
+                });
+
+            modelBuilder.Entity("SIA.WorkflowService.Domain.Entities.ReviewObservation", b =>
+                {
+                    b.HasOne("SIA.WorkflowService.Domain.Entities.ReviewProcess", null)
+                        .WithMany("Observations")
+                        .HasForeignKey("ReviewProcessId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SIA.WorkflowService.Domain.Entities.ReviewProcess", b =>
+                {
+                    b.Navigation("Observations");
                 });
 #pragma warning restore 612, 618
         }

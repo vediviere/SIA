@@ -1,15 +1,15 @@
 ﻿using SIA.AcademicStaffService.Application.Common.Exceptions;
-using SIA.AcademicStaffService.Application.UseCases.Professors;
-using SIA.AcademicStaffService.Contracts.Requests.Professors;
+using SIA.AcademicStaffService.Application.UseCases.Teachers;
+using SIA.AcademicStaffService.Contracts.Requests.Teacher;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Tests.Common.Fakes;
 
-namespace SIA.AcademicStaffService.Tests.Application.UseCases.Professors;
+namespace SIA.AcademicStaffService.Tests.Application.UseCases.Teachers;
 
 public sealed class UpdateTeacherUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_WithValidData_ShouldUpdateTeacher()
+    public async Task ExecuteAsync_WithValidData_ShouldUpdate()
     {
         var teacher = new Teacher(Guid.NewGuid(), Guid.NewGuid(), "Perfil viejo", "Tipo viejo", 20);
         var correlationId = Guid.NewGuid();
@@ -33,13 +33,13 @@ public sealed class UpdateTeacherUseCaseTests
         Assert.NotNull(dataStore.UpdatedTeacher);
         Assert.Equal("Nuevo perfil", dataStore.UpdatedTeacher.ProfessionalProfile);
         Assert.NotNull(dataStore.UpdatedEvent);
-        Assert.Equal(teacher.Id, dataStore.UpdatedEvent.ProfessorId);
+        Assert.Equal(teacher.Id, dataStore.UpdatedEvent.TeacherId);
         Assert.Equal(teacher.TenantId, dataStore.UpdatedEvent.TenantId);
         Assert.Equal(correlationId, dataStore.UpdatedEvent.CorrelationId);
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenTeacherNotFound_ShouldThrowNotFound()
+    public async Task ExecuteAsync_WhenNotFound_ShouldThrowNotFound()
     {
         var dataStore = new FakeTeacherDataStore { TeacherById = null };
         var useCase = new UpdateTeacherUseCase(dataStore);

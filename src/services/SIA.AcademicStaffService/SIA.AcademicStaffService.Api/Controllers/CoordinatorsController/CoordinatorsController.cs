@@ -8,7 +8,7 @@ using SIA.AcademicStaffService.Contracts.Requests.Coordinators;
 using SIA.AcademicStaffService.Contracts.Responses.Coordinators;
 using SIA.AcademicStaffService.Domain.Entities;
 
-namespace SIA.AcademicStaffService.Api.Controllers;
+namespace SIA.AcademicStaffService.Api.Controllers.CoordinatorsController;
 
 [Authorize]
 [ApiController]

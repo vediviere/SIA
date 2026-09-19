@@ -87,7 +87,7 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DivisionId")
+                    b.Property<Guid>("DivisionHeadId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("OfficialLetterNumber")
@@ -563,6 +563,42 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("TeachingSupportHours", (string)null);
+                });
+
+            modelBuilder.Entity("SIA.SchedulingService.Infrastructure.Persistence.Entities.InboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CorrelationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("ProcessedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReceivedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SourceService")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InboxMessages", (string)null);
                 });
 
             modelBuilder.Entity("SIA.SchedulingService.Domain.Entities.AcademicLoad", b =>

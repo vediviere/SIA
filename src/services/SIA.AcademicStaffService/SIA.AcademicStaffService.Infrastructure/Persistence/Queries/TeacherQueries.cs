@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SIA.AcademicStaffService.Application.DTOs.Professors;
+using SIA.AcademicStaffService.Application.DTOs.Teacher;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
@@ -15,12 +15,12 @@ public sealed class TeacherQueries : ITeacherQueries
         _dbContext = dbContext;
     }
 
-    public async Task<Teacher?> GetByIdAsync(Guid tenantId, Guid professorId, CancellationToken cancellationToken)
+    public async Task<Teacher?> GetByIdAsync(Guid tenantId, Guid teacherId, CancellationToken cancellationToken)
     {
         return await _dbContext.Teachers
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                x => x.TenantId == tenantId && x.Id == professorId,
+                x => x.TenantId == tenantId && x.Id == teacherId,
                 cancellationToken);
     }
 

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SIA.WorkflowService\SIA.WorkflowService.Infrastructure\SIA.WorkflowService.Infrastructure.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Application\SIA.SchedulingService.Application.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Domain\SIA.SchedulingService.Domain.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Contracts\SIA.SchedulingService.Contracts.csproj" />

@@ -17,7 +17,7 @@ public sealed class AcademicLoadConfiguration : IEntityTypeConfiguration<Academi
     builder.Property(load => load.ProposalId).IsRequired();
     builder.Property(load => load.TeacherId).IsRequired();
     builder.HasOne<Proposal>().WithMany().HasForeignKey(load => load.ProposalId).OnDelete(DeleteBehavior.Restrict);
-    builder.Property(load => load.DivisionId).IsRequired();
+    builder.Property(load => load.DivisionHeadId).IsRequired();
     builder.Property(load => load.AcademicPeriodId).IsRequired();
     builder.Property(load => load.OfficialLetterNumber).HasMaxLength(100).IsRequired();
     builder.Property(load => load.ProposedDate).IsRequired();

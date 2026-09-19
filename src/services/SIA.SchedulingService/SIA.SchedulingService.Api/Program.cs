@@ -1,9 +1,14 @@
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
+using SIA.SchedulingService.Api.OpenApi;
+using SIA.SchedulingService.Api.Security;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoads;
+using SIA.SchedulingService.Application.Interfaces;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Application.Interfaces.ExternalServices;
 using SIA.SchedulingService.Application.Interfaces.Queries;
@@ -20,14 +25,12 @@ using SIA.SchedulingService.Application.UseCases.SupportSchedules;
 using SIA.SchedulingService.Application.UseCases.Teachers;
 using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 using SIA.SchedulingService.Infrastructure.ExternalServices;
+using SIA.SchedulingService.Infrastructure.MessageBus;
+using SIA.SchedulingService.Infrastructure.MessageBus.Consumers.ReviewProcesses;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 using SIA.SchedulingService.Infrastructure.Persistence.Queries;
-using SIA.SchedulingService.Infrastructure.MessageBus;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using SIA.SchedulingService.Api.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -111,6 +114,9 @@ builder.Services.AddDbContext<SchedulingDbContext>(options =>
 // Configuración de RabbitMQ (Bus de mensajes)
 builder.Services.AddMassTransit(configurator =>
 {
+  configurator.AddConsumer<ApprovedConsumer>();
+  configurator.AddConsumer<CorrectionRequiredConsumer>();
+
   configurator.UsingRabbitMq((context, rabbitMq) =>
   {
     var host = builder.Configuration["RabbitMq:Host"]
@@ -137,6 +143,16 @@ builder.Services.AddMassTransit(configurator =>
             hostConfigurator.Username(username);
             hostConfigurator.Password(password);
           });
+
+      rabbitMq.ReceiveEndpoint("sia-scheduling-proposal-approved-v1", endpoint =>
+      {
+          endpoint.ConfigureConsumer<ApprovedConsumer>(context);
+      });
+
+      rabbitMq.ReceiveEndpoint("sia-scheduling-proposal-correction-required-v1", endpoint =>
+      {
+          endpoint.ConfigureConsumer<CorrectionRequiredConsumer>(context);
+      });
   });
 });
 
@@ -149,6 +165,9 @@ builder.Services.AddSingleton(SchedulingOutboxRegistry.Create());
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
 builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
 builder.Services.AddHostedService<OutboxPublisherService>();
+
+//TenantId
+builder.Services.AddScoped<ITenantContext, TenantContext>();
 
 // DataStores y Queries
 builder.Services.AddScoped<IBuildingDataStore, BuildingDataStore>();
@@ -255,6 +274,10 @@ builder.Services.AddScoped<RestoreSupportActivityUseCase>();
 // UseCases: AcademicLoadProposals
 builder.Services.AddScoped<CreateProposalUseCase>();
 builder.Services.AddScoped<SubmitProposalForReviewUseCase>();
+
+// UseCase de propuesta aprobado y para coreccion
+builder.Services.AddScoped<ApplyProposalApprovedUseCase>();
+builder.Services.AddScoped<ApplyProposalRequiresCorrectionUseCase>();
 
 // ExternalServices: AcademicStaffService
 builder.Services.AddHttpClient<IAcademicStaffServiceClient, AcademicStaffServiceClient>(client =>

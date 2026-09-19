@@ -52,4 +52,44 @@ public sealed class ProposalTests
     Assert.Throws<ArgumentException>(() =>
       new Proposal(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.Empty));
   }
+
+
+    [Fact]
+    public void Approve_WhenSubmittedForReview_ShouldTransitionToApproved()
+    {
+        var proposal = CreateSubmittedProposal();
+        proposal.Approve();
+        Assert.Equal(ProposalStatus.Approved, proposal.ProposalStatus);
+        Assert.NotNull(proposal.UpdatedAtUtc);
+    }
+
+    [Fact]
+    public void Approve_WhenNotSubmittedForReview_ShouldThrowInvalidOperationException()
+    {
+        var proposal = new Proposal(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        Assert.Throws<InvalidOperationException>(() => proposal.Approve());
+    }
+
+    [Fact]
+    public void Reject_WhenSubmittedForReview_ShouldTransitionToRejected()
+    {
+        var proposal = CreateSubmittedProposal();
+        proposal.Reject();
+        Assert.Equal(ProposalStatus.Rejected, proposal.ProposalStatus);
+        Assert.NotNull(proposal.UpdatedAtUtc);
+    }
+
+    [Fact]
+    public void Reject_WhenNotSubmittedForReview_ShouldThrowInvalidOperationException()
+    {
+        var proposal = new Proposal(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        Assert.Throws<InvalidOperationException>(() => proposal.Reject());
+    }
+
+    private static Proposal CreateSubmittedProposal()
+    {
+        var proposal = new Proposal(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        proposal.SubmitForReview();
+        return proposal;
+    }
 }
