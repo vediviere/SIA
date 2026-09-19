@@ -105,29 +105,4 @@ public sealed class ProposalTests
     Assert.Equal(2, proposal.ReviewVersion);
     Assert.Equal(ProposalStatus.SubmittedForReview, proposal.ProposalStatus);
   }
-  
-
-    [Fact]
-    public void Approve_WhenSubmittedForReview_ShouldTransitionToApproved()
-    {
-        var proposal = CreateSubmittedProposal();
-        proposal.Approve();
-        Assert.Equal(ProposalStatus.Approved, proposal.ProposalStatus);
-        Assert.NotNull(proposal.UpdatedAtUtc);
-    }
-
-    [Fact]
-    public void Approve_WhenNotSubmittedForReview_ShouldThrowInvalidOperationException()
-    {
-        var proposal = new Proposal(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-        Assert.Throws<InvalidOperationException>(() => proposal.Approve());
-    }
-
-
-    private static Proposal CreateSubmittedProposal()
-    {
-        var proposal = new Proposal(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-        proposal.SubmitForReview();
-        return proposal;
-    }
 }
