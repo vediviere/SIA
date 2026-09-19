@@ -51,4 +51,17 @@ public sealed class ProposalValidatorTests
     await Assert.ThrowsAsync<AcademicLoadNotEditableException>(() =>
       validator.EnsureEditableAsync(academicLoad, CancellationToken.None));
   }
+
+  [Fact]
+  public async Task EnsureEditableAsync_WithCorrectionRequired_ShouldNotThrow()
+  {
+    var tenantId = Guid.NewGuid();
+    var proposal = new Proposal(tenantId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+    proposal.SubmitForReview();
+    proposal.RequireCorrection();
+
+    var validator = new ProposalValidator(new FakeProposalDataStore(proposal));
+
+    await validator.EnsureEditableAsync(tenantId, proposal.Id, proposal.AcademicPeriodId, CancellationToken.None);
+  }
 }

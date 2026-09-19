@@ -1,13 +1,13 @@
-﻿using SIA.SchedulingService.Application.Common.Exceptions.AcademicLoadProposal;
+using SIA.SchedulingService.Application.Common.Exceptions.AcademicLoadProposal;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 
 namespace SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
 
-public sealed class ApplyProposalApprovedUseCase
+public sealed class ApplyApprovedUseCase
 {
     private readonly IProposalDataStore _dataStore;
 
-    public ApplyProposalApprovedUseCase(IProposalDataStore dataStore)
+    public ApplyApprovedUseCase(IProposalDataStore dataStore)
     {
         _dataStore = dataStore;
     }

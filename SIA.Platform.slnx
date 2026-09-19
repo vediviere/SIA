@@ -130,6 +130,9 @@
   <Folder Name="/test/">
     <Project Path="tests/building-blocks/SIA.BuildingBlocks.Messaging.Tests/SIA.BuildingBlocks.Messaging.Tests.csproj" Id="ab8e1d54-b58a-442c-89b8-03af91c504dc" />
   </Folder>
+  <Folder Name="/test/Architecture/">
+    <Project Path="tests/architecture/SIA.ArchitectureTests/SIA.ArchitectureTests.csproj" />
+  </Folder>
   <Folder Name="/test/Docs/">
     <File Path="tests/README.md" />
   </Folder>

@@ -1,4 +1,5 @@
 using SIA.SchedulingService.Application.Interfaces.DataStores;
+using SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoadProposal;
 using SIA.SchedulingService.Domain.Entities;
 
@@ -21,7 +22,15 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   public Proposal? SubmittedProposal { get; private set; }
   public ProposalSubmittedForReviewIntegrationEvent? SubmittedIntegrationEvent { get; private set; }
 
-    public Task<Proposal?> GetByIdAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
+  public bool DecisionProcessedResult { get; set; }
+  public Proposal? AppliedDecisionProposal { get; private set; }
+  public Guid? AppliedEventId { get; private set; }
+  public string? AppliedEventType { get; private set; }
+  public string? AppliedSourceService { get; private set; }
+  public Guid? AppliedCorrelationId { get; private set; }
+  public int AppliedDecisionCount { get; private set; }
+
+  public Task<Proposal?> GetByIdAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
   {
     if (_proposal is null || _proposal.TenantId != tenantId || _proposal.Id != proposalId)
     {
@@ -48,10 +57,28 @@ public sealed class FakeProposalDataStore : IProposalDataStore
     return Task.FromResult(HasAcademicLoadsResult);
   }
 
-  public Task SubmitForReviewWithOutboxAsync(Proposal proposal,ProposalSubmittedForReviewIntegrationEvent integrationEvent,CancellationToken cancellationToken)
+  public Task SubmitForReviewWithOutboxAsync(Proposal proposal, ProposalSubmittedForReviewIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     SubmittedProposal = proposal;
     SubmittedIntegrationEvent = integrationEvent;
+    return Task.CompletedTask;
+  }
+
+  public Task<bool> WasProposalDecisionProcessedAsync(Guid eventId, CancellationToken cancellationToken)
+  {
+    return Task.FromResult(DecisionProcessedResult);
+  }
+
+  public Task ApplyDecisionAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, CancellationToken cancellationToken)
+  {
+    AppliedDecisionProposal = proposal;
+    AppliedEventId = eventId;
+    AppliedEventType = eventType;
+    AppliedSourceService = sourceService;
+    AppliedCorrelationId = correlationId;
+    AppliedDecisionCount++;
+    DecisionProcessedResult = true;
+
     return Task.CompletedTask;
   }
 }

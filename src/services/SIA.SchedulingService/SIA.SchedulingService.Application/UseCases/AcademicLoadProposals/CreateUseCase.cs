@@ -8,11 +8,11 @@ using SIA.SchedulingService.Domain.Entities;
 
 namespace SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
 
-public sealed class CreateProposalUseCase
+public sealed class CreateUseCase
 {
   private readonly IProposalDataStore _dataStore;
 
-  public CreateProposalUseCase(IProposalDataStore dataStore)
+  public CreateUseCase(IProposalDataStore dataStore)
   {
     _dataStore = dataStore;
   }

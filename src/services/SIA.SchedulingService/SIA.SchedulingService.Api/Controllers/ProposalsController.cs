@@ -12,13 +12,13 @@ namespace SIA.SchedulingService.Api.Controllers;
 [Route("api/academic-load-proposals")]
 public sealed class ProposalsController : ControllerBase
 {
-  private readonly CreateProposalUseCase _createUseCase;
-  private readonly SubmitProposalForReviewUseCase _submitProposalForReviewUseCase;
+  private readonly CreateUseCase _createUseCase;
+  private readonly SubmitForReviewUseCase _submitProposalForReviewUseCase;
   private readonly ITenantContext _tenantContext;
 
     public ProposalsController(
-        CreateProposalUseCase createUseCase,
-        SubmitProposalForReviewUseCase submitProposalForReviewUseCase,
+        CreateUseCase createUseCase,
+        SubmitForReviewUseCase submitProposalForReviewUseCase,
         ITenantContext tenantContext)
     {
         _createUseCase = createUseCase;
