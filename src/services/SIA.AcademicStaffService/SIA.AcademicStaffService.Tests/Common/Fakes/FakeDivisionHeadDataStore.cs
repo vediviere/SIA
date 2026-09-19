@@ -1,5 +1,5 @@
 ﻿using SIA.AcademicStaffService.Application.Interfaces.DataStores;
-using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionManagers;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionHeads;
 using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Tests.Common.Fakes;
@@ -18,28 +18,27 @@ public sealed class FakeDivisionHeadDataStore : IDivisionHeadDataStore
     public DivisionHead? DeactivatedDivisionHead { get; private set; }
     public DivisionHeadDeactivatedIntegrationEvent? DeactivatedEvent { get; private set; }
 
-
     public Task<bool> PersonAlreadyManagesProgramAsync(Guid tenantId, Guid programId, Guid personId, CancellationToken cancellationToken)
         => Task.FromResult(PersonAlreadyManagesProgramResult);
 
-    public Task<DivisionHead?> GetDivisionManagerByIdAsync(Guid tenantId, Guid divisionManagerId, CancellationToken cancellationToken)
+    public Task<DivisionHead?> GetDivisionHeadByIdAsync(Guid tenantId, Guid divisionHeadId, CancellationToken cancellationToken)
         => Task.FromResult(DivisionHeadById);
 
-    public Task AddDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public Task AddDivisionHeadWithOutboxAsync(DivisionHead divisionHead, DivisionHeadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         AddedDivisionHead = divisionHead;
         AddedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
-    public Task ActivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public Task ActivateDivisionHeadWithOutboxAsync(DivisionHead divisionHead, DivisionHeadActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         ActivatedDivisionHead = divisionHead;
         ActivatedEvent = integrationEvent;
         return Task.CompletedTask;
     }
 
-    public Task DeactivateDivisionManagerWithOutboxAsync(DivisionHead divisionHead, DivisionHeadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public Task DeactivateDivisionHeadWithOutboxAsync(DivisionHead divisionHead, DivisionHeadDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         DeactivatedDivisionHead = divisionHead;
         DeactivatedEvent = integrationEvent;

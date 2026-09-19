@@ -1,4 +1,4 @@
-﻿using SIA.AcademicStaffService.Application.DTOs.Professors;
+﻿using SIA.AcademicStaffService.Application.DTOs.Teacher;
 using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Application.Interfaces.Queries;

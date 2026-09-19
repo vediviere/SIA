@@ -1,8 +1,8 @@
 ﻿using SIA.AcademicStaffService.Application.Common.Exceptions;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
-using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionManagers;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionHeads;
 
-namespace SIA.AcademicStaffService.Application.UseCases.DivisionManagers;
+namespace SIA.AcademicStaffService.Application.UseCases.DivisionHeads;
 
 public sealed class ActivateDivisionHeadUseCase
 {
@@ -15,29 +15,29 @@ public sealed class ActivateDivisionHeadUseCase
 
     public async Task ExecuteAsync(
         Guid tenantId,
-        Guid divisionManagerId,
+        Guid divisionHeadId,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
-        var divisionManager = await _dataStore.GetDivisionManagerByIdAsync(tenantId, divisionManagerId, cancellationToken);
+        var divisionHead = await _dataStore.GetDivisionHeadByIdAsync(tenantId, divisionHeadId, cancellationToken);
 
-        if (divisionManager is null)
+        if (divisionHead is null)
         {
-            throw new DivisionHeadNotFoundException(divisionManagerId);
+            throw new DivisionHeadNotFoundException(divisionHeadId);
         }
 
-        divisionManager.Activate();
+        divisionHead.Activate();
 
         var integrationEvent = new DivisionHeadActivatedIntegrationEvent
         {
             EventId = Guid.NewGuid(),
             CorrelationId = correlationId,
-            OccurredAtUtc = divisionManager.UpdatedAtUtc ?? DateTime.UtcNow,
-            TenantId = divisionManager.TenantId,
-            DivisionManagerId = divisionManager.Id,
+            OccurredAtUtc = divisionHead.UpdatedAtUtc ?? DateTime.UtcNow,
+            TenantId = divisionHead.TenantId,
+            DivisionHeadId = divisionHead.Id,
             Version = 1
         };
 
-        await _dataStore.ActivateDivisionManagerWithOutboxAsync(divisionManager, integrationEvent, cancellationToken);
+        await _dataStore.ActivateDivisionHeadWithOutboxAsync(divisionHead, integrationEvent, cancellationToken);
     }
 }

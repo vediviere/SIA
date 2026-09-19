@@ -1,5 +1,4 @@
 using SIA.SchedulingService.Application.Interfaces.DataStores;
-using SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoadProposal;
 using SIA.SchedulingService.Domain.Entities;
 
@@ -8,6 +7,7 @@ namespace SIA.SchedulingService.Tests.Common.Fakes;
 public sealed class FakeProposalDataStore : IProposalDataStore
 {
   private readonly Proposal? _proposal;
+  private readonly HashSet<Guid> _processedEventIds = [];
 
   public FakeProposalDataStore(Proposal? proposal = null)
   {
@@ -18,6 +18,10 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   public bool HasAcademicLoadsResult { get; set; } = true;
   public Proposal? AddedProposal { get; private set; }
   public ProposalCreatedIntegrationEvent? AddedCreatedEvent { get; private set; }
+
+  public int ApplyDecisionCallCount { get; private set; }
+  public Guid? LastAppliedEventId { get; private set; }
+  public Guid? LastAppliedCorrelationId { get; private set; }
 
   public Proposal? SubmittedProposal { get; private set; }
   public ProposalSubmittedForReviewIntegrationEvent? SubmittedIntegrationEvent { get; private set; }
@@ -65,9 +69,9 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   }
 
   public Task<bool> WasProposalDecisionProcessedAsync(Guid eventId, CancellationToken cancellationToken)
-  {
-    return Task.FromResult(DecisionProcessedResult);
-  }
+{
+  return Task.FromResult(DecisionProcessedResult || _processedEventIds.Contains(eventId));
+}
 
   public Task ApplyDecisionAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, CancellationToken cancellationToken)
   {
@@ -77,7 +81,11 @@ public sealed class FakeProposalDataStore : IProposalDataStore
     AppliedSourceService = sourceService;
     AppliedCorrelationId = correlationId;
     AppliedDecisionCount++;
-    DecisionProcessedResult = true;
+
+    _processedEventIds.Add(eventId);
+    ApplyDecisionCallCount++;
+    LastAppliedEventId = eventId;
+    LastAppliedCorrelationId = correlationId;
 
     return Task.CompletedTask;
   }

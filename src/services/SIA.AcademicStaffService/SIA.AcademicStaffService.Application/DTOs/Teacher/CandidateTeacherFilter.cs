@@ -1,4 +1,4 @@
-﻿namespace SIA.AcademicStaffService.Application.DTOs.Professors;
+﻿namespace SIA.AcademicStaffService.Application.DTOs.Teacher;
 
 public sealed class CandidateTeacherFilter
 {

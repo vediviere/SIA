@@ -1,14 +1,14 @@
 ﻿using SIA.AcademicStaffService.Application.Common.Exceptions;
-using SIA.AcademicStaffService.Application.UseCases.Professors;
-using SIA.AcademicStaffService.Contracts.Requests.Professors;
+using SIA.AcademicStaffService.Application.UseCases.Teachers;
+using SIA.AcademicStaffService.Contracts.Requests.Teacher;
 using SIA.AcademicStaffService.Tests.Common.Fakes;
 
-namespace SIA.AcademicStaffService.Tests.Application.UseCases.Professors;
+namespace SIA.AcademicStaffService.Tests.Application.UseCases.Teachers;
 
 public sealed class CreateTeacherUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_WithValidData_ShouldCreateTeacher()
+    public async Task ExecuteAsync_WithValidData_ShouldCreate()
     {
         var tenantId = Guid.NewGuid();
         var personId = Guid.NewGuid();
@@ -32,17 +32,17 @@ public sealed class CreateTeacherUseCaseTests
         Assert.NotNull(dataStore.AddedTeacher);
         Assert.Equal(personId, dataStore.AddedTeacher.PersonId);
         Assert.NotNull(dataStore.AddedEvent);
-        Assert.Equal(dataStore.AddedTeacher.Id, dataStore.AddedEvent.ProfessorId);
+        Assert.Equal(dataStore.AddedTeacher.Id, dataStore.AddedEvent.TeacherId);
         Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
         Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
         Assert.Equal(1, dataStore.AddedEvent.Version);
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenPersonAlreadyProfessor_ShouldThrowConflict()
+    public async Task ExecuteAsync_WhenAlreadyExists_ShouldThrowConflict()
     {
         var tenantId = Guid.NewGuid();
-        var dataStore = new FakeTeacherDataStore { PersonAlreadyProfessorResult = true };
+        var dataStore = new FakeTeacherDataStore { PersonAlreadyTeacherResult = true };
         var useCase = new CreateTeacherUseCase(dataStore);
 
         await Assert.ThrowsAsync<DuplicateTeacherException>(() => useCase.ExecuteAsync(tenantId, new CreateTeacherRequest

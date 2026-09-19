@@ -1,8 +1,8 @@
 ﻿using SIA.AcademicStaffService.Application.Common.Exceptions;
 using SIA.AcademicStaffService.Application.Interfaces.DataStores;
-using SIA.AcademicStaffService.Contracts.IntegrationEvents.Professors;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.Teacher;
 
-namespace SIA.AcademicStaffService.Application.UseCases.Professors;
+namespace SIA.AcademicStaffService.Application.UseCases.Teachers;
 
 public sealed class DeactivateTeacherUseCase
 {
@@ -15,29 +15,29 @@ public sealed class DeactivateTeacherUseCase
 
     public async Task ExecuteAsync(
         Guid tenantId,
-        Guid professorId,
+        Guid teacherId,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
-        var professor = await _dataStore.GetProfessorByIdAsync(tenantId, professorId, cancellationToken);
+        var teacher = await _dataStore.GetTeacherByIdAsync(tenantId, teacherId, cancellationToken);
 
-        if (professor is null)
+        if (teacher is null)
         {
-            throw new TeacherNotFoundException(professorId);
+            throw new TeacherNotFoundException(teacherId);
         }
 
-        professor.Deactivate();
+        teacher.Deactivate();
 
         var integrationEvent = new TeacherDeactivatedIntegrationEvent
         {
             EventId = Guid.NewGuid(),
             CorrelationId = correlationId,
-            OccurredAtUtc = professor.UpdatedAtUtc ?? DateTime.UtcNow,
-            TenantId = professor.TenantId,
-            ProfessorId = professor.Id,
+            OccurredAtUtc = teacher.UpdatedAtUtc ?? DateTime.UtcNow,
+            TenantId = teacher.TenantId,
+            TeacherId = teacher.Id,
             Version = 1
         };
 
-        await _dataStore.DeactivateProfessorWithOutboxAsync(professor, integrationEvent, cancellationToken);
+        await _dataStore.DeactivateTeacherWithOutboxAsync(teacher, integrationEvent, cancellationToken);
     }
 }

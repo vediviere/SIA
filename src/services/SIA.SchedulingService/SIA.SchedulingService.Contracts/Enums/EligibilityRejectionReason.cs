@@ -1,6 +1,6 @@
 ﻿namespace SIA.SchedulingService.Contracts.Enums;
 
-public enum EligibilityRejectionReason
+public enum TeacherEligibilityFailureReason
 {
     TeacherNotAvailable,
     InsufficientAvailableHours,
