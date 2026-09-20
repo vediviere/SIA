@@ -9,7 +9,7 @@ using SIA.AcademicService.Contracts.Requests.Subjects;
 using SIA.AcademicService.Contracts.Responses.Subjects;
 using SIA.AcademicService.Domain.Entities;
 
-namespace SIA.AcademicService.Api.Controllers;
+namespace SIA.AcademicService.Api.Controllers.Study;
 
 [ApiController]
 [Route("api/subjects")]
