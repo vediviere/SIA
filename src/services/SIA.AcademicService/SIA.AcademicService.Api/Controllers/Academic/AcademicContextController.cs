@@ -5,7 +5,7 @@ using SIA.AcademicService.Application.UseCases.AcademicContext;
 using SIA.AcademicService.Contracts.Requests.AcademicContext;
 using SIA.AcademicService.Contracts.Responses.AcademicContext;
 
-namespace SIA.AcademicService.Api.Controllers;
+namespace SIA.AcademicService.Api.Controllers.Academic;
 
 [ApiController]
 [Route("api/academic-context")]

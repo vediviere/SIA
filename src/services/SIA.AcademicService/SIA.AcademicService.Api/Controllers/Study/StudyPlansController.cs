@@ -8,7 +8,7 @@ using SIA.AcademicService.Contracts.Requests.StudyPlans;
 using SIA.AcademicService.Contracts.Responses.StudyPlans;
 using SIA.AcademicService.Domain.Entities;
 
-namespace SIA.AcademicService.Api.Controllers;
+namespace SIA.AcademicService.Api.Controllers.Study;
 
 [ApiController]
 [Route("api/study-plans")]

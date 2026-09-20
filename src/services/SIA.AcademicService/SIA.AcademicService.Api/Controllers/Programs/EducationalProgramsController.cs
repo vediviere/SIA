@@ -8,7 +8,7 @@ using SIA.AcademicService.Contracts.Requests.EducationalProgramsRequest;
 using SIA.AcademicService.Contracts.Responses.EducationalProgramsResponse;
 using SIA.AcademicService.Domain.Entities;
 
-namespace SIA.AcademicService.Api.Controllers;
+namespace SIA.AcademicService.Api.Controllers.Programs;
 
 [ApiController]
 [Route("api/EducationalPrograms")]

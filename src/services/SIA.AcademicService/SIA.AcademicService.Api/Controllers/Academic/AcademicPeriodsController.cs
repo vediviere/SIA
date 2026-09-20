@@ -6,7 +6,7 @@ using SIA.AcademicService.Application.UseCases.AcademicPeriods;
 using SIA.AcademicService.Contracts.Requests.AcademicPeriods;
 using SIA.AcademicService.Contracts.Responses.AcademicPeriods;
 
-namespace SIA.AcademicService.Api.Controllers;
+namespace SIA.AcademicService.Api.Controllers.Academic;
 
 [ApiController]
 [Route("api/academic-periods")]
