@@ -128,7 +128,9 @@
     <Project Path="src/services/SIA.WorkflowService/SIA.WorkflowService.Tests/SIA.WorkflowService.Tests.csproj" />
   </Folder>
   <Folder Name="/test/">
+    <File Path="tests/integration/test.txt" />
     <Project Path="tests/building-blocks/SIA.BuildingBlocks.Messaging.Tests/SIA.BuildingBlocks.Messaging.Tests.csproj" Id="ab8e1d54-b58a-442c-89b8-03af91c504dc" />
+    <Project Path="tests/integration/SIA.WorkflowService.IntegrationTests/SIA.WorkflowService.IntegrationTests.csproj" Id="bd03ebb3-5ae2-46e4-b1e2-b037dbcb1e76" />
   </Folder>
   <Folder Name="/test/Docs/">
     <File Path="tests/README.md" />

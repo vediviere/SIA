@@ -1,19 +1,17 @@
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.BuildingBlocks.WebApi.ExceptionHandling;
 using SIA.WorkflowService.Api.OpenApi;
+using SIA.WorkflowService.Api.Security;
+using SIA.WorkflowService.Application.Interfaces;
 using SIA.WorkflowService.Application.Interfaces.DataStores;
 using SIA.WorkflowService.Application.UseCases.ReviewProcesses;
 using SIA.WorkflowService.Infrastructure.MessageBus.Consumers.Proposals;
 using SIA.WorkflowService.Infrastructure.MessageBus.Outbox;
 using SIA.WorkflowService.Infrastructure.Persistence.Contexts;
 using SIA.WorkflowService.Infrastructure.Persistence.DataStores;
-using SIA.WorkflowService.Api.Security;
-using SIA.WorkflowService.Application.Interfaces;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,64 +34,11 @@ builder.Services.AddDbContext<WorkflowDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions => sqlOptions.EnableRetryOnFailure());
 });
 
-var signingKey = builder.Configuration["Token:SigningKey"]
-  ?? throw new InvalidOperationException("Token:SigningKey no está configurado.");
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
 
-var issuer = builder.Configuration["Token:Issuer"]
-  ?? throw new InvalidOperationException("Token:Issuer no está configurado.");
-
-var audience = builder.Configuration["Token:Audience"]
-  ?? throw new InvalidOperationException("Token:Audience no está configurado.");
-
-var signingKeyBytes = Convert.FromBase64String(signingKey);
-
-if (signingKeyBytes.Length < 32)
-{
-    throw new InvalidOperationException("Token:SigningKey debe contener al menos 256 bits.");
-}
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    options.MapInboundClaims = false;
-
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = issuer,
-        ValidAudience = audience,
-        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes),
-        NameClaimType = "email",
-        RoleClaimType = "role",
-        ClockSkew = TimeSpan.FromSeconds(30)
-    };
-
-    options.Events = new JwtBearerEvents
-    {
-        OnTokenValidated = context =>
-        {
-            var userIdValue = context.Principal?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-
-            if (!Guid.TryParse(userIdValue, out var userId) || userId == Guid.Empty)
-            {
-                context.Fail("La identidad no contiene un identificador de usuario válido.");
-                return Task.CompletedTask;
-            }
-
-            var tenantIdValue = context.Principal?.FindFirst("tenant_id")?.Value;
-
-            if (!Guid.TryParse(tenantIdValue, out var tenantId) || tenantId == Guid.Empty)
-            {
-                context.Fail("La identidad no contiene un TenantId válido.");
-                return Task.CompletedTask;
-            }
-
-            return Task.CompletedTask;
-        }
-    };
-});
+builder.Services.ConfigureOptions<JwtOptionsSetup>();
 
 builder.Services.AddAuthorization();
 
@@ -174,3 +119,5 @@ app.MapGet("/health", () =>
 });
 
 app.Run();
+
+public partial class Program;
