@@ -4,7 +4,7 @@ using SIA.SchedulingService.Application.UseCases.Groups;
 using SIA.SchedulingService.Contracts.Requests.Group;
 using SIA.SchedulingService.Contracts.Responses.Group;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Academic;
 
 [ApiController]
 [Route("api/Groups")]

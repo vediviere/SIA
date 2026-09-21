@@ -3,7 +3,7 @@ using SIA.SchedulingService.Application.UseCases.Teachers;
 using SIA.SchedulingService.Contracts.Requests.Teachers;
 using SIA.SchedulingService.Contracts.Responses.Teachers;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Teacher;
 
 [ApiController]
 [Route("api/teacher-eligibility")]

@@ -4,7 +4,7 @@ using SIA.SchedulingService.Application.UseCases.Buildings;
 using SIA.SchedulingService.Contracts.Requests.Building;
 using SIA.SchedulingService.Contracts.Responses.Building;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Infrastructure;
 
 [ApiController]
 [Route("api/Building")]

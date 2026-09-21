@@ -4,7 +4,7 @@ using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 using SIA.SchedulingService.Contracts.Requests.TeachingSupportHours;
 using SIA.SchedulingService.Contracts.Responses.TeachingSupportHours;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Support;
 
 [ApiController]
 [Route("api/TeachingSupportHoursController")]
