@@ -8,7 +8,7 @@ using SIA.SchedulingService.Contracts.Requests.SupportSchedules;
 using SIA.SchedulingService.Contracts.Responses.SupportSchedules;
 using SIA.SchedulingService.Domain.Entities;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Support;
 
 [ApiController]
 [Route("api/support-schedules")]

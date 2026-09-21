@@ -5,7 +5,7 @@ using SIA.SchedulingService.Contracts.Responses.AcademicLoadProposal;
 using Microsoft.AspNetCore.Authorization;
 using SIA.SchedulingService.Application.Interfaces;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Proposals;
 
 [Authorize]
 [ApiController]

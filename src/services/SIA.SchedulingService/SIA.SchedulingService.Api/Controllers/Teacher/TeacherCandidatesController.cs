@@ -2,7 +2,7 @@
 using SIA.SchedulingService.Application.Interfaces.ExternalServices;
 using SIA.SchedulingService.Application.UseCases.Teachers;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Teacher;
 
 [ApiController]
 [Route("api/teacher-candidates")]

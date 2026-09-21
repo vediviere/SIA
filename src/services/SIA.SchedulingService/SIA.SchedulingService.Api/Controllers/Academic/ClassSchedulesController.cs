@@ -8,7 +8,7 @@ using SIA.SchedulingService.Contracts.Requests.ClassSchedule;
 using SIA.SchedulingService.Contracts.Responses.ClassSchedule;
 using SIA.SchedulingService.Domain.Entities;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Academic;
 
 [ApiController]
 [Route("api/class-schedules")]

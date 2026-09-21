@@ -7,7 +7,7 @@ using SIA.SchedulingService.Contracts.Requests.ClassroomType;
 using SIA.SchedulingService.Contracts.Responses.ClassroomType;
 using SIA.SchedulingService.Domain.Entities;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Infrastructure;
 
 [ApiController]
 [Route("api/classroom-types")]

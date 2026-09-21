@@ -8,7 +8,7 @@ using SIA.SchedulingService.Contracts.Requests.Classroom;
 using SIA.SchedulingService.Contracts.Responses.Classrooms;
 using SIA.SchedulingService.Domain.Entities;
 
-namespace SIA.SchedulingService.Api.Controllers;
+namespace SIA.SchedulingService.Api.Controllers.Infrastructure;
 
 [ApiController]
 [Route("api/classroom-labs")]
