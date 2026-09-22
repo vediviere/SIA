@@ -5,6 +5,8 @@ using SIA.WorkflowService.Api.Extensions;
 using SIA.WorkflowService.Application.UseCases.ReviewProcesses;
 using SIA.WorkflowService.Contracts.Requests.ReviewProcesses;
 using SIA.WorkflowService.Application.Interfaces;
+using SIA.WorkflowService.Application.Interfaces.Queries;
+using SIA.WorkflowService.Contracts.Responses.ReviewProcesses;
 using DomainObservationTarget = SIA.WorkflowService.Domain.Enums.ObservationTarget;
 
 
@@ -18,16 +20,19 @@ public sealed class ReviewProcessesController : ControllerBase
     private readonly ApproveUseCase _approveUseCase;
     private readonly ReturnUseCase _returnUseCase;
     private readonly ITenantContext _tenantContext;
+    private readonly IReviewProcessQueries _reviewProcessQueries;
 
     public ReviewProcessesController(
         ApproveUseCase approveUseCase,
         ReturnUseCase returnUseCase,
-        ITenantContext tenantContext
+        ITenantContext tenantContext,
+        IReviewProcessQueries reviewProcessQueries
     )
     {
         _approveUseCase = approveUseCase;
         _returnUseCase = returnUseCase;
         _tenantContext = tenantContext;
+        _reviewProcessQueries = reviewProcessQueries;
     }
 
     [HttpPost("{processId:guid}/approve")]
@@ -36,7 +41,9 @@ public sealed class ReviewProcessesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> ApproveAsync([FromRoute] Guid processId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ApproveAsync(
+        [FromRoute] Guid processId, 
+        CancellationToken cancellationToken)
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
@@ -61,7 +68,11 @@ public sealed class ReviewProcessesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> ReturnAsync([FromRoute] Guid processId, [FromBody] ReturnRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ReturnAsync(
+        [FromRoute] Guid processId,
+        [FromBody] ReturnRequest request, 
+        CancellationToken cancellationToken
+    )
     {
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
@@ -85,6 +96,42 @@ public sealed class ReviewProcessesController : ControllerBase
         await _returnUseCase.ExecuteAsync(command, cancellationToken);
 
         return NoContent();
+    }
+
+
+    [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<ReviewProcessListItemResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetInReviewAsync(CancellationToken cancellationToken)
+    {
+        var processes = await _reviewProcessQueries.GetInReviewAsync(
+            _tenantContext.TenantId,
+            cancellationToken);
+
+        return Ok(processes);
+    }
+
+    [HttpGet("{processId:guid}")]
+    [ProducesResponseType(typeof(ReviewProcessResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetByIdAsync(
+        [FromRoute] Guid processId,
+        CancellationToken cancellationToken)
+    {
+        var process = await _reviewProcessQueries.GetByIdAsync(
+            _tenantContext.TenantId,
+            processId,
+            cancellationToken);
+
+        if (process is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(process);
     }
 
     private Guid ResolveCorrelationId()
