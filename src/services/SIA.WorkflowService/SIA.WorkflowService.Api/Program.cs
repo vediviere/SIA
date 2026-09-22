@@ -7,11 +7,13 @@ using SIA.WorkflowService.Api.OpenApi;
 using SIA.WorkflowService.Api.Security;
 using SIA.WorkflowService.Application.Interfaces;
 using SIA.WorkflowService.Application.Interfaces.DataStores;
+using SIA.WorkflowService.Application.Interfaces.Queries;
 using SIA.WorkflowService.Application.UseCases.ReviewProcesses;
 using SIA.WorkflowService.Infrastructure.MessageBus.Consumers.Proposals;
 using SIA.WorkflowService.Infrastructure.MessageBus.Outbox;
 using SIA.WorkflowService.Infrastructure.Persistence.Contexts;
 using SIA.WorkflowService.Infrastructure.Persistence.DataStores;
+using SIA.WorkflowService.Infrastructure.Persistence.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +48,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 
 builder.Services.AddScoped<IReviewStore, ReviewStore>();
+builder.Services.AddScoped<IReviewProcessQueries, ReviewProcessQueries>();
 builder.Services.AddScoped<CreateUseCase>();
 builder.Services.AddScoped<ApproveUseCase>();
 builder.Services.AddScoped<ReturnUseCase>();
