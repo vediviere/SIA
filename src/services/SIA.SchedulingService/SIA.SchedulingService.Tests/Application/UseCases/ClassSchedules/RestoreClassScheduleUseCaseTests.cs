@@ -32,6 +32,39 @@ public sealed class RestoreClassScheduleUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchSchedule_ShouldThrowClassScheduleNotFoundException()
+    {
+        var scheduleTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingSchedule = new ClassSchedule(
+            scheduleTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "MARTES",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddHours(1));
+
+        existingSchedule.SoftDelete();
+
+        var dataStore = new FakeClassScheduleDataStore(existingSchedule);
+        var useCase = new RestoreClassScheduleUseCase(dataStore);
+
+        await Assert.ThrowsAsync<ClassScheduleNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingSchedule.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.False(existingSchedule.Status);
+        Assert.Null(dataStore.RestoredSchedule);
+        Assert.Null(dataStore.RestoredEvent);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenScheduleDoesNotExist_ShouldThrowNotFoundException()
     {
         var dataStore = new FakeClassScheduleDataStore(null);

@@ -67,4 +67,68 @@ public sealed class UpdateTeachingSupportHoursUseCaseTests
     Assert.Null(dataStore.AddedUpdatedEvent);
     Assert.Null(dataStore.SavedAcademicLoad);
   }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchSupportHours_ShouldThrowTeachingSupportHoursNotFoundException()
+    {
+        var supportHoursTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var proposal = new Proposal(
+            supportHoursTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid());
+
+        var academicLoad = new AcademicLoad(
+            supportHoursTenantId,
+            proposal.Id,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            proposal.AcademicPeriodId,
+            "OF-2026-001",
+            DateTime.UtcNow,
+            0,
+            0,
+            DateTime.UtcNow);
+
+        var existingTSH = new TeachingSupportHour(
+            supportHoursTenantId,
+            Guid.NewGuid(),
+            academicLoad.Id,
+            5);
+
+        var dataStore = new FakeTeachingSupportHoursDataStore(existingTSH);
+        var academicLoadDataStore = new FakeAcademicLoadDataStore(academicLoad);
+        var supportHoursCalculator = new AcademicLoadSupportHoursCalculator(
+            new FakeTeachingSupportHoursQueries());
+
+        var proposalValidator = new ProposalValidator(
+            new FakeProposalDataStore(proposal));
+
+        var useCase = new UpdateTeachingSupportHoursUseCase(
+            dataStore,
+            academicLoadDataStore,
+            supportHoursCalculator,
+            proposalValidator);
+
+        var request = new UpdateTeachingSupportHoursRequest
+        {
+            Hours = 10
+        };
+
+        await Assert.ThrowsAsync<TeachingSupportHoursNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingTSH.Id,
+                request,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.Equal(5, existingTSH.Hours);
+        Assert.Null(dataStore.UpdatedTeachingSupportHours);
+        Assert.Null(dataStore.AddedUpdatedEvent);
+        Assert.Null(dataStore.SavedAcademicLoad);
+    }
 }

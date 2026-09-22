@@ -1,5 +1,4 @@
-﻿
-namespace SIA.SchedulingService.Contracts.Requests.TeachingSupportHours;
+﻿namespace SIA.SchedulingService.Contracts.Requests.TeachingSupportHours;
 
 public sealed record UpdateTeachingSupportHoursRequest
 {

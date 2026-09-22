@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace SIA.SchedulingService.Application.DTOs.ClassroomTypes;
 
 public sealed record ClassroomTypeFilter

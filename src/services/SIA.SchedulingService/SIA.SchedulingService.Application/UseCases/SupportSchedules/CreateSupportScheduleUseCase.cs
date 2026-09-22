@@ -19,12 +19,13 @@ public sealed class CreateSupportScheduleUseCase
     }
 
     public async Task<CreateSupportScheduleResponse> ExecuteAsync(
+        Guid tenantId,
         CreateSupportScheduleRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var supportSchedule = new SupportSchedule(
-            request.TenantId,
+            tenantId,
             request.SupportHourId,
             request.ClassroomLabId,
             request.AcademicPeriodId,

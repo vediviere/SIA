@@ -27,6 +27,10 @@ public sealed class FakeSupportScheduleDataStore : ISupportScheduleDataStore
 
     public Task<SupportSchedule?> GetSupportScheduleByIdAsync(Guid tenantId, Guid supportScheduleId, CancellationToken cancellationToken)
     {
+        if (_existingSchedule is null || _existingSchedule.TenantId != tenantId || _existingSchedule.Id != supportScheduleId)
+        {
+            return Task.FromResult<SupportSchedule?>(null);
+        }
         return Task.FromResult(_existingSchedule);
     }
 

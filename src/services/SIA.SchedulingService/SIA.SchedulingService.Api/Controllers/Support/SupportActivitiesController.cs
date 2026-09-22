@@ -1,15 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SIA.SchedulingService.Application.Common.Exceptions.SupportActivity;
 using SIA.SchedulingService.Application.DTOs.SupportActivity;
+using SIA.SchedulingService.Application.Interfaces;
 using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.UseCases.SupportActivities;
 using SIA.SchedulingService.Contracts.Requests.SupportActivity;
 using SIA.SchedulingService.Contracts.Responses.SupportActivity;
 using SIA.SchedulingService.Domain.Entities;
 
+
 namespace SIA.SchedulingService.Api.Controllers.Support;
 
+[Authorize]
 [ApiController]
 [Route("api/support-activities")]
 public sealed class SupportActivitiesController : ControllerBase
@@ -19,28 +23,32 @@ public sealed class SupportActivitiesController : ControllerBase
     private readonly SoftDeleteSupportActivityUseCase _softDeleteSupportActivityUseCase;
     private readonly RestoreSupportActivityUseCase _restoreSupportActivityUseCase;
     private readonly ISupportActivityQueries _supportActivityQueries;
+    private readonly ITenantContext _tenantContext;
 
     public SupportActivitiesController(
         CreateSupportActivityUseCase createSupportActivityUseCase,
         UpdateSupportActivityUseCase updateSupportActivityUseCase,
         SoftDeleteSupportActivityUseCase softDeleteSupportActivityUseCase,
         RestoreSupportActivityUseCase restoreSupportActivityUseCase,
-        ISupportActivityQueries supportActivityQueries)
+        ISupportActivityQueries supportActivityQueries,
+        ITenantContext tenantContext)
     {
         _createSupportActivityUseCase = createSupportActivityUseCase;
         _updateSupportActivityUseCase = updateSupportActivityUseCase;
         _softDeleteSupportActivityUseCase = softDeleteSupportActivityUseCase;
         _restoreSupportActivityUseCase = restoreSupportActivityUseCase;
         _supportActivityQueries = supportActivityQueries;
+        _tenantContext = tenantContext;
     }
 
     [HttpGet("Filter")]
     [ProducesResponseType(typeof(IReadOnlyCollection<SupportActivity>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyCollection<SupportActivity>>> SearchAsync([FromQuery] SupportActivityFilter filter, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var secureFilter = new SupportActivityFilter
         {
-            TenantId = filter.TenantId,
+            TenantId = tenantId,
             Activity = filter.Activity,
             Status = filter.Status,
             Page = filter.Page,
@@ -51,11 +59,13 @@ public sealed class SupportActivitiesController : ControllerBase
         return Ok(supportActivities);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(SupportActivity), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SupportActivity>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<SupportActivity>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var supportActivity = await _supportActivityQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (supportActivity == null)
@@ -69,24 +79,28 @@ public sealed class SupportActivitiesController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(CreateSupportActivityResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateSupportActivityResponse>> CreateAsync([FromBody] CreateSupportActivityRequest request, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createSupportActivityUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var response = await _createSupportActivityUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateSupportActivityResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateSupportActivityResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateSupportActivityRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateSupportActivityResponse>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateSupportActivityRequest request, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -100,11 +114,13 @@ public sealed class SupportActivitiesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> SoftDeleteAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SoftDeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -113,11 +129,13 @@ public sealed class SupportActivitiesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
+    [HttpPatch("{id:guid}/restore")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RestoreAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> RestoreAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 

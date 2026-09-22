@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SIA.SchedulingService.Application.Common.Exceptions.ClassSchedule;
 using SIA.SchedulingService.Application.DTOs.ClassSchedules;
+using SIA.SchedulingService.Application.Interfaces;
 using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.UseCases.ClassSchedules;
 using SIA.SchedulingService.Contracts.Requests.ClassSchedule;
@@ -10,6 +12,7 @@ using SIA.SchedulingService.Domain.Entities;
 
 namespace SIA.SchedulingService.Api.Controllers.Academic;
 
+[Authorize]
 [ApiController]
 [Route("api/class-schedules")]
 public sealed class ClassSchedulesController : ControllerBase
@@ -19,28 +22,32 @@ public sealed class ClassSchedulesController : ControllerBase
     private readonly SoftDeleteClassScheduleUseCase _softDeleteClassScheduleUseCase;
     private readonly RestoreClassScheduleUseCase _restoreClassScheduleUseCase;
     private readonly IClassScheduleQueries _classScheduleQueries;
+    private readonly ITenantContext _tenantContext;
 
     public ClassSchedulesController(
         CreateClassScheduleUseCase createClassScheduleUseCase,
         UpdateClassScheduleUseCase updateClassScheduleUseCase,
         SoftDeleteClassScheduleUseCase softDeleteClassScheduleUseCase,
         RestoreClassScheduleUseCase restoreClassScheduleUseCase,
-        IClassScheduleQueries classScheduleQueries)
+        IClassScheduleQueries classScheduleQueries,
+        ITenantContext tenantContext)
     {
         _createClassScheduleUseCase = createClassScheduleUseCase;
         _updateClassScheduleUseCase = updateClassScheduleUseCase;
         _softDeleteClassScheduleUseCase = softDeleteClassScheduleUseCase;
         _restoreClassScheduleUseCase = restoreClassScheduleUseCase;
         _classScheduleQueries = classScheduleQueries;
+        _tenantContext = tenantContext;
     }
 
     [HttpGet("Filter")]
     [ProducesResponseType(typeof(IReadOnlyCollection<ClassSchedule>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyCollection<ClassSchedule>>> SearchAsync([FromQuery] ClassScheduleFilter filter, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var secureFilter = new ClassScheduleFilter
         {
-            TenantId = filter.TenantId,
+            TenantId = tenantId,
             OfferingId = filter.OfferingId,
             ClassroomLabId = filter.ClassroomLabId,
             AcademicPeriodId = filter.AcademicPeriodId,
@@ -54,11 +61,13 @@ public sealed class ClassSchedulesController : ControllerBase
         return Ok(classSchedules);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ClassSchedule), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ClassSchedule>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ClassSchedule>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var classSchedule = await _classScheduleQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (classSchedule == null)
@@ -71,25 +80,29 @@ public sealed class ClassSchedulesController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(CreateClassScheduleResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateClassScheduleResponse>> CreateAsync([FromBody] CreateClassScheduleRequest request, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createClassScheduleUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var response = await _createClassScheduleUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateClassScheduleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateClassScheduleResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateClassScheduleRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateClassScheduleResponse>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateClassScheduleRequest request, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -103,11 +116,13 @@ public sealed class ClassSchedulesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> SoftDeleteAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SoftDeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
@@ -116,11 +131,13 @@ public sealed class ClassSchedulesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
+    [HttpPatch("{id:guid}/restore")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RestoreAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> RestoreAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 

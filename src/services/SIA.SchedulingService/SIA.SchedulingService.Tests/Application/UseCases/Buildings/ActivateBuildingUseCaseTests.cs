@@ -11,10 +11,10 @@ public sealed class ActivateBuildingUseCaseTests
     public async Task ExecuteAsync_WithValidBuilding_ShouldActivateAndPublishEvent()
     {
         var tenantId = Guid.NewGuid();
-        var buildingId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
         var building = new Building(tenantId, "A1", "Edificio A", "EDIFICIO A-ISIC");
+        var buildingId = building.Id;
         building.Deactivate();
 
         var dataStore = new FakeBuildingDataStore(building);
@@ -28,6 +28,36 @@ public sealed class ActivateBuildingUseCaseTests
         Assert.NotNull(dataStore.AddedActivatedEvent);
         Assert.Equal(correlationId, dataStore.AddedActivatedEvent.CorrelationId);
         Assert.True(dataStore.AddedActivatedEvent.Status);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchBuilding_ShouldThrowBuildingNotFoundException()
+    {
+        var buildingTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var buildingId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var building = new Building(
+            buildingTenantId,
+            "A1",
+            "Edificio A",
+            "EDIFICIO A-ISIC");
+
+        building.Deactivate();
+
+        var dataStore = new FakeBuildingDataStore(building);
+        var useCase = new ActivateBuildingUseCase(dataStore);
+
+        await Assert.ThrowsAsync<BuildingNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                buildingId,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.False(building.Status);
+        Assert.Null(dataStore.AddedActivatedEvent);
     }
 
     [Fact]

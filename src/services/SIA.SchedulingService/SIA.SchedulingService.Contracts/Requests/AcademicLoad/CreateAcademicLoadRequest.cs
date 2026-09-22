@@ -2,7 +2,6 @@ namespace SIA.SchedulingService.Contracts.Requests.AcademicLoad;
 
 public sealed record CreateAcademicLoadRequest
 {
-  public required Guid TenantId { get; init; }
   public required Guid ProposalId { get; init; }
   public required Guid TeacherId { get; init; }
   public required Guid DivisionHeadId { get; init; }

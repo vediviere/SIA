@@ -28,6 +28,10 @@ public sealed class FakeClassroomTypeDataStore : IClassroomTypeDataStore
 
     public Task<ClassroomType?> GetClassroomTypeByIdAsync(Guid tenantId, Guid classroomTypeId, CancellationToken cancellationToken)
     {
+        if (_existingType is null || _existingType.TenantId != tenantId || _existingType.Id != classroomTypeId)
+        {
+            return Task.FromResult<ClassroomType?>(null);
+        }
         return Task.FromResult(_existingType);
     }
 

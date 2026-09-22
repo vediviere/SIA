@@ -40,7 +40,7 @@ public sealed class UpdateSupportActivityUseCaseTests
         Assert.Equal(correlationId, dataStore.UpdatedEvent.CorrelationId);
         Assert.Equal(1, dataStore.UpdatedEvent.Version);
     }
-
+     
     [Fact]
     public async Task ExecuteAsync_WhenActivityDoesNotExist_ShouldThrowNotFoundException()
     {

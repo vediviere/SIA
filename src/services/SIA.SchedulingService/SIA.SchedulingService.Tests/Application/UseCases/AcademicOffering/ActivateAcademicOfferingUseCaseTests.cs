@@ -43,7 +43,74 @@ public sealed class ActivateAcademicOfferingUseCaseTests
     Assert.Same(academicLoad, dataStore.SavedAcademicLoad);
   }
 
-  [Fact]
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchOffering_ShouldThrowAcademicOfferingNotFoundException()
+    {
+        var offeringTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var proposal = new Proposal(
+            offeringTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid());
+
+        var academicLoad = new AcademicLoad(
+            offeringTenantId,
+            proposal.Id,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            proposal.AcademicPeriodId,
+            "OF-2026-001",
+            DateTime.UtcNow,
+            0,
+            0,
+            DateTime.UtcNow);
+
+        var offering = new AcademicOffering(
+            offeringTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            academicLoad.Id,
+            "OFERTADA");
+
+        offering.AssignClassHours(4);
+        offering.Deactivate();
+
+        var dataStore = new FakeAcademicOfferingDataStore(offering);
+        var academicLoadDataStore = new FakeAcademicLoadDataStore(academicLoad);
+
+        var offeringQueries = new FakeAcademicOfferingQueries
+        {
+            TotalClassHoursByAcademicLoad = 6
+        };
+
+        var classHoursCalculator =
+            new AcademicLoadClassHoursCalculator(offeringQueries);
+
+        var proposalValidator =
+            new ProposalValidator(new FakeProposalDataStore(proposal));
+
+        var useCase = new ActivateAcademicOfferingUseCase(
+            dataStore,
+            academicLoadDataStore,
+            classHoursCalculator,
+            proposalValidator);
+
+        await Assert.ThrowsAsync<AcademicOfferingNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                offering.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.False(offering.Status);
+        Assert.Null(dataStore.AddedActivatedEvent);
+        Assert.Null(dataStore.SavedAcademicLoad);
+    }
+
+    [Fact]
   public async Task ExecuteAsync_WhenOfferingDoesNotExist_ShouldThrowAcademicOfferingNotFoundException()
   {
     var dataStore = new FakeAcademicOfferingDataStore(null);

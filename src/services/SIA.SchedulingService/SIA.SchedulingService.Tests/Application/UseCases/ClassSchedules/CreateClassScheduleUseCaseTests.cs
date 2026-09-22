@@ -19,7 +19,6 @@ public sealed class CreateClassScheduleUseCaseTests
 
         var request = new CreateClassScheduleRequest
         {
-            TenantId = tenantId,
             OfferingId = Guid.NewGuid(),
             ClassroomLabId = Guid.NewGuid(),
             AcademicPeriodId = Guid.NewGuid(),
@@ -28,7 +27,7 @@ public sealed class CreateClassScheduleUseCaseTests
             EndTime = DateTime.UtcNow.AddHours(2)
         };
 
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, response.Id);
         Assert.Equal(tenantId, response.TenantId);
@@ -40,5 +39,32 @@ public sealed class CreateClassScheduleUseCaseTests
         Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
         Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
         Assert.Equal(1, dataStore.AddedEvent.Version);
+    }
+
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdIsDifferent_ShouldHandleContextProperly()
+    {
+        var tenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+        var dataStore = new FakeClassScheduleDataStore();
+        var useCase = new CreateClassScheduleUseCase(dataStore);
+
+        var request = new CreateClassScheduleRequest
+        {
+            OfferingId = Guid.NewGuid(),
+            ClassroomLabId = Guid.NewGuid(),
+            AcademicPeriodId = Guid.NewGuid(),
+            Day = "MARTES",
+            StartTime = DateTime.UtcNow,
+            EndTime = DateTime.UtcNow.AddHours(2)
+        };
+
+        var response = await useCase.ExecuteAsync(differentTenantId, request, correlationId, CancellationToken.None);
+
+        Assert.Equal(differentTenantId, response.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedSchedule.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedEvent.TenantId);
     }
 }

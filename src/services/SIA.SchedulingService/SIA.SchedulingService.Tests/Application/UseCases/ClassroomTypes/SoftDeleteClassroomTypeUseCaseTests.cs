@@ -30,6 +30,34 @@ public sealed class SoftDeleteClassroomTypeUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchType_ShouldThrowClassroomTypeNotFoundException()
+    {
+        var typeTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingType = new ClassroomType(
+            typeTenantId,
+            "LAB",
+            "Lab",
+            "Desc");
+
+        var dataStore = new FakeClassroomTypeDataStore(existingType);
+        var useCase = new SoftDeleteClassroomTypeUseCase(dataStore);
+
+        await Assert.ThrowsAsync<ClassroomTypeNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingType.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.True(existingType.Status);
+        Assert.Null(dataStore.DeletedType);
+        Assert.Null(dataStore.DeletedEvent);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenTypeDoesNotExist_ShouldThrowNotFoundException()
     {
         var dataStore = new FakeClassroomTypeDataStore(null);

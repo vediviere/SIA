@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIA.SchedulingService.Application.DTOs.SupportSchedules;
+﻿namespace SIA.SchedulingService.Application.DTOs.SupportSchedules;
 
 public sealed record SupportScheduleFilter
 {

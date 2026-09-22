@@ -12,7 +12,6 @@ public sealed class UpdateGroupUseCaseTests
     public async Task ExecuteAsync_WithValidData_ShouldUpdateGroup()
     {
         var tenantId = Guid.NewGuid();
-        var groupId = Guid.NewGuid();
         var educationalProgramId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
@@ -27,7 +26,7 @@ public sealed class UpdateGroupUseCaseTests
             Shift = "  vespertino  ",
             Capacity = 35
         };
-        var responseGroup = await useCase.ExecuteAsync(tenantId, groupId, request, correlationId, CancellationToken.None);
+        var responseGroup = await useCase.ExecuteAsync(tenantId, existingGroup.Id, request, correlationId, CancellationToken.None);
 
         Assert.Equal(tenantId, responseGroup.TenantId);
         Assert.Equal(educationalProgramId, responseGroup.EducationalProgramId);
@@ -81,8 +80,48 @@ public sealed class UpdateGroupUseCaseTests
             Shift = "MATUTINO",
             Capacity = 30
         };
-        await Assert.ThrowsAsync<DuplicateGroupException>(() => useCase.ExecuteAsync(tenantId, Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
+        await Assert.ThrowsAsync<DuplicateGroupException>(() => useCase.ExecuteAsync(tenantId, existingGroup.Id, request, Guid.NewGuid(), CancellationToken.None));
 
+        Assert.Null(dataStore.UpdatedGroup);
+        Assert.Null(dataStore.AddedUpdatedEvent);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchGroup_ShouldThrowGroupNotFoundException()
+    {
+        var groupTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var educationalProgramId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingGroup = new Group(
+            groupTenantId,
+            educationalProgramId,
+            "GRUPO A",
+            "MATUTINO",
+            30);
+
+        var dataStore = new FakeGroupDataStore(existingGroup);
+        var useCase = new UpdateGroupUseCase(dataStore);
+
+        var request = new UpdateGroupRequest
+        {
+            GroupName = "GRUPO B",
+            Shift = "VESPERTINO",
+            Capacity = 35
+        };
+
+        await Assert.ThrowsAsync<GroupNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingGroup.Id,
+                request,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.Equal("GRUPO A", existingGroup.GroupName);
+        Assert.Equal("MATUTINO", existingGroup.Shift);
+        Assert.Equal(30, existingGroup.Capacity);
         Assert.Null(dataStore.UpdatedGroup);
         Assert.Null(dataStore.AddedUpdatedEvent);
     }

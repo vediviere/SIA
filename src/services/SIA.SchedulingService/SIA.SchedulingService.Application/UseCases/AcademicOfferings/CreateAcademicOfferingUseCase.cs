@@ -25,9 +25,9 @@ public sealed class CreateAcademicOfferingUseCase
     _proposalValidator = proposalValidator;
   }
 
-  public async Task<CreateAcademicOfferingResponse> ExecuteAsync(CreateAcademicOfferingRequest request, Guid correlationId, CancellationToken cancellationToken)
+  public async Task<CreateAcademicOfferingResponse> ExecuteAsync(Guid tenantId, CreateAcademicOfferingRequest request, Guid correlationId, CancellationToken cancellationToken)
   {
-    var academicLoad = await _academicLoadDataStore.GetByIdAsync(request.TenantId, request.AcademicLoadId, cancellationToken);
+    var academicLoad = await _academicLoadDataStore.GetByIdAsync(tenantId, request.AcademicLoadId, cancellationToken);
 
     if (academicLoad is null)
     {
@@ -36,14 +36,14 @@ public sealed class CreateAcademicOfferingUseCase
 
     await _proposalValidator.EnsureEditableAsync(academicLoad, cancellationToken);
 
-    var offeringExists = await _dataStore.ExistsByGroupAndSubjectAsync(request.TenantId, request.GroupId, request.SubjectId, cancellationToken);
+    var offeringExists = await _dataStore.ExistsByGroupAndSubjectAsync(tenantId, request.GroupId, request.SubjectId, cancellationToken);
 
     if (offeringExists)
     {
       throw new AcademicOfferingAlreadyExistsException(request.GroupId, request.SubjectId);
     }
 
-    var academicOffering = new AcademicOffering(request.TenantId, request.GroupId, request.SubjectId, request.AcademicLoadId, request.OfferingStatus);
+    var academicOffering = new AcademicOffering(tenantId, request.GroupId, request.SubjectId, request.AcademicLoadId, request.OfferingStatus);
 
     await _classHoursCalculator.RecalculateAsync(academicLoad, academicOffering, cancellationToken);
 

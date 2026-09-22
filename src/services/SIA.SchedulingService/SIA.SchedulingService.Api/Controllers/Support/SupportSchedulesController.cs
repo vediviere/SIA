@@ -1,15 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SIA.SchedulingService.Application.Common.Exceptions.SupportSchedules;
 using SIA.SchedulingService.Application.DTOs.SupportSchedules;
+using SIA.SchedulingService.Application.Interfaces;
 using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.UseCases.SupportSchedules;
 using SIA.SchedulingService.Contracts.Requests.SupportSchedules;
 using SIA.SchedulingService.Contracts.Responses.SupportSchedules;
 using SIA.SchedulingService.Domain.Entities;
 
+
 namespace SIA.SchedulingService.Api.Controllers.Support;
 
+[Authorize]
 [ApiController]
 [Route("api/support-schedules")]
 public sealed class SupportSchedulesController : ControllerBase
@@ -19,28 +23,32 @@ public sealed class SupportSchedulesController : ControllerBase
     private readonly SoftDeleteSupportScheduleUseCase _softDeleteSupportScheduleUseCase;
     private readonly RestoreSupportScheduleUseCase _restoreSupportScheduleUseCase;
     private readonly ISupportScheduleQueries _supportScheduleQueries;
+    private readonly ITenantContext _tenantContext;
 
     public SupportSchedulesController(
         CreateSupportScheduleUseCase createSupportScheduleUseCase,
         UpdateSupportScheduleUseCase updateSupportScheduleUseCase,
         SoftDeleteSupportScheduleUseCase softDeleteSupportScheduleUseCase,
         RestoreSupportScheduleUseCase restoreSupportScheduleUseCase,
-        ISupportScheduleQueries supportScheduleQueries)
+        ISupportScheduleQueries supportScheduleQueries,
+        ITenantContext tenantContext)
     {
         _createSupportScheduleUseCase = createSupportScheduleUseCase;
         _updateSupportScheduleUseCase = updateSupportScheduleUseCase;
         _softDeleteSupportScheduleUseCase = softDeleteSupportScheduleUseCase;
         _restoreSupportScheduleUseCase = restoreSupportScheduleUseCase;
         _supportScheduleQueries = supportScheduleQueries;
+        _tenantContext = tenantContext;
     }
 
     [HttpGet("Filter")]
     [ProducesResponseType(typeof(IReadOnlyCollection<SupportSchedule>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyCollection<SupportSchedule>>> SearchAsync([FromQuery] SupportScheduleFilter filter, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var secureFilter = new SupportScheduleFilter
         {
-            TenantId = filter.TenantId,
+            TenantId = tenantId,
             SupportHourId = filter.SupportHourId,
             ClassroomLabId = filter.ClassroomLabId,
             AcademicPeriodId = filter.AcademicPeriodId,
@@ -54,11 +62,13 @@ public sealed class SupportSchedulesController : ControllerBase
         return Ok(supportSchedules);
     }
 
-    [HttpGet("{tenantId:guid}/{id:guid}")]
+    [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(SupportSchedule), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SupportSchedule>> GetByIdAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<SupportSchedule>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var supportSchedule = await _supportScheduleQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
         if (supportSchedule == null)
@@ -72,25 +82,29 @@ public sealed class SupportSchedulesController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(CreateSupportScheduleResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<CreateSupportScheduleResponse>> CreateAsync([FromBody] CreateSupportScheduleRequest request, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
 
-        var response = await _createSupportScheduleUseCase.ExecuteAsync(request, correlationId, cancellationToken);
+        var response = await _createSupportScheduleUseCase.ExecuteAsync(tenantId, request, correlationId, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
-    [HttpPut("{tenantId:guid}/{id:guid}")]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateSupportScheduleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<UpdateSupportScheduleResponse>> UpdateAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, [FromBody] UpdateSupportScheduleRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UpdateSupportScheduleResponse>> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateSupportScheduleRequest request, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
@@ -105,11 +119,13 @@ public sealed class SupportSchedulesController : ControllerBase
         return Ok(response);
     }
 
-    [HttpDelete("{tenantId:guid}/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> SoftDeleteAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> SoftDeleteAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());
@@ -119,11 +135,13 @@ public sealed class SupportSchedulesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("{tenantId:guid}/{id:guid}/restore")]
+    [HttpPatch("{id:guid}/restore")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> RestoreAsync([FromRoute] Guid tenantId, [FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> RestoreAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
+        var tenantId = _tenantContext.TenantId;
         var correlationId = ResolveCorrelationId();
 
         Response.Headers.Append("X-Correlation-Id", correlationId.ToString());

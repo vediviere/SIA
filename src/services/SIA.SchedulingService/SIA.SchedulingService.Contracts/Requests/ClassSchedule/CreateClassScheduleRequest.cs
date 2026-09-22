@@ -2,7 +2,6 @@
 
 public sealed record CreateClassScheduleRequest
 {
-    public required Guid TenantId { get; init; }
     public required Guid OfferingId { get; init; }
     public required Guid ClassroomLabId { get; init; }
     public required Guid AcademicPeriodId { get; init; }

@@ -23,13 +23,14 @@ public sealed class ValidateTeacherEligibilityUseCase
     }
 
     public async Task<ValidateTeacherEligibilityResponse> ExecuteAsync(
+        Guid tenantId,
         ValidateTeacherEligibilityRequest request,
         CancellationToken cancellationToken)
     {
         var reasons = new List<TeacherEligibilityFailureReason>();
 
         var teacher = await _academicStaffServiceClient.GetTeacherAsync(
-            request.TenantId, request.TeacherId, cancellationToken);
+            tenantId, request.TeacherId, cancellationToken);
 
         if (teacher is null || !teacher.Status)
         {
@@ -43,12 +44,12 @@ public sealed class ValidateTeacherEligibilityUseCase
         }
 
         var offering = await _academicOfferingQueries.GetByIdAsync(
-            request.TenantId, request.AcademicOfferingId, cancellationToken);
+            tenantId, request.AcademicOfferingId, cancellationToken);
 
         if (offering is not null)
         {
             var assignedHours = await _academicOfferingQueries.GetAssignedClassHoursAsync(
-                request.TenantId,
+                tenantId,
                 request.TeacherId,
                 request.AcademicPeriodId,
                 request.AcademicOfferingId,
@@ -63,7 +64,7 @@ public sealed class ValidateTeacherEligibilityUseCase
         }
 
         var group = await _groupQueries.GetByIdAsync(
-            request.TenantId, request.GroupId, cancellationToken);
+            tenantId, request.GroupId, cancellationToken);
 
         if (group is not null && teacher.ProgramId.HasValue && teacher.ProgramId != group.EducationalProgramId)
         {

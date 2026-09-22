@@ -2,7 +2,6 @@
 
 public sealed record CreateSupportScheduleRequest
 {
-    public required Guid TenantId { get; init; }
     public required Guid SupportHourId { get; init; }
     public required Guid ClassroomLabId { get; init; }
     public required Guid AcademicPeriodId { get; init; }

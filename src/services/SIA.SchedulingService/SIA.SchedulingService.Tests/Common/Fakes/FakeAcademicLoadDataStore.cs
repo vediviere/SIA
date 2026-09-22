@@ -19,7 +19,14 @@ public sealed class FakeAcademicLoadDataStore : IAcademicLoadDataStore
     public AcademicLoadActivatedIntegrationEvent? AddedActivatedEvent { get; private set; }
     public AcademicLoadDeactivatedIntegrationEvent? AddedDeactivatedEvent { get; private set; }
 
-    public Task<AcademicLoad?> GetByIdAsync(Guid tenantId, Guid academicLoadId, CancellationToken cancellationToken) => Task.FromResult(_academicLoadReturn);
+    public Task<AcademicLoad?> GetByIdAsync(Guid tenantId,Guid academicLoadId,CancellationToken cancellationToken)
+    {
+        if (_academicLoadReturn is null || _academicLoadReturn.TenantId != tenantId || _academicLoadReturn.Id != academicLoadId)
+        {
+            return Task.FromResult<AcademicLoad?>(null);
+        }
+        return Task.FromResult<AcademicLoad?>(_academicLoadReturn);
+    }
     public Task AddAcademicLoadWithOutboxAsync(AcademicLoad academicLoad, AcademicLoadCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         AddedAcademicLoad = academicLoad;

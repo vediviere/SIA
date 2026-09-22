@@ -18,12 +18,12 @@ public sealed class CreateAcademicLoadUseCase
     _proposalValidator = proposalValidator;
   }
 
-  public async Task<CreateAcademicLoadResponse> ExecuteAsync(CreateAcademicLoadRequest request, Guid correlationId, CancellationToken cancellationToken)
+  public async Task<CreateAcademicLoadResponse> ExecuteAsync(Guid tenantId, CreateAcademicLoadRequest request, Guid correlationId, CancellationToken cancellationToken)
   {
-    await _proposalValidator.EnsureEditableAsync(request.TenantId, request.ProposalId, request.AcademicPeriodId, cancellationToken);
+    await _proposalValidator.EnsureEditableAsync(tenantId, request.ProposalId, request.AcademicPeriodId, cancellationToken);
 
     var academicLoad = new AcademicLoad(
-        request.TenantId,
+        tenantId,
         request.ProposalId,
         request.TeacherId,
         request.DivisionHeadId,

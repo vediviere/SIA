@@ -29,6 +29,10 @@ public sealed class FakeClassroomLabDataStore : IClassroomLabDataStore
 
     public Task<ClassroomLab?> GetClassroomLabByIdAsync(Guid tenantId, Guid classroomLabId, CancellationToken cancellationToken)
     {
+        if (_existingLab is null || _existingLab.TenantId != tenantId || _existingLab.Id != classroomLabId)
+        {
+            return Task.FromResult<ClassroomLab?>(null);
+        }
         return Task.FromResult(_existingLab);
     }
 

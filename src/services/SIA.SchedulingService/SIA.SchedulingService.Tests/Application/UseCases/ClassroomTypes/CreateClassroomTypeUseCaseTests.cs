@@ -20,13 +20,12 @@ public sealed class CreateClassroomTypeUseCaseTests
 
         var request = new CreateClassroomTypeRequest
         {
-            TenantId = tenantId,
             Code = "LAB-COMP",
             Name = "Laboratorio de Cómputo",
             Description = "Desc"
         };
 
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, response.Id);
         Assert.Equal(tenantId, response.TenantId);
@@ -41,6 +40,29 @@ public sealed class CreateClassroomTypeUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdIsDifferent_ShouldHandleContextProperly()
+    {
+        var tenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+        var dataStore = new FakeClassroomTypeDataStore();
+        var useCase = new CreateClassroomTypeUseCase(dataStore);
+
+        var request = new CreateClassroomTypeRequest
+        {
+            Code = "LAB-COMP",
+            Name = "Laboratorio de Cómputo",
+            Description = "Desc"
+        };
+
+        var response = await useCase.ExecuteAsync(differentTenantId, request, correlationId, CancellationToken.None);
+
+        Assert.Equal(differentTenantId, response.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedType.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedEvent.TenantId);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenNameAlreadyExists_ShouldThrowDuplicateClassroomTypeNameException()
     {
         var dataStore = new FakeClassroomTypeDataStore { NameExistsResult = true };
@@ -48,14 +70,13 @@ public sealed class CreateClassroomTypeUseCaseTests
 
         var request = new CreateClassroomTypeRequest
         {
-            TenantId = Guid.NewGuid(),
             Code = "LAB",
             Name = "Lab Existente",
             Description = "Desc"
         };
 
         await Assert.ThrowsAsync<DuplicateClassroomTypeNameException>(() =>
-            useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+            useCase.ExecuteAsync(Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
 
         Assert.Null(dataStore.AddedType);
         Assert.Null(dataStore.AddedEvent);

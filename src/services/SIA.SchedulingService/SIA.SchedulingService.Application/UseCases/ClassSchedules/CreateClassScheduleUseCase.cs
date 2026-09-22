@@ -19,12 +19,13 @@ public sealed class CreateClassScheduleUseCase
     }
 
     public async Task<CreateClassScheduleResponse> ExecuteAsync(
+        Guid tenantId,
         CreateClassScheduleRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var classSchedule = new ClassSchedule(
-            request.TenantId,
+            tenantId,
             request.OfferingId,
             request.ClassroomLabId,
             request.AcademicPeriodId,

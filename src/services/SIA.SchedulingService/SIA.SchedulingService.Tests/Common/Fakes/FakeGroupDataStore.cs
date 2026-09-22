@@ -20,7 +20,14 @@ public sealed class FakeGroupDataStore : IGroupDataStore
     public GroupActivateIntegrationEvent? AddedActivatedEvent { get; private set; }
     public GroupDeactivatedIntegrationEvent? AddedDeactivatedEvent { get; private set; }
 
-    public Task<Group?> GetByIdAsync(Guid tenantId, Guid groupId, CancellationToken cancellationToken) => Task.FromResult(_groupReturn);
+    public Task<Group?> GetByIdAsync(Guid tenantId, Guid groupId, CancellationToken cancellationToken)
+    {
+        if (_groupReturn is null || _groupReturn.TenantId != tenantId || _groupReturn.Id != groupId)
+        {
+            return Task.FromResult<Group?>(null);
+        }
+        return Task.FromResult(_groupReturn);
+    }
     public Task<bool> GroupExistsAsync(Guid tenantId, Guid educationalProgramId, string shift, string groupName, CancellationToken cancellationToken) => Task.FromResult(GroupExistsResult);
     public Task AddGroupWithOutboxAsync(Group group, GroupCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {

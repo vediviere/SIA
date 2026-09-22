@@ -31,7 +31,49 @@ public sealed class ActivateAcademicLoadUseCaseTests
     Assert.Equal(proposal.Id, dataStore.AddedActivatedEvent.ProposalId);
   }
 
-  [Fact]
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchAcademicLoad_ShouldThrowAcademicLoadNotFoundException()
+    {
+        var academicLoadTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var proposal = new Proposal(
+            academicLoadTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid());
+
+        var academicLoad = new AcademicLoad(
+            academicLoadTenantId,
+            proposal.Id,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            proposal.AcademicPeriodId,
+            "OF-2026-001",
+            DateTime.UtcNow,
+            20,
+            10,
+            DateTime.UtcNow);
+
+        academicLoad.Deactivate();
+
+        var dataStore = new FakeAcademicLoadDataStore(academicLoad);
+        var proposalValidator = new ProposalValidator(new FakeProposalDataStore(proposal));
+        var useCase = new ActivateAcademicLoadUseCase(dataStore, proposalValidator);
+
+        await Assert.ThrowsAsync<AcademicLoadNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                academicLoad.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.False(academicLoad.Status);
+        Assert.Null(dataStore.AddedActivatedEvent);
+    }
+
+    [Fact]
   public async Task ExecuteAsync_WhenAcademicLoadDoesNotExist_ShouldThrowAcademicLoadNotFoundException()
   {
     var dataStore = new FakeAcademicLoadDataStore();

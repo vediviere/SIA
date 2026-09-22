@@ -40,6 +40,44 @@ public sealed class UpdateClassroomTypeUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchType_ShouldThrowClassroomTypeNotFoundException()
+    {
+        var typeTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingType = new ClassroomType(
+            typeTenantId,
+            "LAB",
+            "Viejo Nombre",
+            "Desc");
+
+        var dataStore = new FakeClassroomTypeDataStore(existingType);
+        var useCase = new UpdateClassroomTypeUseCase(dataStore);
+
+        var request = new UpdateClassroomTypeRequest
+        {
+            Code = "LAB-NEW",
+            Name = "Nuevo Nombre",
+            Description = "Desc Actualizada"
+        };
+
+        await Assert.ThrowsAsync<ClassroomTypeNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingType.Id,
+                request,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.Equal("LAB", existingType.Code);
+        Assert.Equal("Viejo Nombre", existingType.Name);
+        Assert.Equal("Desc", existingType.Description);
+        Assert.Null(dataStore.UpdatedType);
+        Assert.Null(dataStore.UpdatedEvent);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenTypeDoesNotExist_ShouldThrowNotFoundException()
     {
         var dataStore = new FakeClassroomTypeDataStore(null);
