@@ -4,6 +4,7 @@ public static class InternalServiceConfiguration
 {
   public const string AcademicService = "AcademicService";
   public const string SchedulingService = "SchedulingService";
+  public const string WorkflowService = "WorkflowService";
 
   public static Uri GetRequiredBaseAddress(IConfiguration configuration, string serviceName)
   {
