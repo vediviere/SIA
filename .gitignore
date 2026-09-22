@@ -483,3 +483,4 @@ $RECYCLE.BIN/
 /deploy/compose
 /src/services/SIA.AcademicService/SIA.AcademicService.Api/appsettings.json
 /src/services/SIA.SchoolControlService/SIA.SchoolControlService.Api/appsettings.json
+/tests/Bff/SIA.AdminBff.Tests

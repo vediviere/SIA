@@ -1,4 +1,4 @@
-﻿using MassTransit;
+using MassTransit;
 using SIA.SchedulingService.Application.UseCases.AcademicLoadProposals;
 using SIA.WorkflowService.Contracts.IntegrationEvents.ReviewProcesses;
 
@@ -7,9 +7,9 @@ namespace SIA.SchedulingService.Infrastructure.MessageBus.Consumers.ReviewProces
 public sealed class CorrectionRequiredConsumer : IConsumer<CorrectionRequiredEvent>
 {
     private const string SourceService = "SIA.WorkflowService";
-    private readonly ApplyProposalRequiresCorrectionUseCase _useCase;
+    private readonly ApplyCorrectionUseCase _useCase;
 
-    public CorrectionRequiredConsumer(ApplyProposalRequiresCorrectionUseCase useCase)
+    public CorrectionRequiredConsumer(ApplyCorrectionUseCase useCase)
     {
         _useCase = useCase;
     }

@@ -272,12 +272,12 @@ builder.Services.AddScoped<SoftDeleteSupportActivityUseCase>();
 builder.Services.AddScoped<RestoreSupportActivityUseCase>();
 
 // UseCases: AcademicLoadProposals
-builder.Services.AddScoped<CreateProposalUseCase>();
-builder.Services.AddScoped<SubmitProposalForReviewUseCase>();
+builder.Services.AddScoped<CreateUseCase>();
+builder.Services.AddScoped<SubmitForReviewUseCase>();
 
 // UseCase de propuesta aprobado y para coreccion
-builder.Services.AddScoped<ApplyProposalApprovedUseCase>();
-builder.Services.AddScoped<ApplyProposalRequiresCorrectionUseCase>();
+builder.Services.AddScoped<ApplyApprovedUseCase>();
+builder.Services.AddScoped<ApplyCorrectionUseCase>();
 
 // ExternalServices: AcademicStaffService
 builder.Services.AddHttpClient<IAcademicStaffServiceClient, AcademicStaffServiceClient>(client =>

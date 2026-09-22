@@ -22,6 +22,9 @@ public sealed class ProposalConfiguration : IEntityTypeConfiguration<Proposal>
         .HasDefaultValue(ProposalStatus.Draft)
         .HasSentinel((ProposalStatus)0)
         .IsRequired();
+    builder.Property(proposal => proposal.ReviewVersion)
+        .HasDefaultValue(0)
+        .IsRequired();
     builder.Property(proposal => proposal.Status).IsRequired();
     builder.Property(proposal => proposal.CreatedAtUtc).IsRequired();
     builder.Property(proposal => proposal.UpdatedAtUtc);

@@ -424,6 +424,11 @@ namespace SIA.SchedulingService.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
+                    b.Property<int>("ReviewVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 

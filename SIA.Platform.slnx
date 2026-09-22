@@ -10,7 +10,6 @@
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/bff/">
-    <Project Path="src/bff/SIA.AdminBff.Tests/SIA.AdminBff.Tests.csproj" Id="b01663d6-98b4-4d6c-82c8-a448d2ecd572" />
     <Project Path="src/bff/SIA.AdminBff/SIA.AdminBff.csproj" />
     <Project Path="src/bff/SIA.MobileBff/SIA.MobileBff.csproj" />
     <Project Path="src/bff/SIA.StudentBff/SIA.StudentBff.csproj" />
@@ -129,6 +128,14 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="tests/building-blocks/SIA.BuildingBlocks.Messaging.Tests/SIA.BuildingBlocks.Messaging.Tests.csproj" Id="ab8e1d54-b58a-442c-89b8-03af91c504dc" />
+    <Project Path="tests/integration/SIA.WorkflowService.IntegrationTests/SIA.WorkflowService.IntegrationTests.csproj" Id="bd03ebb3-5ae2-46e4-b1e2-b037dbcb1e76" />
+  </Folder>
+  <Folder Name="/test/Architecture/">
+    <Project Path="tests/architecture/SIA.ArchitectureTests/SIA.ArchitectureTests.csproj" />
+  </Folder>
+  <Folder Name="/test/BFF/">
+    <Project Path="tests/Bff/SIA.AdminBff.Tests/SIA.AdminBff.Tests.csproj" />
+    <Project Path="tests/Bff/SIA.TeacherBff.Tests/SIA.TeacherBff.Tests.csproj" Id="9823dab6-f599-4729-b42d-94ebcd9cfabd" />
   </Folder>
   <Folder Name="/test/Docs/">
     <File Path="tests/README.md" />

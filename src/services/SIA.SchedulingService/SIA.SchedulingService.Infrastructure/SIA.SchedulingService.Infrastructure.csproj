@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SIA.WorkflowService\SIA.WorkflowService.Infrastructure\SIA.WorkflowService.Infrastructure.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Application\SIA.SchedulingService.Application.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Domain\SIA.SchedulingService.Domain.csproj" />
     <ProjectReference Include="..\SIA.SchedulingService.Contracts\SIA.SchedulingService.Contracts.csproj" />
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Infrastructure\SIA.BuildingBlocks.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Messaging\SIA.BuildingBlocks.Messaging.csproj" />
+    <ProjectReference Include="..\..\SIA.WorkflowService\SIA.WorkflowService.Contracts\SIA.WorkflowService.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
