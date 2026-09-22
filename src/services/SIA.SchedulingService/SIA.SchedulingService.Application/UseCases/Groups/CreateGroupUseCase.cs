@@ -17,12 +17,12 @@ public sealed class CreateGroupUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<CreateGroupResponse> ExecuteAsync(CreateGroupRequest request, Guid correlationId, CancellationToken cancellationToken)
+    public async Task<CreateGroupResponse> ExecuteAsync(Guid tenantId, CreateGroupRequest request, Guid correlationId, CancellationToken cancellationToken)
     {
         var normalizedName = request.GroupName.Trim().ToUpperInvariant();
         var normalidedShift = request.Shift.Trim().ToUpperInvariant();
 
-        var groupExists = await _dataStore.GroupExistsAsync(request.TenantId, request.EducationalProgramId, request.Shift, request.GroupName, cancellationToken);
+        var groupExists = await _dataStore.GroupExistsAsync(tenantId, request.EducationalProgramId, request.Shift, request.GroupName, cancellationToken);
 
         if (groupExists)
         {
@@ -30,7 +30,7 @@ public sealed class CreateGroupUseCase
         }
 
         var group = new Group(
-            request.TenantId,
+            tenantId,
             request.EducationalProgramId,
             normalizedName,
             normalidedShift,

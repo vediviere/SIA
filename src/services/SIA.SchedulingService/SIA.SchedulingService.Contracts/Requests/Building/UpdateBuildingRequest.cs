@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIA.SchedulingService.Contracts.Requests.Building;
+﻿namespace SIA.SchedulingService.Contracts.Requests.Building;
 
 public sealed record UpdateBuildingRequest
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIA.SchedulingService.Application.DTOs.ClassSchedules;
+﻿namespace SIA.SchedulingService.Application.DTOs.ClassSchedules;
 
 public sealed record ClassScheduleFilter
 {

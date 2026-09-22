@@ -22,7 +22,6 @@ public sealed class CreateAcademicLoadUseCaseTests
     var useCase = new CreateAcademicLoadUseCase(dataStore, proposalValidator);
     var request = new CreateAcademicLoadRequest
     {
-      TenantId = tenantId,
       ProposalId = proposal.Id,
       TeacherId = Guid.NewGuid(),
       DivisionHeadId = Guid.NewGuid(),
@@ -32,7 +31,7 @@ public sealed class CreateAcademicLoadUseCaseTests
       AssignmentDate = DateTime.UtcNow
     };
 
-    var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+    var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
     Assert.Equal(tenantId, response.TenantId);
     Assert.Equal(proposal.Id, response.ProposalId);
@@ -49,7 +48,49 @@ public sealed class CreateAcademicLoadUseCaseTests
     Assert.Equal(correlationId, dataStore.AddedCreatedEvent.CorrelationId);
   }
 
-  [Fact]
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchProposal_ShouldThrowProposalNotEditableException()
+    {
+        var proposalTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var academicPeriodId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var proposal = new Proposal(
+            proposalTenantId,
+            Guid.NewGuid(),
+            academicPeriodId,
+            Guid.NewGuid());
+
+        var dataStore = new FakeAcademicLoadDataStore();
+        var proposalValidator = new ProposalValidator(new FakeProposalDataStore(proposal));
+        var useCase = new CreateAcademicLoadUseCase(dataStore, proposalValidator);
+
+        var request = new CreateAcademicLoadRequest
+        {
+            ProposalId = proposal.Id,
+            TeacherId = Guid.NewGuid(),
+            DivisionHeadId = Guid.NewGuid(),
+            AcademicPeriodId = academicPeriodId,
+            OfficialLetterNumber = "OF-2026-CROSS",
+            ProposedDate = DateTime.UtcNow,
+            AssignmentDate = DateTime.UtcNow
+        };
+
+        await Assert.ThrowsAsync<ProposalNotEditableException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                request,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.Null(dataStore.AddedAcademicLoad);
+        Assert.Null(dataStore.AddedCreatedEvent);
+    }
+
+
+    [Fact]
   public async Task ExecuteAsync_WhenProposalIsNotEditable_ShouldThrowProposalNotEditableException()
   {
     var dataStore = new FakeAcademicLoadDataStore();
@@ -57,7 +98,6 @@ public sealed class CreateAcademicLoadUseCaseTests
     var useCase = new CreateAcademicLoadUseCase(dataStore, proposalValidator);
     var request = new CreateAcademicLoadRequest
     {
-      TenantId = Guid.NewGuid(),
       ProposalId = Guid.NewGuid(),
       TeacherId = Guid.NewGuid(),
       DivisionHeadId = Guid.NewGuid(),
@@ -68,7 +108,7 @@ public sealed class CreateAcademicLoadUseCaseTests
     };
 
     await Assert.ThrowsAsync<ProposalNotEditableException>(() =>
-      useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+      useCase.ExecuteAsync(Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
 
     Assert.Null(dataStore.AddedAcademicLoad);
     Assert.Null(dataStore.AddedCreatedEvent);

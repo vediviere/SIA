@@ -1,4 +1,6 @@
-﻿using SIA.SchedulingService.Application.Common.Exceptions.SupportSchedules;
+﻿using SIA.SchedulingService.Application.Common.Exceptions.SupportActivity;
+using SIA.SchedulingService.Application.Common.Exceptions.SupportSchedules;
+using SIA.SchedulingService.Application.UseCases.SupportActivities;
 using SIA.SchedulingService.Application.UseCases.SupportSchedules;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Tests.Common.Fakes;
@@ -27,6 +29,33 @@ public sealed class SoftDeleteSupportScheduleUseCaseTests
         Assert.Equal(existingSchedule.Id, dataStore.DeletedEvent.SupportScheduleId);
         Assert.Equal(correlationId, dataStore.DeletedEvent.CorrelationId);
         Assert.Equal(1, dataStore.DeletedEvent.Version);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchActivity_ShouldThrowSupportActivityNotFoundException()
+    {
+        var activityTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingActivity = new SupportActivity(
+            activityTenantId,
+            "Tutoría",
+            "Obs");
+
+        var dataStore = new FakeSupportActivityDataStore(existingActivity);
+        var useCase = new SoftDeleteSupportActivityUseCase(dataStore);
+
+        await Assert.ThrowsAsync<SupportActivityNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingActivity.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.True(existingActivity.Status);
+        Assert.Null(dataStore.DeletedActivity);
+        Assert.Null(dataStore.DeletedEvent);
     }
 
     [Fact]

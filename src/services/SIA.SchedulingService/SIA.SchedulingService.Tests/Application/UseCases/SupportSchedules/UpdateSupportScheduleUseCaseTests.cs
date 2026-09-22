@@ -1,5 +1,8 @@
-﻿using SIA.SchedulingService.Application.Common.Exceptions.SupportSchedules;
+﻿using SIA.SchedulingService.Application.Common.Exceptions.SupportActivity;
+using SIA.SchedulingService.Application.Common.Exceptions.SupportSchedules;
+using SIA.SchedulingService.Application.UseCases.SupportActivities;
 using SIA.SchedulingService.Application.UseCases.SupportSchedules;
+using SIA.SchedulingService.Contracts.Requests.SupportActivity;
 using SIA.SchedulingService.Contracts.Requests.SupportSchedules;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Tests.Common.Fakes;
@@ -40,6 +43,41 @@ public sealed class UpdateSupportScheduleUseCaseTests
         Assert.Equal(existingSchedule.Id, dataStore.UpdatedEvent.SupportScheduleId);
         Assert.Equal(correlationId, dataStore.UpdatedEvent.CorrelationId);
         Assert.Equal(1, dataStore.UpdatedEvent.Version);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchActivity_ShouldThrowSupportActivityNotFoundException()
+    {
+        var activityTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingActivity = new SupportActivity(
+            activityTenantId,
+            "Tutoría",
+            "Observación inicial");
+
+        var dataStore = new FakeSupportActivityDataStore(existingActivity);
+        var useCase = new UpdateSupportActivityUseCase(dataStore);
+
+        var request = new UpdateSupportActivityRequest
+        {
+            Activity = "Tutoría Actualizada",
+            Observation = "Observación editada"
+        };
+
+        await Assert.ThrowsAsync<SupportActivityNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingActivity.Id,
+                request,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.Equal("Tutoría", existingActivity.Activity);
+        Assert.Equal("Observación inicial", existingActivity.Observation);
+        Assert.Null(dataStore.UpdatedActivity);
+        Assert.Null(dataStore.UpdatedEvent);
     }
 
     [Fact]

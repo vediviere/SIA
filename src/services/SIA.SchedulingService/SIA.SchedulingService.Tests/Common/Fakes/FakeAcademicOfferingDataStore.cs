@@ -24,8 +24,15 @@ public sealed class FakeAcademicOfferingDataStore : IAcademicOfferingDataStore
   public int TotalClassHoursByAcademicLoad { get; set; }
 
   public Task<bool> ExistsByGroupAndSubjectAsync(Guid tenantId, Guid groupId, Guid subjectId, CancellationToken cancellationToken) => Task.FromResult(ExistsResult);
-  public Task<AcademicOffering?> GetByIdAsync(Guid tenantId, Guid offeringId, CancellationToken cancellationToken) => Task.FromResult(_offeringReturn);
-  public Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public Task<AcademicOffering?> GetByIdAsync(Guid tenantId, Guid offeringId, CancellationToken cancellationToken)
+    {
+        if (_offeringReturn is null || _offeringReturn.TenantId != tenantId || _offeringReturn.Id != offeringId)
+        {
+            return Task.FromResult<AcademicOffering?>(null);
+        }
+        return Task.FromResult<AcademicOffering?>(_offeringReturn);
+    }
+    public Task AddAcademicOfferingWithOutboxAsync(AcademicOffering academicOffering, AcademicLoad academicLoad, AcademicOfferingCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     AddedAcademicOffering = academicOffering;
     AddedCreatedEvent = integrationEvent;

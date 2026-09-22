@@ -25,9 +25,9 @@ public sealed class CreateTeachingSupportHoursUseCase
     _proposalValidator = proposalValidator;
   }
 
-  public async Task<CreateTeachingSupportHoursResponse> ExecuteAsync(CreateTeachingSupportHoursRequest request, Guid correlationId, CancellationToken cancellationToken)
+  public async Task<CreateTeachingSupportHoursResponse> ExecuteAsync(Guid tenantId, CreateTeachingSupportHoursRequest request, Guid correlationId, CancellationToken cancellationToken)
   {
-    var academicLoad = await _academicLoadDataStore.GetByIdAsync(request.TenantId, request.AcademicLoadId, cancellationToken);
+    var academicLoad = await _academicLoadDataStore.GetByIdAsync(tenantId, request.AcademicLoadId, cancellationToken);
 
     if (academicLoad is null)
     {
@@ -36,14 +36,14 @@ public sealed class CreateTeachingSupportHoursUseCase
 
     await _proposalValidator.EnsureEditableAsync(academicLoad, cancellationToken);
 
-    var exists = await _dataStore.ExistsByActivityAndAcademicLoadAsync(request.TenantId, request.ActivityId, request.AcademicLoadId, cancellationToken);
+    var exists = await _dataStore.ExistsByActivityAndAcademicLoadAsync(tenantId, request.ActivityId, request.AcademicLoadId, cancellationToken);
 
     if (exists)
     {
       throw new DuplicateTeachingSupportHoursException(request.ActivityId, request.AcademicLoadId);
     }
 
-    var teachingSupportHours = new TeachingSupportHour(request.TenantId, request.ActivityId, request.AcademicLoadId, request.Hours);
+    var teachingSupportHours = new TeachingSupportHour(tenantId, request.ActivityId, request.AcademicLoadId, request.Hours);
 
     await _supportHoursCalculator.RecalculateAsync(academicLoad, teachingSupportHours, cancellationToken);
 

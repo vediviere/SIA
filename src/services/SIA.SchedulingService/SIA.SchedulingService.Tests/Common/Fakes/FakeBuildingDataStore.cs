@@ -20,7 +20,14 @@ public sealed class FakeBuildingDataStore : IBuildingDataStore
     public BuildingActivatedIntegrationEvent? AddedActivatedEvent { get; private set; }
     public BuildingDeactivatedIntegrationEvent? AddedDeactivatedEvent { get; private set; }
 
-    public Task<Building?> GetByIdAsync(Guid tenantId, Guid buildingId, CancellationToken cancellationToken) => Task.FromResult(_buildingReturn);
+    public Task<Building?> GetByIdAsync(Guid tenantId, Guid buildingId, CancellationToken cancellationToken)
+    {
+        if (_buildingReturn is null || _buildingReturn.TenantId != tenantId || _buildingReturn.Id != buildingId)
+        {
+            return Task.FromResult<Building?>(null);
+        }
+        return Task.FromResult(_buildingReturn);
+    }
     public Task<bool> BuildingCodeExistsAsync(Guid tenantId, string code, CancellationToken cancellationToken) => Task.FromResult(CodeExistsResult);
     public Task AddBuildingWithOutboxAsync(Building building, BuildingCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {

@@ -16,11 +16,11 @@ public sealed class CreateBuildingUseCase
         _dataStore = dataStore;
     }
 
-    public async Task<CreateBuildingResponse> ExecuteAsync(CreateBuildingRequest request, Guid correlationId, CancellationToken cancellationToken)
+    public async Task<CreateBuildingResponse> ExecuteAsync(Guid tenantId, CreateBuildingRequest request, Guid correlationId, CancellationToken cancellationToken)
     {
         var normalizedCode = request.Code.Trim().ToUpperInvariant();
 
-        var codeExist = await _dataStore.BuildingCodeExistsAsync(request.TenantId, normalizedCode, cancellationToken);
+        var codeExist = await _dataStore.BuildingCodeExistsAsync(tenantId, normalizedCode, cancellationToken);
 
         if (codeExist)
         {
@@ -28,7 +28,7 @@ public sealed class CreateBuildingUseCase
         }
 
         var building = new Building(
-            request.TenantId,
+            tenantId,
             normalizedCode,
             request.Name,
             request.Description ?? string.Empty);

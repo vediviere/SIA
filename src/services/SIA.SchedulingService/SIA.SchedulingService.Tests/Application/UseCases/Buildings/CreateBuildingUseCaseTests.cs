@@ -18,12 +18,11 @@ public sealed class CreateBuildingUseCaseTests
 
         var request = new CreateBuildingRequest
         {
-            TenantId = tenantId,
             Code = "  a1  ",
             Name = "Edificio A",
             Description = "EDIFICIO A-ISIC"
         };
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         Assert.Equal(tenantId, response.TenantId);
         Assert.Equal("A1", response.Code);
@@ -49,15 +48,37 @@ public sealed class CreateBuildingUseCaseTests
 
         var request = new CreateBuildingRequest
         {
-            TenantId = Guid.NewGuid(),
             Code = "A1",
             Name = "Edificio A",
             Description = "EDIFICIO A-ISIC"
         };
-        await Assert.ThrowsAsync<DuplicateBuildingCodeException>(() => useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+        await Assert.ThrowsAsync<DuplicateBuildingCodeException>(() => useCase.ExecuteAsync(Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
 
         Assert.Null(dataStore.AddedBuilding);
         Assert.Null(dataStore.AddedCreatedEvent);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdIsDifferent_ShouldHandleContextProperly()
+    {
+        var tenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var dataStore = new FakeBuildingDataStore();
+        var useCase = new CreateBuildingUseCase(dataStore);
+
+        var request = new CreateBuildingRequest
+        {
+            Code = "A1",
+            Name = "Edificio A",
+            Description = "EDIFICIO A-ISIC"
+        };
+        var response = await useCase.ExecuteAsync(differentTenantId, request, correlationId, CancellationToken.None);
+
+        Assert.Equal(differentTenantId, response.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedBuilding.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedCreatedEvent.TenantId);
     }
 
     [Fact]
@@ -71,12 +92,11 @@ public sealed class CreateBuildingUseCaseTests
 
         var request = new CreateBuildingRequest
         {
-            TenantId = Guid.NewGuid(),
             Code = "A1",
             Name = "Edificio A",
             Description = null
         };
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(Guid.NewGuid(), request, correlationId, CancellationToken.None);
         Assert.Equal(string.Empty, response.Description);
 
         Assert.NotNull(dataStore.AddedBuilding);

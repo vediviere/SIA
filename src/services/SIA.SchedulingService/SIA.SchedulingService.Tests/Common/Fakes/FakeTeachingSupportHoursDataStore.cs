@@ -22,8 +22,15 @@ public sealed class FakeTeachingSupportHoursDataStore : ITeachingSupportHoursDat
   public AcademicLoad? SavedAcademicLoad { get; private set; }
 
   public Task<bool> ExistsByActivityAndAcademicLoadAsync(Guid tenantId, Guid activityId, Guid academicLoadId, CancellationToken cancellationToken) => Task.FromResult(ExistsResult);
-  public Task<TeachingSupportHour?> GetByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken) => Task.FromResult(_tshReturn);
-  public Task AddTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public Task<TeachingSupportHour?> GetByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken)
+    {
+        if (_tshReturn is null || _tshReturn.TenantId != tenantId || _tshReturn.Id != id)
+        {
+            return Task.FromResult<TeachingSupportHour?>(null);
+        }
+        return Task.FromResult(_tshReturn);
+    }
+    public Task AddTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     AddedTeachingSupportHours = teachingSupportHours;
     SavedAcademicLoad = academicLoad;

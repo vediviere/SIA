@@ -32,6 +32,36 @@ public sealed class RestoreClassroomTypeUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchType_ShouldThrowClassroomTypeNotFoundException()
+    {
+        var typeTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingType = new ClassroomType(
+            typeTenantId,
+            "LAB",
+            "Lab",
+            "Desc");
+
+        existingType.SoftDelete();
+
+        var dataStore = new FakeClassroomTypeDataStore(existingType);
+        var useCase = new RestoreClassroomTypeUseCase(dataStore);
+
+        await Assert.ThrowsAsync<ClassroomTypeNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingType.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.False(existingType.Status);
+        Assert.Null(dataStore.RestoredType);
+        Assert.Null(dataStore.RestoredEvent);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenTypeDoesNotExist_ShouldThrowNotFoundException()
     {
         var dataStore = new FakeClassroomTypeDataStore(null);

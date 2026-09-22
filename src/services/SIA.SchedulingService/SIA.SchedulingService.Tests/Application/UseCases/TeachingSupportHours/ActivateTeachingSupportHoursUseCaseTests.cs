@@ -41,7 +41,66 @@ public sealed class ActivateTeachingSupportHoursUseCaseTests
     Assert.Same(academicLoad, dataStore.SavedAcademicLoad);
   }
 
-  [Fact]
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchSupportHours_ShouldThrowTeachingSupportHoursNotFoundException()
+    {
+        var supportHoursTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var proposal = new Proposal(
+            supportHoursTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid());
+
+        var academicLoad = new AcademicLoad(
+            supportHoursTenantId,
+            proposal.Id,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            proposal.AcademicPeriodId,
+            "OF-2026-001",
+            DateTime.UtcNow,
+            0,
+            0,
+            DateTime.UtcNow);
+
+        var tsh = new TeachingSupportHour(
+            supportHoursTenantId,
+            Guid.NewGuid(),
+            academicLoad.Id,
+            5);
+
+        tsh.Deactivate();
+
+        var dataStore = new FakeTeachingSupportHoursDataStore(tsh);
+        var academicLoadDataStore = new FakeAcademicLoadDataStore(academicLoad);
+        var supportHoursCalculator = new AcademicLoadSupportHoursCalculator(
+            new FakeTeachingSupportHoursQueries());
+
+        var proposalValidator = new ProposalValidator(
+            new FakeProposalDataStore(proposal));
+
+        var useCase = new ActivateTeachingSupportHoursUseCase(
+            dataStore,
+            academicLoadDataStore,
+            supportHoursCalculator,
+            proposalValidator);
+
+        await Assert.ThrowsAsync<TeachingSupportHoursNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                tsh.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.False(tsh.Status);
+        Assert.Null(dataStore.AddedActivatedEvent);
+        Assert.Null(dataStore.SavedAcademicLoad);
+    }
+
+    [Fact]
   public async Task ExecuteAsync_WhenDoesNotExist_ShouldThrowTeachingSupportHoursNotFoundException()
   {
     var dataStore = new FakeTeachingSupportHoursDataStore(null);

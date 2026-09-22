@@ -43,7 +43,56 @@ public sealed class UpdateAcademicLoadUseCaseTests
     Assert.Equal(correlationId, dataStore.AddedUpdatedEvent.CorrelationId);
   }
 
-  [Fact]
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchAcademicLoad_ShouldThrowAcademicLoadNotFoundException()
+    {
+        var academicLoadTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var proposal = new Proposal(
+            academicLoadTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid());
+
+        var academicLoad = new AcademicLoad(
+            academicLoadTenantId,
+            proposal.Id,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            proposal.AcademicPeriodId,
+            "OF-OLD-100",
+            DateTime.UtcNow,
+            15,
+            5,
+            DateTime.UtcNow);
+
+        var dataStore = new FakeAcademicLoadDataStore(academicLoad);
+        var proposalValidator = new ProposalValidator(new FakeProposalDataStore(proposal));
+        var useCase = new UpdateAcademicLoadUseCase(dataStore, proposalValidator);
+
+        var request = new UpdateAcademicLoadRequest
+        {
+            OfficialLetterNumber = "OF-NEW-200",
+            ProposedDate = DateTime.UtcNow,
+            AssignmentDate = DateTime.UtcNow
+        };
+
+        await Assert.ThrowsAsync<AcademicLoadNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                academicLoad.Id,
+                request,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.Equal("OF-OLD-100", academicLoad.OfficialLetterNumber);
+        Assert.Null(dataStore.UpdatedAcademicLoad);
+        Assert.Null(dataStore.AddedUpdatedEvent);
+    }
+
+    [Fact]
   public async Task ExecuteAsync_WhenAcademicLoadDoesNotExist_ShouldThrowAcademicLoadNotFoundException()
   {
     var dataStore = new FakeAcademicLoadDataStore();

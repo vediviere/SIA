@@ -20,12 +20,11 @@ public sealed class CreateSupportActivityUseCaseTests
 
         var request = new CreateSupportActivityRequest
         {
-            TenantId = tenantId,
             Activity = "Tutoría Académica",
             Observation = "Observación de prueba"
         };
 
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         Assert.NotEqual(Guid.Empty, response.Id);
         Assert.Equal(tenantId, response.TenantId);
@@ -38,5 +37,27 @@ public sealed class CreateSupportActivityUseCaseTests
         Assert.Equal(tenantId, dataStore.AddedEvent.TenantId);
         Assert.Equal(correlationId, dataStore.AddedEvent.CorrelationId);
         Assert.Equal(1, dataStore.AddedEvent.Version);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdIsDifferent_ShouldHandleContextProperly()
+    {
+        var tenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+        var dataStore = new FakeSupportActivityDataStore();
+        var useCase = new CreateSupportActivityUseCase(dataStore);
+
+        var request = new CreateSupportActivityRequest
+        {
+            Activity = "Tutoría Académica",
+            Observation = "Observación de prueba"
+        };
+
+        var response = await useCase.ExecuteAsync(differentTenantId, request, correlationId, CancellationToken.None);
+
+        Assert.Equal(differentTenantId, response.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedActivity.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedEvent.TenantId);
     }
 }

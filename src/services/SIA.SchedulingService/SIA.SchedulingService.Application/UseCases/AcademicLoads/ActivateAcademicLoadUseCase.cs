@@ -25,7 +25,7 @@ public sealed class ActivateAcademicLoadUseCase
       throw new AcademicLoadNotFoundException(id);
     }
 
-    await _proposalValidator.EnsureEditableAsync(academicLoad.TenantId, academicLoad.ProposalId, academicLoad.AcademicPeriodId, cancellationToken);
+    await _proposalValidator.EnsureEditableAsync(tenantId, academicLoad.ProposalId, academicLoad.AcademicPeriodId, cancellationToken);
 
     academicLoad.Activate();
 

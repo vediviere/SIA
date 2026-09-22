@@ -11,7 +11,6 @@ public sealed class ActivateGroupUseCaseTests
     public async Task ExecuteAsync_WithValidGroup_ShouldActivateAndPublishEvent()
     {
         var tenantId = Guid.NewGuid();
-        var groupId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
         var group = new Group(tenantId, Guid.NewGuid(), "GRUPO A-ISIC", "MATUTINO", 30);
@@ -20,7 +19,7 @@ public sealed class ActivateGroupUseCaseTests
         var dataStore = new FakeGroupDataStore(group);
         var useCase = new ActivateGroupUseCase(dataStore);
 
-        await useCase.ExecuteAsync(tenantId, groupId, correlationId, CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, group.Id, correlationId, CancellationToken.None);
 
         Assert.True(group.Status);
         Assert.NotNull(group.UpdatedAtUtc);
@@ -28,6 +27,36 @@ public sealed class ActivateGroupUseCaseTests
         Assert.NotNull(dataStore.AddedActivatedEvent);
         Assert.Equal(correlationId, dataStore.AddedActivatedEvent.CorrelationId);
         Assert.True(dataStore.AddedActivatedEvent.Status);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchGroup_ShouldThrowGroupNotFoundException()
+    {
+        var groupTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var group = new Group(
+            groupTenantId,
+            Guid.NewGuid(),
+            "GRUPO A-ISIC",
+            "MATUTINO",
+            30);
+
+        group.Deactivate();
+
+        var dataStore = new FakeGroupDataStore(group);
+        var useCase = new ActivateGroupUseCase(dataStore);
+
+        await Assert.ThrowsAsync<GroupNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                group.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.False(group.Status);
+        Assert.Null(dataStore.AddedActivatedEvent);
     }
 
     [Fact]

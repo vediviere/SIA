@@ -30,6 +30,37 @@ public sealed class SoftDeleteClassroomLabUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchLab_ShouldThrowClassroomLabNotFoundException()
+    {
+        var labTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingLab = new ClassroomLab(
+            labTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "LAB-01",
+            "Lab",
+            30,
+            "Desc");
+
+        var dataStore = new FakeClassroomLabDataStore(existingLab);
+        var useCase = new SoftDeleteClassroomLabUseCase(dataStore);
+
+        await Assert.ThrowsAsync<ClassroomLabNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingLab.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.True(existingLab.Status);
+        Assert.Null(dataStore.DeletedClassroomLab);
+        Assert.Null(dataStore.DeletedEvent);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenLabDoesNotExist_ShouldThrowNotFoundException()
     {
         var dataStore = new FakeClassroomLabDataStore(null);

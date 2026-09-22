@@ -27,6 +27,10 @@ public sealed class FakeSupportActivityDataStore : ISupportActivityDataStore
 
     public Task<SupportActivity?> GetSupportActivityByIdAsync(Guid tenantId, Guid supportActivityId, CancellationToken cancellationToken)
     {
+        if (_existingActivity is null || _existingActivity.TenantId != tenantId || _existingActivity.Id != supportActivityId)
+        {
+            return Task.FromResult<SupportActivity?>(null);
+        }
         return Task.FromResult(_existingActivity);
     }
 

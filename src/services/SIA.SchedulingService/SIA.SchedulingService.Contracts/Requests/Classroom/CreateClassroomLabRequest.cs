@@ -2,7 +2,6 @@
 
 public sealed record CreateClassroomLabRequest
 {
-    public required Guid TenantId { get; init; }
     public required Guid BuildingId { get; init; }
     public required Guid ClassroomTypeId { get; init; }
     public required string Code { get; init; }

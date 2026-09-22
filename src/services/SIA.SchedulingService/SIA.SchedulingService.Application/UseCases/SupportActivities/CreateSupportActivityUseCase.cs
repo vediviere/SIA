@@ -19,12 +19,13 @@ public sealed class CreateSupportActivityUseCase
     }
 
     public async Task<CreateSupportActivityResponse> ExecuteAsync(
+        Guid tenantId,
         CreateSupportActivityRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var supportActivity = new SupportActivity(
-            request.TenantId,
+            tenantId,
             request.Activity,
             request.Observation);
 

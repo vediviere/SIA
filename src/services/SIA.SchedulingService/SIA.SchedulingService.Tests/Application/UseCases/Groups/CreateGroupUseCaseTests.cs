@@ -19,13 +19,12 @@ public sealed class CreateGroupUseCaseTests
 
         var request = new CreateGroupRequest
         {
-            TenantId = tenantId,
             EducationalProgramId = educationalProgramId,
             GroupName = "  grupo a-isic  ",
             Shift = "  vespertino  ",
             Capacity = 9
         };
-        var response = await useCase.ExecuteAsync(request, correlationId, CancellationToken.None);
+        var response = await useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None);
 
         Assert.Equal(tenantId, response.TenantId);
         Assert.Equal(educationalProgramId, response.EducationalProgramId);
@@ -47,6 +46,30 @@ public sealed class CreateGroupUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdIsDifferent_ShouldHandleContextProperly()
+    {
+        var tenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var dataStore = new FakeGroupDataStore();
+        var useCase = new CreateGroupUseCase(dataStore);
+
+        var request = new CreateGroupRequest
+        {
+            EducationalProgramId = Guid.NewGuid(),
+            GroupName = "GRUPO A-ISIC",
+            Shift = "VESPERTINO",
+            Capacity = 9
+        };
+        var response = await useCase.ExecuteAsync(differentTenantId, request, correlationId, CancellationToken.None);
+
+        Assert.Equal(differentTenantId, response.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedGroup.TenantId);
+        Assert.Equal(differentTenantId, dataStore.AddedCreatedEvent.TenantId);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenGroupAlreadyExists_ShouldThrowDuplicateGroupException()
     {
         var dataStore = new FakeGroupDataStore { GroupExistsResult = true };
@@ -54,13 +77,12 @@ public sealed class CreateGroupUseCaseTests
 
         var request = new CreateGroupRequest
         {
-            TenantId = Guid.NewGuid(),
             EducationalProgramId = Guid.NewGuid(),
             GroupName = "Grupo A-ISIC",
             Shift = "Vespertino",
             Capacity = 9
         };
-        await Assert.ThrowsAsync<DuplicateGroupException>(() => useCase.ExecuteAsync(request, Guid.NewGuid(), CancellationToken.None));
+        await Assert.ThrowsAsync<DuplicateGroupException>(() => useCase.ExecuteAsync(Guid.NewGuid(), request, Guid.NewGuid(), CancellationToken.None));
 
         Assert.Null(dataStore.AddedGroup);
         Assert.Null(dataStore.AddedCreatedEvent);

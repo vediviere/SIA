@@ -18,6 +18,7 @@ public sealed class CreateClassroomTypeUseCase
     }
 
     public async Task<CreateClassroomTypeResponse> ExecuteAsync(
+        Guid tenantId,
         CreateClassroomTypeRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
@@ -25,7 +26,7 @@ public sealed class CreateClassroomTypeUseCase
         var normalizedName = request.Name.Trim();
 
         var nameExists = await _dataStore.ClassroomTypeNameExistsAsync(
-            request.TenantId,
+            tenantId,
             normalizedName,
             cancellationToken);
 
@@ -35,7 +36,7 @@ public sealed class CreateClassroomTypeUseCase
         }
 
         var classroomType = new ClassroomType(
-            request.TenantId,
+            tenantId,
             request.Code,
             normalizedName,
             request.Description);

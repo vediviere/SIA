@@ -30,6 +30,37 @@ public sealed class SoftDeleteClassScheduleUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchSchedule_ShouldThrowClassScheduleNotFoundException()
+    {
+        var scheduleTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingSchedule = new ClassSchedule(
+            scheduleTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "MARTES",
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddHours(1));
+
+        var dataStore = new FakeClassScheduleDataStore(existingSchedule);
+        var useCase = new SoftDeleteClassScheduleUseCase(dataStore);
+
+        await Assert.ThrowsAsync<ClassScheduleNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingSchedule.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.True(existingSchedule.Status);
+        Assert.Null(dataStore.DeletedSchedule);
+        Assert.Null(dataStore.DeletedEvent);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenScheduleDoesNotExist_ShouldThrowNotFoundException()
     {
         var dataStore = new FakeClassScheduleDataStore(null);

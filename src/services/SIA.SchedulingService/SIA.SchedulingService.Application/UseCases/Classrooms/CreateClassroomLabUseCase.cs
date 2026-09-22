@@ -17,6 +17,7 @@ public sealed class CreateClassroomLabUseCase
     }
 
     public async Task<CreateClassroomLabResponse> ExecuteAsync(
+        Guid tenantId,
         CreateClassroomLabRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
@@ -24,7 +25,7 @@ public sealed class CreateClassroomLabUseCase
         var normalizedCode = request.Code.Trim().ToUpperInvariant();
 
         var codeExists = await _dataStore.ClassroomLabCodeExistsAsync(
-            request.TenantId,
+            tenantId,
             normalizedCode,
             cancellationToken);
 
@@ -34,7 +35,7 @@ public sealed class CreateClassroomLabUseCase
         }
 
         var classroomLab = new ClassroomLab(
-            request.TenantId,
+            tenantId,
             request.BuildingId,
             request.ClassroomTypeId,
             normalizedCode,

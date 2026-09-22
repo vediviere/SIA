@@ -32,6 +32,39 @@ public sealed class RestoreClassroomLabUseCaseTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WhenTenantIdDoesNotMatchLab_ShouldThrowClassroomLabNotFoundException()
+    {
+        var labTenantId = Guid.NewGuid();
+        var differentTenantId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var existingLab = new ClassroomLab(
+            labTenantId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "LAB-01",
+            "Lab",
+            30,
+            "Desc");
+
+        existingLab.SoftDelete();
+
+        var dataStore = new FakeClassroomLabDataStore(existingLab);
+        var useCase = new RestoreClassroomLabUseCase(dataStore);
+
+        await Assert.ThrowsAsync<ClassroomLabNotFoundException>(() =>
+            useCase.ExecuteAsync(
+                differentTenantId,
+                existingLab.Id,
+                correlationId,
+                CancellationToken.None));
+
+        Assert.False(existingLab.Status);
+        Assert.Null(dataStore.RestoredClassroomLab);
+        Assert.Null(dataStore.RestoredEvent);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_WhenLabDoesNotExist_ShouldThrowNotFoundException()
     {
         var dataStore = new FakeClassroomLabDataStore(null);

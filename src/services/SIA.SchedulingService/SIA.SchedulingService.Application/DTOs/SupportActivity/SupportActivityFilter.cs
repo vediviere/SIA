@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIA.SchedulingService.Application.DTOs.SupportActivity;
+﻿namespace SIA.SchedulingService.Application.DTOs.SupportActivity;
 
 public sealed record SupportActivityFilter
 {
