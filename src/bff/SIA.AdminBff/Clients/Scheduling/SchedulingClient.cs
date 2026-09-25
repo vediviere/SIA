@@ -7,88 +7,87 @@ namespace SIA.AdminBff.Clients.Scheduling;
 
 public sealed class SchedulingClient : ISchedulingClient
 {
-  private readonly HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
 
-  public SchedulingClient(HttpClient httpClient)
-  {
-    _httpClient = httpClient;
-  }
-
-  public async Task<IReadOnlyCollection<TeacherCandidateDto>> GetTeacherCandidatesAsync(Guid tenantId, Guid educationalProgramId, CancellationToken cancellationToken)
-  {
-    using var response = await _httpClient.GetAsync($"api/teacher-candidates?tenantId={tenantId}&programId={educationalProgramId}", cancellationToken);
-
-    response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
-
-    return await response.Content.ReadFromJsonAsync<IReadOnlyCollection<TeacherCandidateDto>>(cancellationToken: cancellationToken)
-        ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
-  }
-
-  public async Task<ProposalDto> CreateProposalAsync(Guid tenantId, Guid educationalProgramId, Guid academicPeriodId, Guid divisionHeadId, CancellationToken cancellationToken)
-  {
-    var request = new ProposalCreateDto
+    public SchedulingClient(HttpClient httpClient)
     {
-      TenantId = tenantId,
-      EducationalProgramId = educationalProgramId,
-      AcademicPeriodId = academicPeriodId,
-      DivisionHeadId = divisionHeadId
-    };
+        _httpClient = httpClient;
+    }
 
-    using var response = await _httpClient.PostAsJsonAsync("api/academic-load-proposals", request, cancellationToken);
+    public async Task<IReadOnlyCollection<TeacherCandidateDto>> GetTeacherCandidatesAsync(Guid educationalProgramId, CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.GetAsync($"api/teacher-candidates?programId={educationalProgramId}", cancellationToken);
 
-    response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
+        response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
-    return await response.Content.ReadFromJsonAsync<ProposalDto>(cancellationToken: cancellationToken)
-        ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
-  }
+        return await response.Content.ReadFromJsonAsync<IReadOnlyCollection<TeacherCandidateDto>>(cancellationToken: cancellationToken)
+            ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
+    }
 
-  public async Task<LoadDto> CreateLoadAsync(LoadCreateDto request, CancellationToken cancellationToken)
-  {
-    using var response = await _httpClient.PostAsJsonAsync("api/AcademicLoad", request, cancellationToken);
+    public async Task<ProposalDto> CreateProposalAsync(Guid educationalProgramId, Guid academicPeriodId, Guid divisionHeadId, CancellationToken cancellationToken)
+    {
+        var request = new ProposalCreateDto
+        {
+            EducationalProgramId = educationalProgramId,
+            AcademicPeriodId = academicPeriodId,
+            DivisionHeadId = divisionHeadId
+        };
 
-    response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
+        using var response = await _httpClient.PostAsJsonAsync("api/academic-load-proposals", request, cancellationToken);
 
-    return await response.Content.ReadFromJsonAsync<LoadDto>(cancellationToken: cancellationToken)
-        ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
-  }
+        response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
-  public async Task<LoadDto> UpdateLoadAsync(Guid tenantId, Guid loadId, LoadUpdateDto request, CancellationToken cancellationToken)
-  {
-    using var response = await _httpClient.PutAsJsonAsync($"api/AcademicLoad/{tenantId}/{loadId}", request, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<ProposalDto>(cancellationToken: cancellationToken)
+            ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
+    }
 
-    response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
+    public async Task<LoadDto> CreateLoadAsync(LoadCreateDto request, CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.PostAsJsonAsync("api/academic-loads", request, cancellationToken);
 
-    return await response.Content.ReadFromJsonAsync<LoadDto>(cancellationToken: cancellationToken)
-        ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
-  }
+        response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
-  public async Task<ProposalDto> SubmitForReviewAsync(Guid tenantId, Guid proposalId, CancellationToken cancellationToken)
-  {
-    using var response = await _httpClient.PostAsync($"api/academic-load-proposals/{proposalId}/submit-for-review?tenantId={tenantId}", null, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<LoadDto>(cancellationToken: cancellationToken)
+            ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
+    }
 
-    response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
+    public async Task<LoadDto> UpdateLoadAsync(Guid loadId, LoadUpdateDto request, CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.PutAsJsonAsync($"api/academic-loads/{loadId}", request, cancellationToken);
 
-    return await response.Content.ReadFromJsonAsync<ProposalDto>(cancellationToken: cancellationToken)
-        ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
-  }
+        response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
-  public async Task<SupportHourDto> CreateSupportHourAsync(SupportHourCreateDto request, CancellationToken cancellationToken)
-  {
-    using var response = await _httpClient.PostAsJsonAsync("api/TeachingSupportHoursController", request, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<LoadDto>(cancellationToken: cancellationToken)
+            ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
+    }
 
-    response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
+    public async Task<ProposalDto> SubmitForReviewAsync(Guid proposalId, CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.PostAsync($"api/academic-load-proposals/{proposalId}/submit-for-review", null, cancellationToken);
 
-    return await response.Content.ReadFromJsonAsync<SupportHourDto>(cancellationToken: cancellationToken)
-        ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
-  }
+        response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
-  public async Task<SupportHourDto> UpdateSupportHourAsync(Guid tenantId, Guid supportHourId, SupportHourUpdateDto request, CancellationToken cancellationToken)
-  {
-    using var response = await _httpClient.PutAsJsonAsync($"api/TeachingSupportHoursController/{tenantId}/{supportHourId}", request, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<ProposalDto>(cancellationToken: cancellationToken)
+            ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
+    }
 
-    response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
+    public async Task<SupportHourDto> CreateSupportHourAsync(SupportHourCreateDto request, CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.PostAsJsonAsync("api/teaching-support-hours", request, cancellationToken);
 
-    return await response.Content.ReadFromJsonAsync<SupportHourDto>(cancellationToken: cancellationToken)
-        ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
-  }
+        response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
+
+        return await response.Content.ReadFromJsonAsync<SupportHourDto>(cancellationToken: cancellationToken)
+            ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
+    }
+
+    public async Task<SupportHourDto> UpdateSupportHourAsync(Guid supportHourId, SupportHourUpdateDto request, CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.PutAsJsonAsync($"api/teaching-support-hours/{supportHourId}", request, cancellationToken);
+
+        response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
+
+        return await response.Content.ReadFromJsonAsync<SupportHourDto>(cancellationToken: cancellationToken)
+            ?? throw new InternalServiceException(InternalServiceConfiguration.SchedulingService, HttpStatusCode.BadGateway);
+    }
 }

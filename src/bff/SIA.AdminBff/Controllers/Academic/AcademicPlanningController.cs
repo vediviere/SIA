@@ -25,35 +25,35 @@ public sealed class AcademicPlanningController : ControllerBase
     _tenantContext = tenantContext;
   }
 
-  [HttpGet("context/{educationalProgramId:guid}")]
-  [ProducesResponseType(typeof(AcademicPlanningContextResponse), StatusCodes.Status200OK)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status401Unauthorized)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status404NotFound)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status502BadGateway)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
-  public async Task<ActionResult<AcademicPlanningContextResponse>> GetContextAsync([FromRoute] Guid educationalProgramId, CancellationToken cancellationToken)
-  {
-    var tenantId = _tenantContext.TenantId;
-    var academicContextTask = _academicClient.GetAcademicContextAsync(tenantId, educationalProgramId, cancellationToken);
-    var teacherCandidatesTask = _schedulingClient.GetTeacherCandidatesAsync(tenantId, educationalProgramId, cancellationToken);
-
-    await Task.WhenAll(academicContextTask, teacherCandidatesTask);
-
-    var academicContext = await academicContextTask;
-    var teacherCandidates = await teacherCandidatesTask;
-
-    return Ok(new AcademicPlanningContextResponse
+    [HttpGet("context/{educationalProgramId:guid}")]
+    [ProducesResponseType(typeof(AcademicPlanningContextResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status502BadGateway)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<AcademicPlanningContextResponse>> GetContextAsync([FromRoute] Guid educationalProgramId, CancellationToken cancellationToken)
     {
-      AcademicPeriod = MapAcademicPeriod(academicContext.AcademicPeriod),
-      EducationalProgram = MapEducationalProgram(academicContext.EducationalProgram),
-      StudyPlan = MapStudyPlan(academicContext.StudyPlan),
-      Subjects = academicContext.Subjects.Select(MapSubject).ToList(),
-      TeacherCandidates = teacherCandidates.Select(MapTeacherCandidate).ToList(),
-      IsWithinPlanningWindow = academicContext.IsWithinPlanningWindow
-    });
-  }
+        var tenantId = _tenantContext.TenantId;
+        var academicContextTask = _academicClient.GetAcademicContextAsync(tenantId, educationalProgramId, cancellationToken);
+        var teacherCandidatesTask = _schedulingClient.GetTeacherCandidatesAsync(educationalProgramId, cancellationToken);
 
-  private static AcademicPeriodResponse MapAcademicPeriod(AcademicPeriodDto source)
+        await Task.WhenAll(academicContextTask, teacherCandidatesTask);
+
+        var academicContext = await academicContextTask;
+        var teacherCandidates = await teacherCandidatesTask;
+
+        return Ok(new AcademicPlanningContextResponse
+        {
+            AcademicPeriod = MapAcademicPeriod(academicContext.AcademicPeriod),
+            EducationalProgram = MapEducationalProgram(academicContext.EducationalProgram),
+            StudyPlan = MapStudyPlan(academicContext.StudyPlan),
+            Subjects = academicContext.Subjects.Select(MapSubject).ToList(),
+            TeacherCandidates = teacherCandidates.Select(MapTeacherCandidate).ToList(),
+            IsWithinPlanningWindow = academicContext.IsWithinPlanningWindow
+        });
+    }
+
+    private static AcademicPeriodResponse MapAcademicPeriod(AcademicPeriodDto source)
   {
     return new AcademicPeriodResponse
     {

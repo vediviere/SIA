@@ -13,61 +13,58 @@ namespace SIA.AdminBff.Controllers.Scheduling;
 [Route("api/academic-planning")]
 public sealed class LoadsController : ControllerBase
 {
-  private readonly ISchedulingClient _schedulingClient;
-  private readonly ITenantContext _tenantContext;
+    private readonly ISchedulingClient _schedulingClient;
+    private readonly ITenantContext _tenantContext;
 
-  public LoadsController(ISchedulingClient schedulingClient, ITenantContext tenantContext)
-  {
-    _schedulingClient = schedulingClient;
-    _tenantContext = tenantContext;
-  }
-
-  [HttpPost("proposals/{proposalId:guid}/loads")]
-  [ProducesResponseType(typeof(LoadResponse), StatusCodes.Status201Created)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status400BadRequest)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status401Unauthorized)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status404NotFound)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status409Conflict)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status502BadGateway)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
-  public async Task<ActionResult<LoadResponse>> CreateAsync([FromRoute] Guid proposalId, [FromBody] CreateLoadRequest request, CancellationToken cancellationToken)
-  {
-    var dto = new LoadCreateDto
+    public LoadsController(ISchedulingClient schedulingClient, ITenantContext tenantContext)
     {
-      TenantId = _tenantContext.TenantId,
-      ProposalId = proposalId,
-      TeacherId = request.TeacherId,
-      DivisionHeadId = request.DivisionHeadId,
-      AcademicPeriodId = request.AcademicPeriodId,
-      OfficialLetterNumber = request.OfficialLetterNumber,
-      ProposedDate = request.ProposedDate,
-      AssignmentDate = request.AssignmentDate
-    };
+        _schedulingClient = schedulingClient;
+        _tenantContext = tenantContext;
+    }
 
-    var response = await _schedulingClient.CreateLoadAsync(dto, cancellationToken);
-
-    return StatusCode(StatusCodes.Status201Created, LoadResponse.FromDto(response));
-  }
-
-  [HttpPut("loads/{loadId:guid}")]
-  [ProducesResponseType(typeof(LoadResponse), StatusCodes.Status200OK)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status400BadRequest)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status401Unauthorized)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status404NotFound)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status409Conflict)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status502BadGateway)]
-  [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
-  public async Task<ActionResult<LoadResponse>> UpdateAsync([FromRoute] Guid loadId, [FromBody] UpdateLoadRequest request, CancellationToken cancellationToken)
-  {
-    var dto = new LoadUpdateDto
+    [HttpPost("proposals/{proposalId:guid}/loads")]
+    [ProducesResponseType(typeof(LoadResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status502BadGateway)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<LoadResponse>> CreateAsync([FromRoute] Guid proposalId, [FromBody] CreateLoadRequest request, CancellationToken cancellationToken)
     {
-      OfficialLetterNumber = request.OfficialLetterNumber,
-      ProposedDate = request.ProposedDate,
-      AssignmentDate = request.AssignmentDate
-    };
+        var dto = new LoadCreateDto
+        {
+            ProposalId = proposalId,
+            TeacherId = request.TeacherId,
+            DivisionHeadId = request.DivisionHeadId,
+            AcademicPeriodId = request.AcademicPeriodId,
+            OfficialLetterNumber = request.OfficialLetterNumber,
+            ProposedDate = request.ProposedDate,
+            AssignmentDate = request.AssignmentDate
+        };
 
-    var response = await _schedulingClient.UpdateLoadAsync(_tenantContext.TenantId, loadId, dto, cancellationToken);
+        var response = await _schedulingClient.CreateLoadAsync(dto, cancellationToken);
+        return StatusCode(StatusCodes.Status201Created, LoadResponse.FromDto(response));
+    }
 
-    return Ok(LoadResponse.FromDto(response));
-  }
+    [HttpPut("loads/{loadId:guid}")]
+    [ProducesResponseType(typeof(LoadResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status502BadGateway)]
+    [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<LoadResponse>> UpdateAsync([FromRoute] Guid loadId, [FromBody] UpdateLoadRequest request, CancellationToken cancellationToken)
+    {
+        var dto = new LoadUpdateDto
+        {
+            OfficialLetterNumber = request.OfficialLetterNumber,
+            ProposedDate = request.ProposedDate,
+            AssignmentDate = request.AssignmentDate
+        };
+
+        var response = await _schedulingClient.UpdateLoadAsync(loadId, dto, cancellationToken);
+        return Ok(LoadResponse.FromDto(response));
+    }
 }
