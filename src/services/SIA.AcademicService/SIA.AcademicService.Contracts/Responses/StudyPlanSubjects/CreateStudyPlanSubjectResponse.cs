@@ -9,6 +9,7 @@ public sealed record CreateStudyPlanSubjectResponse
     public required int Semester { get; init; }
     public required int Credits { get; init; }
     public required bool IsRequired { get; init; }
+    public Guid? PrerequisiteSubjectId { get; init; }
     public required bool Status { get; init; }
     public required DateTime CreatedAtUtc { get; init; }
     public required Guid CorrelationId { get; init; }

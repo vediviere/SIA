@@ -12,6 +12,8 @@ namespace SIA.AcademicService.Application.DTOs.StudyPlan
 
         public Guid? SubjectId { get; init; }
 
+        public Guid? PrerequisiteSubjectId { get; init; }
+
         public string? Code { get; init; }
 
         public string? Name { get; init; }

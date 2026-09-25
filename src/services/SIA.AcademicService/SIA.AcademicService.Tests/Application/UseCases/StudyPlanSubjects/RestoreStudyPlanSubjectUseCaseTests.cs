@@ -10,7 +10,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.StudyPlanSubjects;
 public class RestoreStudyPlanSubjectUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_WithValidRequest_ShouldRestoreStudyPlanSubject()
+    public async Task ExecuteAsync_WithValidRequest_ShouldRestore()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -18,7 +18,7 @@ public class RestoreStudyPlanSubjectUseCaseTests
         var subjectId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
-        var studyPlanSubject = new StudyPlanSubject(tenantId, studyPlanId, subjectId, 3, 6, true);
+        var studyPlanSubject = new StudyPlanSubject(tenantId, studyPlanId, subjectId, 3, 6, false, null);
 
         // Dejamos la relación desactivada para representar
         // el estado previo a la restauración.
@@ -32,7 +32,7 @@ public class RestoreStudyPlanSubjectUseCaseTests
                 tenantId,
                 studyPlanSubjectId,
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(studyPlanSubject);
+            .ReturnsAsync(studyPlanSubject); 
 
         dataStore.Setup(x => x.RestoreStudyPlanSubjectWithOutboxAsync(
                 It.IsAny<StudyPlanSubject>(),
@@ -43,7 +43,7 @@ public class RestoreStudyPlanSubjectUseCaseTests
         var useCase = new RestoreStudyPlanSubjectUseCase(dataStore.Object);
 
         // Act
-        await useCase.ExecuteAsync(tenantId,studyPlanSubjectId,correlationId,CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, studyPlanSubjectId, correlationId, CancellationToken.None);
 
         // Assert
         Assert.True(studyPlanSubject.Status);
@@ -54,11 +54,11 @@ public class RestoreStudyPlanSubjectUseCaseTests
                 studyPlanSubject,
                 It.IsAny<StudyPlanSubjectRestoredIntegrationEvent>(),
                 It.IsAny<CancellationToken>()),
-            Times.Once);
+            Times.Once); 
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenStudyPlanSubjectDoesNotExist_ShouldThrowStudyPlanSubjectNotFoundException()
+    public async Task ExecuteAsync_WhenEntityDoesNotExist_ShouldThrowNotFoundException()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -70,13 +70,13 @@ public class RestoreStudyPlanSubjectUseCaseTests
         dataStore.Setup(x => x.GetStudyPlanSubjectByIdAsync(
                 tenantId,
                 studyPlanSubjectId,
-                It.IsAny<CancellationToken>())).ReturnsAsync((StudyPlanSubject?)null);
+                It.IsAny<CancellationToken>())).ReturnsAsync((StudyPlanSubject?)null); 
 
         var useCase = new RestoreStudyPlanSubjectUseCase(dataStore.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<StudyPlanSubjectNotFoundException>(() =>
-            useCase.ExecuteAsync(tenantId,studyPlanSubjectId,correlationId,CancellationToken.None)
+            useCase.ExecuteAsync(tenantId, studyPlanSubjectId, correlationId, CancellationToken.None)
         );
 
         dataStore.Verify(
@@ -84,7 +84,7 @@ public class RestoreStudyPlanSubjectUseCaseTests
                 It.IsAny<StudyPlanSubject>(),
                 It.IsAny<StudyPlanSubjectRestoredIntegrationEvent>(),
                 It.IsAny<CancellationToken>()),
-            Times.Never);
+            Times.Never); 
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class RestoreStudyPlanSubjectUseCaseTests
         var subjectId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
-        var studyPlanSubject = new StudyPlanSubject(tenantId, studyPlanId, subjectId, 3, 6, true);
+        var studyPlanSubject = new StudyPlanSubject(tenantId, studyPlanId, subjectId, 3, 6, false, null);
 
         studyPlanSubject.SoftDelete();
 
@@ -107,7 +107,7 @@ public class RestoreStudyPlanSubjectUseCaseTests
         dataStore.Setup(x => x.GetStudyPlanSubjectByIdAsync(
                 tenantId,
                 studyPlanSubjectId,
-                It.IsAny<CancellationToken>())).ReturnsAsync(studyPlanSubject);
+                It.IsAny<CancellationToken>())).ReturnsAsync(studyPlanSubject); 
 
         dataStore.Setup(x => x.RestoreStudyPlanSubjectWithOutboxAsync(
                 It.IsAny<StudyPlanSubject>(),
@@ -118,7 +118,7 @@ public class RestoreStudyPlanSubjectUseCaseTests
         var useCase = new RestoreStudyPlanSubjectUseCase(dataStore.Object);
 
         // Act
-        await useCase.ExecuteAsync(tenantId,studyPlanSubjectId,correlationId,CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, studyPlanSubjectId, correlationId, CancellationToken.None);
 
         // Assert
         dataStore.Verify(
@@ -135,6 +135,6 @@ public class RestoreStudyPlanSubjectUseCaseTests
                     integrationEvent.Status &&
                     integrationEvent.Version == 1),
                 It.IsAny<CancellationToken>()),
-            Times.Once);
+            Times.Once); 
     }
 }

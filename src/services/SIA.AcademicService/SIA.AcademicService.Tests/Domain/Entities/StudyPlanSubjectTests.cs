@@ -5,12 +5,13 @@ namespace SIA.AcademicService.Tests.Domain.Entities;
 public class StudyPlanSubjectTests
 {
     [Fact]
-    public void Constructor_WithValidData_ShouldCreateStudyPlanSubject()
+    public void Constructor_WithValidData_ShouldCreate()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
         var studyPlanId = Guid.NewGuid();
         var subjectId = Guid.NewGuid();
+        var prerequisiteId = Guid.NewGuid();
 
         // Act
         var studyPlanSubject = new StudyPlanSubject(
@@ -19,22 +20,21 @@ public class StudyPlanSubjectTests
             subjectId,
             1,
             6,
-            true);
+            true,
+            prerequisiteId);
 
         // Assert
         Assert.NotEqual(Guid.Empty, studyPlanSubject.Id);
         Assert.Equal(tenantId, studyPlanSubject.TenantId);
         Assert.Equal(studyPlanId, studyPlanSubject.StudyPlanId);
         Assert.Equal(subjectId, studyPlanSubject.SubjectId);
+        Assert.Equal(prerequisiteId, studyPlanSubject.PrerequisiteSubjectId);
         Assert.Equal(1, studyPlanSubject.Semester);
         Assert.Equal(6, studyPlanSubject.Credits);
         Assert.True(studyPlanSubject.IsRequired);
         Assert.True(studyPlanSubject.Status);
         Assert.NotEqual(default, studyPlanSubject.CreatedAtUtc);
         Assert.Null(studyPlanSubject.UpdatedAtUtc);
-
-        Assert.Null(studyPlanSubject.Subject);
-        Assert.Null(studyPlanSubject.StudyPlan);
     }
 
     [Fact]
@@ -47,13 +47,7 @@ public class StudyPlanSubjectTests
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() =>
-            new StudyPlanSubject(
-                tenantId,
-                studyPlanId,
-                subjectId,
-                1,
-                6,
-                true));
+            new StudyPlanSubject(tenantId, studyPlanId, subjectId, 1, 6, false));
     }
 
     [Fact]
@@ -66,13 +60,7 @@ public class StudyPlanSubjectTests
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() =>
-            new StudyPlanSubject(
-                tenantId,
-                studyPlanId,
-                subjectId,
-                1,
-                6,
-                true));
+            new StudyPlanSubject(tenantId, studyPlanId, subjectId, 1, 6, false));
     }
 
     [Fact]
@@ -85,20 +73,13 @@ public class StudyPlanSubjectTests
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() =>
-            new StudyPlanSubject(
-                tenantId,
-                studyPlanId,
-                subjectId,
-                1,
-                6,
-                true));
+            new StudyPlanSubject(tenantId, studyPlanId, subjectId, 1, 6, false));
     }
 
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public void Constructor_WithInvalidSemester_ShouldThrowArgumentOutOfRangeException(
-        int semester)
+    public void Constructor_WithInvalidSemester_ShouldThrowArgumentOutOfRangeException(int semester)
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -107,20 +88,13 @@ public class StudyPlanSubjectTests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new StudyPlanSubject(
-                tenantId,
-                studyPlanId,
-                subjectId,
-                semester,
-                6,
-                true));
+            new StudyPlanSubject(tenantId, studyPlanId, subjectId, semester, 6, false));
     }
 
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public void Constructor_WithInvalidCredits_ShouldThrowArgumentOutOfRangeException(
-        int credits)
+    public void Constructor_WithInvalidCredits_ShouldThrowArgumentOutOfRangeException(int credits)
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -129,41 +103,54 @@ public class StudyPlanSubjectTests
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            new StudyPlanSubject(
-                tenantId,
-                studyPlanId,
-                subjectId,
-                1,
-                credits,
-                true));
+            new StudyPlanSubject(tenantId, studyPlanId, subjectId, 1, credits, false));
     }
 
     [Fact]
-    public void Constructor_WithIsRequiredFalse_ShouldPreserveValue()
+    public void Constructor_WithSelfReferencePrerequisite_ShouldThrowInvalidOperationException()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
         var studyPlanId = Guid.NewGuid();
         var subjectId = Guid.NewGuid();
 
-        // Act
-        var studyPlanSubject = new StudyPlanSubject(
-            tenantId,
-            studyPlanId,
-            subjectId,
-            1,
-            6,
-            false);
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() =>
+            new StudyPlanSubject(tenantId, studyPlanId, subjectId, 1, 6, true, subjectId));
+    }
 
-        // Assert
-        Assert.False(studyPlanSubject.IsRequired);
+    [Fact]
+    public void Constructor_WithIsRequiredTrueAndNullPrerequisite_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var tenantId = Guid.NewGuid();
+        var studyPlanId = Guid.NewGuid();
+        var subjectId = Guid.NewGuid();
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() =>
+            new StudyPlanSubject(tenantId, studyPlanId, subjectId, 1, 6, true, null));
+    }
+
+    [Fact]
+    public void Constructor_WithIsRequiredFalseAndNotNullPrerequisite_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var tenantId = Guid.NewGuid();
+        var studyPlanId = Guid.NewGuid();
+        var subjectId = Guid.NewGuid();
+        var prerequisiteId = Guid.NewGuid();
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() =>
+            new StudyPlanSubject(tenantId, studyPlanId, subjectId, 1, 6, false, prerequisiteId));
     }
 
     [Fact]
     public void SoftDelete_ShouldSetStatusToFalse()
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
 
         // Act
         studyPlanSubject.SoftDelete();
@@ -176,7 +163,7 @@ public class StudyPlanSubjectTests
     public void SoftDelete_ShouldSetUpdatedAtUtc()
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
 
         // Act
         studyPlanSubject.SoftDelete();
@@ -189,7 +176,7 @@ public class StudyPlanSubjectTests
     public void Restore_ShouldSetStatusToTrue()
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
         studyPlanSubject.SoftDelete();
 
         // Act
@@ -203,7 +190,7 @@ public class StudyPlanSubjectTests
     public void Restore_ShouldSetUpdatedAtUtc()
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
         studyPlanSubject.SoftDelete();
 
         // Act
@@ -214,91 +201,84 @@ public class StudyPlanSubjectTests
     }
 
     [Fact]
-    public void Update_WithValidData_ShouldUpdateStudyPlanSubject()
+    public void Update_WithValidData_ShouldUpdate()
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
+        var newPrerequisiteId = Guid.NewGuid();
 
         // Act
-        studyPlanSubject.Update(
-            3,
-            8,
-            false);
+        studyPlanSubject.Update(3, 8, true, newPrerequisiteId);
 
         // Assert
         Assert.Equal(3, studyPlanSubject.Semester);
         Assert.Equal(8, studyPlanSubject.Credits);
-        Assert.False(studyPlanSubject.IsRequired);
+        Assert.True(studyPlanSubject.IsRequired);
+        Assert.Equal(newPrerequisiteId, studyPlanSubject.PrerequisiteSubjectId);
         Assert.NotNull(studyPlanSubject.UpdatedAtUtc);
     }
 
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public void Update_WithInvalidSemester_ShouldThrowArgumentOutOfRangeException(
-        int semester)
+    public void Update_WithInvalidSemester_ShouldThrowArgumentOutOfRangeException(int semester)
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            studyPlanSubject.Update(
-                semester,
-                8,
-                false));
+            studyPlanSubject.Update(semester, 8, false, null));
     }
 
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public void Update_WithInvalidCredits_ShouldThrowArgumentOutOfRangeException(
-        int credits)
+    public void Update_WithInvalidCredits_ShouldThrowArgumentOutOfRangeException(int credits)
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() =>
-            studyPlanSubject.Update(
-                3,
-                credits,
-                false));
+            studyPlanSubject.Update(3, credits, false, null));
     }
 
     [Fact]
-    public void Update_WithIsRequiredTrue_ShouldPreserveValue()
+    public void Update_WithSelfReferencePrerequisite_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
 
-        // Act
-        studyPlanSubject.Update(
-            3,
-            8,
-            true);
-
-        // Assert
-        Assert.True(studyPlanSubject.IsRequired);
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() =>
+            studyPlanSubject.Update(3, 8, true, studyPlanSubject.SubjectId));
     }
 
     [Fact]
-    public void Update_WithIsRequiredFalse_ShouldPreserveValue()
+    public void Update_WithIsRequiredTrueAndNullPrerequisite_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var studyPlanSubject = CreateValidStudyPlanSubject();
+        var studyPlanSubject = CreateValidEntity();
 
-        // Act
-        studyPlanSubject.Update(
-            3,
-            8,
-            false);
-
-        // Assert
-        Assert.False(studyPlanSubject.IsRequired);
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() =>
+            studyPlanSubject.Update(3, 8, true, null));
     }
 
-    private static StudyPlanSubject CreateValidStudyPlanSubject()
+    [Fact]
+    public void Update_WithIsRequiredFalseAndNotNullPrerequisite_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var studyPlanSubject = CreateValidEntity();
+        var prerequisiteId = Guid.NewGuid();
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() =>
+            studyPlanSubject.Update(3, 8, false, prerequisiteId));
+    }
+
+    private static StudyPlanSubject CreateValidEntity()
     {
         return new StudyPlanSubject(
             Guid.NewGuid(),
@@ -306,6 +286,7 @@ public class StudyPlanSubjectTests
             Guid.NewGuid(),
             1,
             6,
-            true);
+            false,
+            null);
     }
 }

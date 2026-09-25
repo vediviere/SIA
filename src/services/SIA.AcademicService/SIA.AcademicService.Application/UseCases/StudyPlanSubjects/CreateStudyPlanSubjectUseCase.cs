@@ -33,13 +33,28 @@ public sealed class CreateStudyPlanSubjectUseCase
             throw new DuplicateStudyPlanSubjectException();
         }
 
+        if (request.PrerequisiteSubjectId.HasValue)
+        {
+            var prerequisiteExistsInPlan = await _dataStore.StudyPlanSubjectExistsAsync(
+                tenantId,
+                request.StudyPlanId,
+                request.PrerequisiteSubjectId.Value,
+                cancellationToken);
+
+            if (!prerequisiteExistsInPlan)
+            {
+                throw new InvalidOperationException("La materia prerrequisito no existe en este plan de estudios o tenant.");
+            }
+        }
+
         var studyPlanSubject = new StudyPlanSubject(
             tenantId,
             request.StudyPlanId,
             request.SubjectId,
             request.Semester,
             request.Credits,
-            request.IsRequired);
+            request.IsRequired,
+            request.PrerequisiteSubjectId);
 
         var integrationEvent = new StudyPlanSubjectCreatedIntegrationEvent
         {
@@ -53,6 +68,7 @@ public sealed class CreateStudyPlanSubjectUseCase
             Semester = studyPlanSubject.Semester,
             Credits = studyPlanSubject.Credits,
             IsRequired = studyPlanSubject.IsRequired,
+            PrerequisiteSubjectId = studyPlanSubject.PrerequisiteSubjectId,
             Status = studyPlanSubject.Status,
             Version = 1
         };
@@ -68,6 +84,7 @@ public sealed class CreateStudyPlanSubjectUseCase
             Semester = studyPlanSubject.Semester,
             Credits = studyPlanSubject.Credits,
             IsRequired = studyPlanSubject.IsRequired,
+            PrerequisiteSubjectId = studyPlanSubject.PrerequisiteSubjectId,
             Status = studyPlanSubject.Status,
             CreatedAtUtc = studyPlanSubject.CreatedAtUtc,
             CorrelationId = correlationId
