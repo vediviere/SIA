@@ -21,7 +21,8 @@ public sealed class CorrectionRequiredConsumer : IConsumer<CorrectionRequiredEve
         await _useCase.ExecuteAsync(
           integrationEvent.TenantId,
           integrationEvent.ProposalId,
-          integrationEvent.EventId,
+          integrationEvent.Version,
+          integrationEvent.EventId, 
           ReviewEventTypes.ProposalRequiresCorrectionV1,
           SourceService,
           integrationEvent.CorrelationId,

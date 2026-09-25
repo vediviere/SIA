@@ -21,6 +21,7 @@ public sealed class ApprovedConsumer : IConsumer<ApprovedEvent>
         await _useCase.ExecuteAsync(
           integrationEvent.TenantId,
           integrationEvent.ProposalId,
+          integrationEvent.Version,
           integrationEvent.EventId,
           ReviewEventTypes.ProposalApprovedV1,
           SourceService,
