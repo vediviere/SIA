@@ -2,22 +2,19 @@
 using Microsoft.AspNetCore.Mvc;
 using SIA.AdminBff.Clients.Workflow;
 using SIA.AdminBff.Infrastructure.Errors;
-using SIA.AdminBff.Infrastructure.Tenancy;
 
 namespace SIA.AdminBff.Controllers.Workflow;
 
 [ApiController]
 [Authorize]
 [Route("api/review-processes")]
-public sealed class WorkflowReviewsController : ControllerBase
+public sealed class AdminReviewProcessesController : ControllerBase
 {
     private readonly IWorkflowClient _workflowClient;
-    private readonly ITenantContext _tenantContext;
 
-    public WorkflowReviewsController(IWorkflowClient workflowClient, ITenantContext tenantContext)
+    public AdminReviewProcessesController(IWorkflowClient workflowClient)
     {
         _workflowClient = workflowClient;
-        _tenantContext = tenantContext;
     }
 
     [HttpGet]
@@ -28,8 +25,7 @@ public sealed class WorkflowReviewsController : ControllerBase
     [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
     public async Task<ActionResult<IEnumerable<ReviewProcessListItemDto>>> GetPendingReviewsAsync(CancellationToken cancellationToken)
     {
-        var tenantId = _tenantContext.TenantId;
-        var result = await _workflowClient.GetPendingReviewsAsync(tenantId, cancellationToken);
+        var result = await _workflowClient.GetPendingReviewsAsync(cancellationToken);
 
         return Ok(result);
     }
@@ -43,8 +39,7 @@ public sealed class WorkflowReviewsController : ControllerBase
     [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
     public async Task<ActionResult<ReviewProcessDetailDto>> GetByIdAsync([FromRoute] Guid processId, CancellationToken cancellationToken)
     {
-        var tenantId = _tenantContext.TenantId;
-        var result = await _workflowClient.GetReviewByIdAsync(tenantId, processId, cancellationToken);
+        var result = await _workflowClient.GetReviewByIdAsync(processId, cancellationToken);
 
         if (result is null)
         {
@@ -63,8 +58,7 @@ public sealed class WorkflowReviewsController : ControllerBase
     [ProducesResponseType(typeof(BffErrorResponse), StatusCodes.Status503ServiceUnavailable)]
     public async Task<IActionResult> ApproveAsync([FromRoute] Guid processId, CancellationToken cancellationToken)
     {
-        var tenantId = _tenantContext.TenantId;
-        await _workflowClient.ApproveReviewAsync(tenantId, processId, cancellationToken);
+        await _workflowClient.ApproveReviewAsync(processId, cancellationToken);
 
         return NoContent();
     }
@@ -82,8 +76,7 @@ public sealed class WorkflowReviewsController : ControllerBase
         [FromBody] ReturnRequestDto request,
         CancellationToken cancellationToken)
     {
-        var tenantId = _tenantContext.TenantId;
-        await _workflowClient.ReturnReviewAsync(tenantId, processId, request, cancellationToken);
+        await _workflowClient.ReturnReviewAsync(processId, request, cancellationToken);
 
         return NoContent();
     }
