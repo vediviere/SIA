@@ -24,6 +24,9 @@ public sealed class FakeProposalDataStore : IProposalDataStore
   public Proposal? SubmittedProposal { get; private set; }
   public ProposalSubmittedForReviewIntegrationEvent? SubmittedIntegrationEvent { get; private set; }
 
+  public AcademicLoadApprovedIntegrationEvent? PublishedApprovedEvent { get; private set; }
+  public int PublishedApprovedEventCount { get; private set; }
+
   public Proposal? AppliedDecisionProposal { get; private set; }
   public Guid? AppliedEventId { get; private set; }
   public string? AppliedEventType { get; private set; }
@@ -83,6 +86,22 @@ public sealed class FakeProposalDataStore : IProposalDataStore
     AppliedCorrelationId = correlationId;
     AppliedDecisionCount++;
 
+    _processedEventIds.Add(eventId);
+
+    return Task.CompletedTask;
+  }
+
+
+  public Task ProposalApprovalWithOutboxAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, AcademicLoadApprovedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  {
+    AppliedDecisionProposal = proposal;
+    AppliedEventId = eventId;
+    AppliedEventType = eventType;
+    AppliedSourceService = sourceService;
+    AppliedCorrelationId = correlationId;
+    AppliedDecisionCount++;
+    PublishedApprovedEvent = integrationEvent;
+    PublishedApprovedEventCount++;
     _processedEventIds.Add(eventId);
 
     return Task.CompletedTask;

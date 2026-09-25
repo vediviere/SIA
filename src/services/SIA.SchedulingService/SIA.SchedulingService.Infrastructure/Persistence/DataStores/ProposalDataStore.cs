@@ -58,20 +58,35 @@ public sealed class ProposalDataStore : IProposalDataStore
     _dbContext.AcademicLoadProposals.Update(proposal);
     await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
     await _dbContext.SaveChangesAsync(cancellationToken);
-    }
+  }
 
-    public Task<bool> WasProposalDecisionProcessedAsync(Guid eventId, CancellationToken cancellationToken)
-    {
-        return _dbContext.InboxMessages.AsNoTracking().AnyAsync(message => message.Id == eventId, cancellationToken);
-    }
+  public Task<bool> WasProposalDecisionProcessedAsync(Guid eventId, CancellationToken cancellationToken)
+  {
+    return _dbContext.InboxMessages.AsNoTracking().AnyAsync(message => message.Id == eventId, cancellationToken);
+  }
 
-    public async Task ApplyDecisionAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, CancellationToken cancellationToken)
-    {
-        var inboxMessage = new InboxMessage(eventId, eventType, sourceService, correlationId);
-        inboxMessage.MarkAsProcessed();
+  public async Task ApplyDecisionAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, CancellationToken cancellationToken)
+  {
+    var inboxMessage = new InboxMessage(eventId, eventType, sourceService, correlationId);
+    inboxMessage.MarkAsProcessed();
 
-        _dbContext.AcademicLoadProposals.Update(proposal);
-        await _dbContext.InboxMessages.AddAsync(inboxMessage, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-    }
+    _dbContext.AcademicLoadProposals.Update(proposal);
+    await _dbContext.InboxMessages.AddAsync(inboxMessage, cancellationToken);
+    await _dbContext.SaveChangesAsync(cancellationToken);
+  }
+
+  public async Task ProposalApprovalWithOutboxAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, AcademicLoadApprovedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  {
+    var payload = JsonSerializer.Serialize(integrationEvent);
+    var outboxEventType = SchedulingIntegrationEventTypes.AcademicLoadApprovedV1;
+    var outboxMessage = new OutboxMessage(outboxEventType, payload, integrationEvent.CorrelationId);
+
+    var inboxMessage = new InboxMessage(eventId, eventType, sourceService, correlationId);
+    inboxMessage.MarkAsProcessed();
+
+    _dbContext.AcademicLoadProposals.Update(proposal);
+    await _dbContext.OutboxMessages.AddAsync(outboxMessage, cancellationToken);
+    await _dbContext.InboxMessages.AddAsync(inboxMessage, cancellationToken);
+    await _dbContext.SaveChangesAsync(cancellationToken);
+  }
 }
