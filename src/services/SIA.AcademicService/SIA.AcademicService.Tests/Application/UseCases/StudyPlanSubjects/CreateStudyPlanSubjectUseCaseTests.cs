@@ -11,12 +11,13 @@ namespace SIA.AcademicService.Tests.Application.UseCases.StudyPlanSubjects;
 public class CreateStudyPlanSubjectUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_WithValidRequest_ShouldCreateStudyPlanSubject()
+    public async Task ExecuteAsync_WithValidRequest_ShouldCreate()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
         var studyPlanId = Guid.NewGuid();
         var subjectId = Guid.NewGuid();
+        var prerequisiteId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
         var request = new CreateStudyPlanSubjectRequest
@@ -25,21 +26,25 @@ public class CreateStudyPlanSubjectUseCaseTests
             SubjectId = subjectId,
             Semester = 3,
             Credits = 6,
-            IsRequired = true
+            IsRequired = true,
+            PrerequisiteSubjectId = prerequisiteId
         };
 
         var dataStore = new Mock<IStudyPlanSubjectDataStore>();
 
         dataStore.Setup(x => x.StudyPlanSubjectExistsAsync(
-                tenantId,
-                studyPlanId,
-                subjectId,
-                It.IsAny<CancellationToken>())).ReturnsAsync(false);
+                tenantId, studyPlanId, subjectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false); 
+
+        dataStore.Setup(x => x.StudyPlanSubjectExistsAsync(
+                tenantId, studyPlanId, prerequisiteId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         dataStore.Setup(x => x.AddStudyPlanSubjectWithOutboxAsync(
                 It.IsAny<StudyPlanSubject>(),
                 It.IsAny<StudyPlanSubjectCreatedIntegrationEvent>(),
-                It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         var useCase = new CreateStudyPlanSubjectUseCase(dataStore.Object);
 
@@ -51,6 +56,7 @@ public class CreateStudyPlanSubjectUseCaseTests
         Assert.Equal(tenantId, response.TenantId);
         Assert.Equal(studyPlanId, response.StudyPlanId);
         Assert.Equal(subjectId, response.SubjectId);
+        Assert.Equal(prerequisiteId, response.PrerequisiteSubjectId);
         Assert.Equal(3, response.Semester);
         Assert.Equal(6, response.Credits);
         Assert.True(response.IsRequired);
@@ -67,7 +73,7 @@ public class CreateStudyPlanSubjectUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenRelationAlreadyExists_ShouldThrowDuplicateStudyPlanSubjectException()
+    public async Task ExecuteAsync_WhenRelationAlreadyExists_ShouldThrowDuplicateException()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -81,16 +87,14 @@ public class CreateStudyPlanSubjectUseCaseTests
             SubjectId = subjectId,
             Semester = 3,
             Credits = 6,
-            IsRequired = true
+            IsRequired = false
         };
 
         var dataStore = new Mock<IStudyPlanSubjectDataStore>();
 
         dataStore.Setup(x => x.StudyPlanSubjectExistsAsync(
-                tenantId,
-                studyPlanId,
-                subjectId,
-                It.IsAny<CancellationToken>())).ReturnsAsync(true);
+                tenantId, studyPlanId, subjectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true); 
 
         var useCase = new CreateStudyPlanSubjectUseCase(dataStore.Object);
 
@@ -104,16 +108,17 @@ public class CreateStudyPlanSubjectUseCaseTests
                 It.IsAny<StudyPlanSubject>(),
                 It.IsAny<StudyPlanSubjectCreatedIntegrationEvent>(),
                 It.IsAny<CancellationToken>()),
-            Times.Never);
+            Times.Never); 
     }
 
     [Fact]
-    public async Task ExecuteAsync_WithValidRequest_ShouldSaveStudyPlanSubjectWithOutboxEvent()
+    public async Task ExecuteAsync_WhenPrerequisiteDoesNotExistInPlan_ShouldThrowInvalidOperationException()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
         var studyPlanId = Guid.NewGuid();
         var subjectId = Guid.NewGuid();
+        var prerequisiteId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
         var request = new CreateStudyPlanSubjectRequest
@@ -122,22 +127,63 @@ public class CreateStudyPlanSubjectUseCaseTests
             SubjectId = subjectId,
             Semester = 3,
             Credits = 6,
-            IsRequired = true
+            IsRequired = true,
+            PrerequisiteSubjectId = prerequisiteId
         };
 
         var dataStore = new Mock<IStudyPlanSubjectDataStore>();
 
         dataStore.Setup(x => x.StudyPlanSubjectExistsAsync(
-                tenantId,
-                studyPlanId,
-                subjectId,
-                It.IsAny<CancellationToken>())).ReturnsAsync(false);
+                tenantId, studyPlanId, subjectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false); 
+
+        dataStore.Setup(x => x.StudyPlanSubjectExistsAsync(
+                tenantId, studyPlanId, prerequisiteId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        var useCase = new CreateStudyPlanSubjectUseCase(dataStore.Object);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            useCase.ExecuteAsync(tenantId, request, correlationId, CancellationToken.None)
+        );
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithValidRequest_ShouldSaveWithOutboxEvent()
+    {
+        // Arrange
+        var tenantId = Guid.NewGuid();
+        var studyPlanId = Guid.NewGuid();
+        var subjectId = Guid.NewGuid();
+        var prerequisiteId = Guid.NewGuid();
+        var correlationId = Guid.NewGuid();
+
+        var request = new CreateStudyPlanSubjectRequest
+        {
+            StudyPlanId = studyPlanId,
+            SubjectId = subjectId,
+            Semester = 3,
+            Credits = 6,
+            IsRequired = true,
+            PrerequisiteSubjectId = prerequisiteId
+        };
+
+        var dataStore = new Mock<IStudyPlanSubjectDataStore>();
+
+        dataStore.Setup(x => x.StudyPlanSubjectExistsAsync(
+                tenantId, studyPlanId, subjectId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false); 
+
+        dataStore.Setup(x => x.StudyPlanSubjectExistsAsync(
+                tenantId, studyPlanId, prerequisiteId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         dataStore.Setup(x => x.AddStudyPlanSubjectWithOutboxAsync(
                 It.IsAny<StudyPlanSubject>(),
                 It.IsAny<StudyPlanSubjectCreatedIntegrationEvent>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+            .Returns(Task.CompletedTask); 
 
         var useCase = new CreateStudyPlanSubjectUseCase(dataStore.Object);
 
@@ -151,6 +197,7 @@ public class CreateStudyPlanSubjectUseCaseTests
                     entity.TenantId == tenantId &&
                     entity.StudyPlanId == studyPlanId &&
                     entity.SubjectId == subjectId &&
+                    entity.PrerequisiteSubjectId == prerequisiteId &&
                     entity.Semester == 3 &&
                     entity.Credits == 6 &&
                     entity.IsRequired &&
@@ -165,6 +212,7 @@ public class CreateStudyPlanSubjectUseCaseTests
                     integrationEvent.StudyPlanSubjectId != Guid.Empty &&
                     integrationEvent.StudyPlanId == studyPlanId &&
                     integrationEvent.SubjectId == subjectId &&
+                    integrationEvent.PrerequisiteSubjectId == prerequisiteId &&
                     integrationEvent.Semester == 3 &&
                     integrationEvent.Credits == 6 &&
                     integrationEvent.IsRequired &&

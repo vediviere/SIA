@@ -17,22 +17,40 @@ public sealed class UpdateStudyPlanSubjectUseCase
 
     public async Task<UpdateStudyPlanSubjectResponse> ExecuteAsync(
         Guid tenantId,
-        Guid studyPlanSubjectId, 
+        Guid studyPlanSubjectId,
         UpdateStudyPlanSubjectRequest request,
         Guid correlationId,
         CancellationToken cancellationToken)
     {
         var studyPlanSubject = await _dataStore.GetStudyPlanSubjectByIdAsync(
             tenantId,
-            studyPlanSubjectId, 
+            studyPlanSubjectId,
             cancellationToken);
 
         if (studyPlanSubject is null)
         {
-            throw new StudyPlanSubjectNotFoundException(studyPlanSubjectId); 
+            throw new StudyPlanSubjectNotFoundException(studyPlanSubjectId);
         }
 
-        studyPlanSubject.Update(request.Semester, request.Credits, request.IsRequired);
+        if (request.PrerequisiteSubjectId.HasValue)
+        {
+            var prerequisiteExistsInPlan = await _dataStore.StudyPlanSubjectExistsAsync(
+                tenantId,
+                studyPlanSubject.StudyPlanId,
+                request.PrerequisiteSubjectId.Value,
+                cancellationToken);
+
+            if (!prerequisiteExistsInPlan)
+            {
+                throw new InvalidOperationException("La materia prerrequisito no existe en este plan de estudios o tenant.");
+            }
+        }
+
+        studyPlanSubject.Update(
+            request.Semester,
+            request.Credits,
+            request.IsRequired,
+            request.PrerequisiteSubjectId);
 
         var integrationEvent = new StudyPlanSubjectUpdatedIntegrationEvent
         {
@@ -43,6 +61,7 @@ public sealed class UpdateStudyPlanSubjectUseCase
             StudyPlanSubjectId = studyPlanSubject.Id,
             StudyPlanId = studyPlanSubject.StudyPlanId,
             SubjectId = studyPlanSubject.SubjectId,
+            PrerequisiteSubjectId = studyPlanSubject.PrerequisiteSubjectId,
             Semester = studyPlanSubject.Semester,
             Credits = studyPlanSubject.Credits,
             IsRequired = studyPlanSubject.IsRequired,
@@ -58,6 +77,7 @@ public sealed class UpdateStudyPlanSubjectUseCase
             TenantId = studyPlanSubject.TenantId,
             StudyPlanId = studyPlanSubject.StudyPlanId,
             SubjectId = studyPlanSubject.SubjectId,
+            PrerequisiteSubjectId = studyPlanSubject.PrerequisiteSubjectId,
             Semester = studyPlanSubject.Semester,
             Credits = studyPlanSubject.Credits,
             IsRequired = studyPlanSubject.IsRequired,

@@ -10,7 +10,7 @@ namespace SIA.AcademicService.Tests.Application.UseCases.StudyPlanSubjects;
 public class SoftDeleteStudyPlanSubjectUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_WithValidRequest_ShouldSoftDeleteStudyPlanSubject()
+    public async Task ExecuteAsync_WithValidRequest_ShouldSoftDelete()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -18,7 +18,7 @@ public class SoftDeleteStudyPlanSubjectUseCaseTests
         var subjectId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
-        var studyPlanSubject = new StudyPlanSubject(tenantId, studyPlanId, subjectId, 3, 6, true);
+        var studyPlanSubject = new StudyPlanSubject(tenantId, studyPlanId, subjectId, 3, 6, false, null);
 
         var studyPlanSubjectId = studyPlanSubject.Id;
 
@@ -37,7 +37,7 @@ public class SoftDeleteStudyPlanSubjectUseCaseTests
         var useCase = new SoftDeleteStudyPlanSubjectUseCase(dataStore.Object);
 
         // Act
-        await useCase.ExecuteAsync(tenantId,studyPlanSubjectId,correlationId,CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, studyPlanSubjectId, correlationId, CancellationToken.None);
 
         // Assert
         Assert.False(studyPlanSubject.Status);
@@ -52,7 +52,7 @@ public class SoftDeleteStudyPlanSubjectUseCaseTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_WhenStudyPlanSubjectDoesNotExist_ShouldThrowStudyPlanSubjectNotFoundException()
+    public async Task ExecuteAsync_WhenEntityDoesNotExist_ShouldThrowNotFoundException()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -64,13 +64,13 @@ public class SoftDeleteStudyPlanSubjectUseCaseTests
         dataStore.Setup(x => x.GetStudyPlanSubjectByIdAsync(
                 tenantId,
                 studyPlanSubjectId,
-                It.IsAny<CancellationToken>())).ReturnsAsync((StudyPlanSubject?)null);
+                It.IsAny<CancellationToken>())).ReturnsAsync((StudyPlanSubject?)null); 
 
         var useCase = new SoftDeleteStudyPlanSubjectUseCase(dataStore.Object);
 
         // Act & Assert
         await Assert.ThrowsAsync<StudyPlanSubjectNotFoundException>(() =>
-            useCase.ExecuteAsync(tenantId,studyPlanSubjectId,correlationId,CancellationToken.None)
+            useCase.ExecuteAsync(tenantId, studyPlanSubjectId, correlationId, CancellationToken.None)
         );
 
         dataStore.Verify(
@@ -90,7 +90,7 @@ public class SoftDeleteStudyPlanSubjectUseCaseTests
         var subjectId = Guid.NewGuid();
         var correlationId = Guid.NewGuid();
 
-        var studyPlanSubject = new StudyPlanSubject(tenantId, studyPlanId, subjectId, 3, 6, true);
+        var studyPlanSubject = new StudyPlanSubject(tenantId, studyPlanId, subjectId, 3, 6, false, null);
 
         var studyPlanSubjectId = studyPlanSubject.Id;
 
@@ -110,7 +110,7 @@ public class SoftDeleteStudyPlanSubjectUseCaseTests
         var useCase = new SoftDeleteStudyPlanSubjectUseCase(dataStore.Object);
 
         // Act
-        await useCase.ExecuteAsync(tenantId,studyPlanSubjectId,correlationId,CancellationToken.None);
+        await useCase.ExecuteAsync(tenantId, studyPlanSubjectId, correlationId, CancellationToken.None);
 
         // Assert
         dataStore.Verify(

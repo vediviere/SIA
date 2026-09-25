@@ -29,7 +29,7 @@ public sealed class StudyPlanSubjectQueries : IStudyPlanSubjectQueries
     {
         IQueryable<StudyPlanSubject> query = _dbContext.StudyPlanSubjects
                                     .AsNoTracking()
-                                    .Where(x => x.TenantId == tenantId); 
+                                    .Where(x => x.TenantId == tenantId);
 
         if (filter.StudyPlanId.HasValue)
         {

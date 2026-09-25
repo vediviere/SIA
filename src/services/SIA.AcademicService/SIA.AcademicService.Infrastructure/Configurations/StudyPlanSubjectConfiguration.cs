@@ -37,6 +37,8 @@ public sealed class StudyPlanSubjectConfiguration
         builder.Property(sps => sps.IsRequired)
             .IsRequired();
 
+        builder.Property(sps => sps.PrerequisiteSubjectId);
+
         builder.Property(sps => sps.Status)
             .IsRequired();
 
@@ -46,8 +48,13 @@ public sealed class StudyPlanSubjectConfiguration
         builder.Property(sps => sps.UpdatedAtUtc);
 
         builder.HasOne(sps => sps.Subject)
-            .WithMany() 
+            .WithMany()
             .HasForeignKey(sps => sps.SubjectId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(sps => sps.PrerequisiteSubject)
+            .WithMany()
+            .HasForeignKey(sps => sps.PrerequisiteSubjectId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(sps => sps.StudyPlan)
