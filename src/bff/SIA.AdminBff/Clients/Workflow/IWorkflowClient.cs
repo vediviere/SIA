@@ -2,8 +2,8 @@
 
 public interface IWorkflowClient
 {
-    Task<IEnumerable<ReviewProcessListItemDto>> GetPendingReviewsAsync(Guid tenantId, CancellationToken cancellationToken);
-    Task<ReviewProcessDetailDto?> GetReviewByIdAsync(Guid tenantId, Guid processId, CancellationToken cancellationToken);
-    Task ApproveReviewAsync(Guid tenantId, Guid processId, CancellationToken cancellationToken);
-    Task ReturnReviewAsync(Guid tenantId, Guid processId, ReturnRequestDto request, CancellationToken cancellationToken);
+    Task<IEnumerable<ReviewProcessListItemDto>> GetPendingReviewsAsync(CancellationToken cancellationToken);
+    Task<ReviewProcessDetailDto?> GetReviewByIdAsync(Guid processId, CancellationToken cancellationToken);
+    Task ApproveReviewAsync(Guid processId, CancellationToken cancellationToken);
+    Task ReturnReviewAsync(Guid processId, ReturnRequestDto request, CancellationToken cancellationToken);
 }

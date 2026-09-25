@@ -115,7 +115,7 @@ public sealed class ApplyApprovedUseCaseTests
     public async Task ExecuteAsync_WithFutureVersion_ShouldThrowProposalReviewVersionAheadException()
     {
         var tenantId = Guid.NewGuid();
-        var proposal = CreateSubmittedProposal(tenantId); /
+        var proposal = CreateSubmittedProposal(tenantId);
         var dataStore = new FakeProposalDataStore(proposal);
         var useCase = new ApplyApprovedUseCase(dataStore, NullLogger<ApplyApprovedUseCase>.Instance);
 
