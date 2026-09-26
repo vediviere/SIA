@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIA.AdminBff.Clients.Scheduling;
+using SIA.AdminBff.Clients.Scheduling.Clients;
 using SIA.AdminBff.Contracts.Scheduling.Requests;
 using SIA.AdminBff.Contracts.Scheduling.Responses;
 using SIA.AdminBff.Infrastructure.Errors;

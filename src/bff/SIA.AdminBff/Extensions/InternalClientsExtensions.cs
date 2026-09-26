@@ -1,8 +1,8 @@
 using SIA.AdminBff.Clients.Academic;
 using SIA.AdminBff.Clients.Workflow;
-using SIA.AdminBff.Clients.Scheduling;
 using SIA.AdminBff.Configuration;
 using SIA.AdminBff.Infrastructure.Http;
+using SIA.AdminBff.Clients.Scheduling.Clients;
 
 namespace SIA.AdminBff.Extensions;
 

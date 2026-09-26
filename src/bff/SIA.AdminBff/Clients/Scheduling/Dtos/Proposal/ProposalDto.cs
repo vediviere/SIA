@@ -1,6 +1,6 @@
 using SIA.AdminBff.Contracts.Scheduling.Enums;
 
-namespace SIA.AdminBff.Clients.Scheduling;
+namespace SIA.AdminBff.Clients.Scheduling.Dtos.Proposal;
 
 public sealed record ProposalDto
 {

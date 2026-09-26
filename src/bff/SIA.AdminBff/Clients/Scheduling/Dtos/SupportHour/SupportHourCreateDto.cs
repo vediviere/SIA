@@ -1,4 +1,4 @@
-namespace SIA.AdminBff.Clients.Scheduling;
+namespace SIA.AdminBff.Clients.Scheduling.Dtos.SupportHour;
 
 public sealed record SupportHourCreateDto
 {

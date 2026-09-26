@@ -1,9 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
+using SIA.AdminBff.Clients.Scheduling.Dtos.Load;
+using SIA.AdminBff.Clients.Scheduling.Dtos.Proposal;
+using SIA.AdminBff.Clients.Scheduling.Dtos.SupportHour;
+using SIA.AdminBff.Clients.Scheduling.Dtos.TeacherCandidate;
 using SIA.AdminBff.Configuration;
 using SIA.AdminBff.Infrastructure.Errors;
 
-namespace SIA.AdminBff.Clients.Scheduling;
+namespace SIA.AdminBff.Clients.Scheduling.Clients;
 
 public sealed class SchedulingClient : ISchedulingClient
 {
