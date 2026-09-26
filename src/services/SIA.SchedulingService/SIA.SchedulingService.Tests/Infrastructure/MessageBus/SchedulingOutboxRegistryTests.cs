@@ -2,6 +2,7 @@ using System.Reflection;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
 using SIA.SchedulingService.Infrastructure.MessageBus;
+using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoadProposal;
 
 namespace SIA.SchedulingService.Tests.Infrastructure.MessageBus;
 
@@ -44,5 +45,13 @@ public sealed class SchedulingOutboxRegistryTests
     var eventType = registry.Resolve(SchedulingIntegrationEventTypes.AcademicLoadUpdatedV1);
 
     Assert.Equal(typeof(AcademicLoadUpdatedIntegrationEvent), eventType);
+  }
+
+  [Fact]
+  public void Create_ShouldResolveAcademicLoadApprovedEvent()
+  {
+    var registry = SchedulingOutboxRegistry.Create();
+    var eventType = registry.Resolve(SchedulingIntegrationEventTypes.AcademicLoadApprovedV1);
+    Assert.Equal(typeof(AcademicLoadApprovedIntegrationEvent), eventType);
   }
 }
