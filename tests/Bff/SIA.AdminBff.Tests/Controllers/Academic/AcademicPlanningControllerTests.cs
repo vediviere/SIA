@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using SIA.AdminBff.Clients.Academic;
-using SIA.AdminBff.Clients.Scheduling;
+using SIA.AdminBff.Clients.Scheduling.Clients;
+using SIA.AdminBff.Clients.Scheduling.Dtos.Load;
+using SIA.AdminBff.Clients.Scheduling.Dtos.Proposal;
+using SIA.AdminBff.Clients.Scheduling.Dtos.SupportHour;
+using SIA.AdminBff.Clients.Scheduling.Dtos.TeacherCandidate;
 using SIA.AdminBff.Contracts.Academic.Responses;
 using SIA.AdminBff.Controllers.Academic;
 using SIA.AdminBff.Infrastructure.Tenancy;

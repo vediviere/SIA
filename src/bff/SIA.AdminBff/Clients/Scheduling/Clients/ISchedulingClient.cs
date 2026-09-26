@@ -1,4 +1,9 @@
-namespace SIA.AdminBff.Clients.Scheduling;
+using SIA.AdminBff.Clients.Scheduling.Dtos.Load;
+using SIA.AdminBff.Clients.Scheduling.Dtos.Proposal;
+using SIA.AdminBff.Clients.Scheduling.Dtos.SupportHour;
+using SIA.AdminBff.Clients.Scheduling.Dtos.TeacherCandidate;
+
+namespace SIA.AdminBff.Clients.Scheduling.Clients;
 
 public interface ISchedulingClient
 {

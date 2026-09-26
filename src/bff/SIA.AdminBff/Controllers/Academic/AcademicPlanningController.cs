@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIA.AdminBff.Clients.Academic;
-using SIA.AdminBff.Clients.Scheduling;
+using SIA.AdminBff.Clients.Scheduling.Clients;
+using SIA.AdminBff.Clients.Scheduling.Dtos.TeacherCandidate;
 using SIA.AdminBff.Contracts.Academic.Responses;
 using SIA.AdminBff.Contracts.AcademicStaff.Responses;
 using SIA.AdminBff.Infrastructure.Errors;
