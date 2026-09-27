@@ -29,7 +29,7 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
         {
             IQueryable<StudyPlan> query = _dbContext.StudyPlans
                                      .AsNoTracking()
-                                     .Where(x => x.TenantId == tenantId); 
+                                     .Where(x => x.TenantId == tenantId);
 
             if (filter.EducationalProgramId.HasValue)
             {
@@ -70,12 +70,14 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
             (
                 from sps in _dbContext.StudyPlanSubjects
                 join s in _dbContext.Subjects on sps.SubjectId equals s.Id
+                join ps in _dbContext.Subjects on sps.PrerequisiteSubjectId equals ps.Id into prerequisiteGroup
+                from prerequisite in prerequisiteGroup.DefaultIfEmpty()
                 where sps.TenantId == tenantId
                       && sps.StudyPlanId == studyPlanId
                       && sps.Status
+                orderby sps.Semester ascending, s.Name ascending
                 select new StudyPlanSubjectDto
                 {
-                    TenantId = sps.TenantId,
                     StudyPlanId = sps.StudyPlanId,
                     SubjectId = s.Id,
                     Code = s.Code,
@@ -83,7 +85,13 @@ namespace SIA.AcademicService.Infrastructure.Persistence.Queries
                     Semester = sps.Semester,
                     Credits = sps.Credits,
                     IsRequired = sps.IsRequired,
-                    Status = sps.Status
+                    Status = sps.Status,
+                    Prerequisite = sps.PrerequisiteSubjectId != null ? new PrerequisiteDto
+                    {
+                        Id = prerequisite.Id,
+                        Code = prerequisite.Code,
+                        Name = prerequisite.Name
+                    } : null
                 }
             ).ToListAsync(cancellationToken);
 

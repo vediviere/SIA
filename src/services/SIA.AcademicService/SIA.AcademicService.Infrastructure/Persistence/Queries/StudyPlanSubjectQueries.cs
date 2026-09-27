@@ -19,6 +19,8 @@ public sealed class StudyPlanSubjectQueries : IStudyPlanSubjectQueries
     {
         return await _dbContext.StudyPlanSubjects
                             .AsNoTracking()
+                            .Include(x => x.Subject)
+                            .Include(x => x.PrerequisiteSubject)
                             .FirstOrDefaultAsync(
                                 x => x.TenantId == tenantId &&
                                      x.Id == studyPlanSubjectId,
@@ -29,6 +31,8 @@ public sealed class StudyPlanSubjectQueries : IStudyPlanSubjectQueries
     {
         IQueryable<StudyPlanSubject> query = _dbContext.StudyPlanSubjects
                                     .AsNoTracking()
+                                    .Include(x => x.Subject)
+                                    .Include(x => x.PrerequisiteSubject)
                                     .Where(x => x.TenantId == tenantId);
 
         if (filter.StudyPlanId.HasValue)
