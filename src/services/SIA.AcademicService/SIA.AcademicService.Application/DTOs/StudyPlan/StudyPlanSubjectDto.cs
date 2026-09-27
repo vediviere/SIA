@@ -6,13 +6,9 @@ namespace SIA.AcademicService.Application.DTOs.StudyPlan
 {
     public sealed class StudyPlanSubjectDto
     {
-        public Guid TenantId { get; init; }
-
         public Guid? StudyPlanId { get; init; }
 
         public Guid? SubjectId { get; init; }
-
-        public Guid? PrerequisiteSubjectId { get; init; }
 
         public string? Code { get; init; }
 
@@ -25,5 +21,7 @@ namespace SIA.AcademicService.Application.DTOs.StudyPlan
         public bool? IsRequired { get; init; }
 
         public bool? Status { get; init; }
+
+        public PrerequisiteDto? Prerequisite { get; init; }
     }
 }
