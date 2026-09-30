@@ -14,7 +14,7 @@ namespace SIA.WorkflowService.Api.Controllers;
 
 [ApiController]
 [Route("api/review-processes")]
-[Authorize(Roles = nameof(RoleCode.Administrator))]
+[Authorize(Roles = nameof(RoleCode.Coordinator))]
 public sealed class ReviewProcessesController : ControllerBase
 {
     private readonly ApproveUseCase _approveUseCase;
