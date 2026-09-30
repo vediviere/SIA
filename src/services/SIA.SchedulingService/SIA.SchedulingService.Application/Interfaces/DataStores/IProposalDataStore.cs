@@ -13,4 +13,6 @@ public interface IProposalDataStore
 
   Task<bool> WasProposalDecisionProcessedAsync(Guid eventId, CancellationToken cancellationToken);
   Task ApplyDecisionAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, CancellationToken cancellationToken);
+
+  Task ProposalApprovalWithOutboxAsync(Proposal proposal, Guid eventId, string eventType, string sourceService, Guid correlationId, AcademicLoadApprovedIntegrationEvent integrationEvent, CancellationToken cancellationToken);
 }

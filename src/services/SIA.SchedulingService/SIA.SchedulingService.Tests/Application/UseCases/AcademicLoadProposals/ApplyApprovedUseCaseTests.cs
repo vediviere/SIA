@@ -10,6 +10,42 @@ namespace SIA.SchedulingService.Tests.Application.UseCases.AcademicLoadProposals
 
 public sealed class ApplyApprovedUseCaseTests
 {
+
+    [Fact]
+    public async Task ExecuteAsync_WithValidEvent_ShouldApproveProposalAndPublishIntegrationEvent()
+    {
+        var tenantId = Guid.NewGuid();
+        var proposal = CreateSubmittedProposal(tenantId);
+        var dataStore = new FakeProposalDataStore(proposal);
+        var correlationId = Guid.NewGuid();
+        var eventId = Guid.NewGuid();
+        var useCase = new ApplyApprovedUseCase(dataStore, NullLogger<ApplyApprovedUseCase>.Instance);
+
+        await useCase.ExecuteAsync(
+          tenantId,
+          proposal.Id,
+          1,
+          eventId,
+          "ProposalApprovedIntegrationEvent.v1",
+          "SIA.WorkflowService",
+          correlationId,
+          CancellationToken.None);
+
+        Assert.Equal(ProposalStatus.Approved, proposal.ProposalStatus);
+        Assert.Same(proposal, dataStore.AppliedDecisionProposal);
+        Assert.Equal(1, dataStore.AppliedDecisionCount);
+
+        Assert.NotNull(dataStore.PublishedApprovedEvent);
+        Assert.Equal(1, dataStore.PublishedApprovedEventCount);
+        Assert.Equal(tenantId, dataStore.PublishedApprovedEvent!.TenantId);
+        Assert.Equal(correlationId, dataStore.PublishedApprovedEvent.CorrelationId);
+        Assert.Equal(proposal.Id, dataStore.PublishedApprovedEvent.ProposalId);
+        Assert.Equal(proposal.EducationalProgramId, dataStore.PublishedApprovedEvent.EducationalProgramId);
+        Assert.Equal(proposal.AcademicPeriodId, dataStore.PublishedApprovedEvent.AcademicPeriodId);
+        Assert.Equal(proposal.DivisionHeadId, dataStore.PublishedApprovedEvent.DivisionHeadId);
+        Assert.Equal(1, dataStore.PublishedApprovedEvent.Version);
+    }
+
   [Fact]
   public async Task ExecuteAsync_WithValidEvent_ShouldApproveProposal()
   {
@@ -123,7 +159,7 @@ public sealed class ApplyApprovedUseCaseTests
           useCase.ExecuteAsync(
             tenantId,
             proposal.Id,
-            2, // versión futura
+            2, 
             Guid.NewGuid(),
             "ProposalApprovedIntegrationEvent.v1",
             "SIA.WorkflowService",
@@ -182,13 +218,13 @@ public sealed class ApplyApprovedUseCaseTests
     return proposal;
   }
 
-    private static Proposal CreateResubmittedProposal(Guid tenantId)
-    {
-        var proposal = new Proposal(tenantId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-        proposal.SubmitForReview();    
-        proposal.RequireCorrection(); 
-        proposal.SubmitForReview();   
+  private static Proposal CreateResubmittedProposal(Guid tenantId)
+  {
+    var proposal = new Proposal(tenantId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+    proposal.SubmitForReview();    
+    proposal.RequireCorrection(); 
+    proposal.SubmitForReview();   
 
-        return proposal;
-    }
+    return proposal;
+  }
 }

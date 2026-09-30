@@ -1,4 +1,4 @@
-using SIA.AdminBff.Clients.Scheduling;
+using SIA.AdminBff.Clients.Scheduling.Dtos.SupportHour;
 
 namespace SIA.AdminBff.Contracts.Scheduling.Responses;
 

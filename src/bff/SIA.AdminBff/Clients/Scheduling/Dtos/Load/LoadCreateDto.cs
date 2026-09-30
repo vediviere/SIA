@@ -1,9 +1,7 @@
-namespace SIA.AdminBff.Clients.Scheduling;
+namespace SIA.AdminBff.Clients.Scheduling.Dtos.Load;
 
 public sealed record LoadCreateDto
 {
-  public required Guid TenantId { get; init; }
-
   public required Guid ProposalId { get; init; }
 
   public required Guid TeacherId { get; init; }

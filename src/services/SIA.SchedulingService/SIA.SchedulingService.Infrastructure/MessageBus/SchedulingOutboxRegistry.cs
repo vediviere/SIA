@@ -69,6 +69,9 @@ public static class SchedulingOutboxRegistry
       .Register<ClassroomTypeRestoredIntegrationEvent>(SchedulingIntegrationEventTypes.ClassroomTypeRestoredV1)
 
       .Register<ProposalCreatedIntegrationEvent>(SchedulingIntegrationEventTypes.ProposalCreatedV1)
-      .Register<ProposalSubmittedForReviewIntegrationEvent>(SchedulingIntegrationEventTypes.ProposalSubmittedForReviewV1);
+      .Register<ProposalSubmittedForReviewIntegrationEvent>(SchedulingIntegrationEventTypes.ProposalSubmittedForReviewV1)
+
+      .Register<AcademicLoadApprovedIntegrationEvent>(SchedulingIntegrationEventTypes.AcademicLoadApprovedV1);
+            
   }
 }
