@@ -9,7 +9,7 @@ services:
       - "1433:1433"
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=Sia_Dev_P@ssw0rd
+      - SA_PASSWORD=${DB_PASSWORD}
       - MSSQL_PID=Developer
     volumes:
       - sia-sqldata:/var/opt/mssql
@@ -22,8 +22,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-guest}
     volumes:
       - sia-rabbitmqdata:/var/lib/rabbitmq
 

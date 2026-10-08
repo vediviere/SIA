@@ -11,13 +11,19 @@ Antes de iniciar el entorno local, es necesario contar con:
 
 En versiones actuales de Docker Desktop, Docker Compose está disponible mediante el comando `docker compose`.
 
+## Configuración Inicial
+
+Para proteger las credenciales y no versionarlas en el repositorio, este proyecto utiliza variables de entorno locales. Antes de levantar la infraestructura por primera vez:
+
+1. Crea una copia del archivo de ejemplo de variables de entorno: cp .env.example .env
+
 ## Componentes y Puertos
 
 | Componente         | Contenedor            | Puerto(s) local | Usuario | Contraseña         |
 | :------------------| :-------------------- | :-------------- | :------ | :----------------- |
-| SQL Server 2022    | `sia_sqlserver_local` | `1433`          | `sa`    | `Sia_Dev_P@ssw0rd` |
-| RabbitMQ Broker    | `sia_rabbitmq_local`  | `5672`          | `guest` | `guest`            |
-| RabbitMQ Management| `sia_rabbitmq_local`  | `15672`         | `guest` | `guest`            |
+| SQL Server 2022    | `sia_sqlserver_local` | `1433`          | `sa`    | `Definida en .env` |
+| RabbitMQ Broker    | `sia_rabbitmq_local`  | `5672`          | `guest` | `Definida en .env`            |
+| RabbitMQ Management| `sia_rabbitmq_local`  | `15672`         | `guest` | `Definida en .env`            |
 
 ### RabbitMQ Management
 
