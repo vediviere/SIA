@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/deploy/" />
   <Folder Name="/deploy/compose/">
-    <File Path=".env.example" />
+    <File Path="deploy/compose/.env.example" />
     <File Path="deploy/compose/docker-compose.yml" />
     <File Path="deploy/compose/README.md" />
   </Folder>
