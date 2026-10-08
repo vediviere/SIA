@@ -1,5 +1,10 @@
 <Solution>
   <Folder Name="/deploy/" />
+  <Folder Name="/deploy/compose/">
+    <File Path="deploy/compose/.env.example" />
+    <File Path="deploy/compose/docker-compose.yml" />
+    <File Path="deploy/compose/README.md" />
+  </Folder>
   <Folder Name="/docs/">
     <File Path="PLAN-02-integration-test.md" />
   </Folder>
