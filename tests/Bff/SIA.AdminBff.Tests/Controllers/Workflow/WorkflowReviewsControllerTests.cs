@@ -16,7 +16,7 @@ public sealed class WorkflowReviewsControllerTests
         {
             new(
                 Id: processId,
-                Status: "InReview",
+                Status: 1,
                 CreatedAtUtc: DateTime.UtcNow
             )
         });
@@ -39,7 +39,7 @@ public sealed class WorkflowReviewsControllerTests
 
         var detailDto = new ReviewProcessDetailDto(
             Id: processId,
-            Status: "InReview",
+            Status: 1,
             CreatedAtUtc: DateTime.UtcNow
         );
 
