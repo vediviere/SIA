@@ -2,12 +2,12 @@
 
 public sealed record ReviewProcessListItemDto(
     Guid Id,
-    string Status,
+    int Status,
     DateTime CreatedAtUtc);
 
 public sealed record ReviewProcessDetailDto(
     Guid Id,
-    string Status,
+    int Status,
     DateTime CreatedAtUtc);
 
 public sealed record ReturnRequestDto(
