@@ -6,7 +6,6 @@ using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.Teachers;
 using SIA.AcademicStaffService.Contracts.Requests.Teacher;
 using SIA.AcademicStaffService.Contracts.Responses.Teacher;
-using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
 
@@ -39,8 +38,8 @@ public sealed class TeachersController : ControllerBase
     }
 
     [HttpGet("Filter")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<Teacher>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<Teacher>>> SearchAsync([FromQuery] TeacherFilter filter, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyCollection<TeacherResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<TeacherResponse>>> SearchAsync([FromQuery] TeacherFilter filter, CancellationToken cancellationToken)
     {
         var secureFilter = new TeacherFilter
         {
@@ -53,23 +52,50 @@ public sealed class TeachersController : ControllerBase
         };
 
         var teachers = await _teacherQueries.SearchAsync(secureFilter, cancellationToken);
-        return Ok(teachers);
+
+        var response = teachers.Select(t => new TeacherResponse
+        {
+            Id = t.Id,
+            TenantId = t.TenantId,
+            PersonId = t.PersonId,
+            ProfessionalProfile = t.ProfessionalProfile,
+            ContractType = t.ContractType,
+            ContractHours = t.ContractHours,
+            Status = t.Status,
+            CreatedAtUtc = t.CreatedAtUtc,
+            UpdatedAtUtc = t.UpdatedAtUtc
+        }).ToList();
+
+        return Ok(response);
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(Teacher), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TeacherResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Teacher>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<TeacherResponse>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId;
-        var teacher = await _teacherQueries.GetByIdAsync(tenantId, id, cancellationToken);
+        var t = await _teacherQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
-        if (teacher == null)
+        if (t == null)
         {
             return NotFound(new { message = $"No se encontró el profesor con Id {id}." });
         }
 
-        return Ok(teacher);
+        var response = new TeacherResponse
+        {
+            Id = t.Id,
+            TenantId = t.TenantId,
+            PersonId = t.PersonId,
+            ProfessionalProfile = t.ProfessionalProfile,
+            ContractType = t.ContractType,
+            ContractHours = t.ContractHours,
+            Status = t.Status,
+            CreatedAtUtc = t.CreatedAtUtc,
+            UpdatedAtUtc = t.UpdatedAtUtc
+        };
+
+        return Ok(response);
     }
 
     [HttpPost]

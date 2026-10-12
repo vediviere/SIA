@@ -6,7 +6,6 @@ using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.Coordinators;
 using SIA.AcademicStaffService.Contracts.Requests.Coordinators;
 using SIA.AcademicStaffService.Contracts.Responses.Coordinators;
-using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers.CoordinatorsController;
 
@@ -36,8 +35,8 @@ public sealed class CoordinatorsController : ControllerBase
     }
 
     [HttpGet("Filter")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<Coordinator>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<Coordinator>>> SearchAsync([FromQuery] CoordinatorFilter filter, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyCollection<CoordinatorResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<CoordinatorResponse>>> SearchAsync([FromQuery] CoordinatorFilter filter, CancellationToken cancellationToken)
     {
         var secureFilter = new CoordinatorFilter
         {
@@ -49,23 +48,44 @@ public sealed class CoordinatorsController : ControllerBase
         };
 
         var coordinators = await _coordinatorQueries.SearchAsync(secureFilter, cancellationToken);
-        return Ok(coordinators);
+
+        var response = coordinators.Select(c => new CoordinatorResponse
+        {
+            Id = c.Id,
+            TenantId = c.TenantId,
+            PersonId = c.PersonId,
+            Status = c.Status,
+            CreatedAtUtc = c.CreatedAtUtc,
+            UpdatedAtUtc = c.UpdatedAtUtc
+        }).ToList();
+
+        return Ok(response);
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(Coordinator), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CoordinatorResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Coordinator>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<CoordinatorResponse>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId;
-        var coordinator = await _coordinatorQueries.GetByIdAsync(tenantId, id, cancellationToken);
+        var c = await _coordinatorQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
-        if (coordinator == null)
+        if (c == null)
         {
             return NotFound(new { message = $"No se encontró el coordinador con Id {id}." });
         }
 
-        return Ok(coordinator);
+        var response = new CoordinatorResponse
+        {
+            Id = c.Id,
+            TenantId = c.TenantId,
+            PersonId = c.PersonId,
+            Status = c.Status,
+            CreatedAtUtc = c.CreatedAtUtc,
+            UpdatedAtUtc = c.UpdatedAtUtc
+        };
+
+        return Ok(response);
     }
 
     [HttpPost]
