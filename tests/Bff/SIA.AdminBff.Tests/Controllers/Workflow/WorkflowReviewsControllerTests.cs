@@ -16,7 +16,10 @@ public sealed class WorkflowReviewsControllerTests
         {
             new(
                 Id: processId,
-                Status: 1,
+                AcademicLoadProposalId: Guid.NewGuid(),
+                DivisionHeadId: Guid.NewGuid(),
+                Version: 1,
+                SubmittedAtUtc: DateTime.UtcNow,
                 CreatedAtUtc: DateTime.UtcNow
             )
         });
@@ -40,7 +43,14 @@ public sealed class WorkflowReviewsControllerTests
         var detailDto = new ReviewProcessDetailDto(
             Id: processId,
             Status: 1,
-            CreatedAtUtc: DateTime.UtcNow
+            AcademicLoadProposalId: Guid.NewGuid(),
+            DivisionHeadId: Guid.NewGuid(),
+            Version: 1,
+            SubmittedAtUtc: DateTime.UtcNow,
+            CreatedAtUtc: DateTime.UtcNow,
+            UpdatedAtUtc: null,
+            CorrelationId: Guid.NewGuid(),
+            Observations: new List<ObservationDetailDto>()
         );
 
         var workflowClient = new WorkflowClientFake(detailDto);
