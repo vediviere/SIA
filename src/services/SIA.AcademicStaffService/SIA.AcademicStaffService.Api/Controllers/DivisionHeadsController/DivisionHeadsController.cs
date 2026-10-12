@@ -6,7 +6,6 @@ using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.DivisionHeads;
 using SIA.AcademicStaffService.Contracts.Requests.DivisionHeads;
 using SIA.AcademicStaffService.Contracts.Responses.DivisionHeads;
-using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
 
@@ -36,8 +35,8 @@ public sealed class DivisionHeadsController : ControllerBase
     }
 
     [HttpGet("Filter")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<DivisionHead>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<DivisionHead>>> SearchAsync([FromQuery] DivisionHeadFilter filter, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyCollection<DivisionHeadResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<DivisionHeadResponse>>> SearchAsync([FromQuery] DivisionHeadFilter filter, CancellationToken cancellationToken)
     {
         var secureFilter = new DivisionHeadFilter
         {
@@ -50,23 +49,46 @@ public sealed class DivisionHeadsController : ControllerBase
         };
 
         var divisionHeads = await _divisionHeadQueries.SearchAsync(secureFilter, cancellationToken);
-        return Ok(divisionHeads);
+
+        var response = divisionHeads.Select(d => new DivisionHeadResponse
+        {
+            Id = d.Id,
+            TenantId = d.TenantId,
+            ProgramId = d.ProgramId,
+            PersonId = d.PersonId,
+            Status = d.Status,
+            CreatedAtUtc = d.CreatedAtUtc,
+            UpdatedAtUtc = d.UpdatedAtUtc
+        }).ToList();
+
+        return Ok(response);
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(DivisionHead), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(DivisionHeadResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DivisionHead>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<DivisionHeadResponse>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId;
-        var divisionHead = await _divisionHeadQueries.GetByIdAsync(tenantId, id, cancellationToken);
+        var d = await _divisionHeadQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
-        if (divisionHead == null)
+        if (d == null)
         {
             return NotFound(new { message = $"No se encontró el responsable de división con Id {id}." });
         }
 
-        return Ok(divisionHead);
+        var response = new DivisionHeadResponse
+        {
+            Id = d.Id,
+            TenantId = d.TenantId,
+            ProgramId = d.ProgramId,
+            PersonId = d.PersonId,
+            Status = d.Status,
+            CreatedAtUtc = d.CreatedAtUtc,
+            UpdatedAtUtc = d.UpdatedAtUtc
+        };
+
+        return Ok(response);
     }
 
     [HttpPost]

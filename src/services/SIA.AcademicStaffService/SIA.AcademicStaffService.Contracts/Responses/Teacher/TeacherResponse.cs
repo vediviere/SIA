@@ -1,0 +1,14 @@
+﻿namespace SIA.AcademicStaffService.Contracts.Responses.Teacher;
+
+public sealed record TeacherResponse
+{
+    public required Guid Id { get; init; }
+    public required Guid TenantId { get; init; }
+    public required Guid PersonId { get; init; }
+    public required string ProfessionalProfile { get; init; }
+    public required string ContractType { get; init; }
+    public required int ContractHours { get; init; }
+    public required bool Status { get; init; }
+    public required DateTime CreatedAtUtc { get; init; }
+    public required DateTime? UpdatedAtUtc { get; init; }
+}

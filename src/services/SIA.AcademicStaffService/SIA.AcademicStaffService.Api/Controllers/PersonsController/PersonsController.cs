@@ -39,8 +39,8 @@ public sealed class PersonsController : ControllerBase
     }
 
     [HttpGet("Filter")]
-    [ProducesResponseType(typeof(IReadOnlyCollection<Person>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<Person>>> SearchAsync([FromQuery] PersonFilter filter, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(IReadOnlyCollection<PersonResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<PersonResponse>>> SearchAsync([FromQuery] PersonFilter filter, CancellationToken cancellationToken)
     {
         var secureFilter = new PersonFilter
         {
@@ -54,23 +54,56 @@ public sealed class PersonsController : ControllerBase
         };
 
         var persons = await _personQueries.SearchAsync(secureFilter, cancellationToken);
-        return Ok(persons);
+
+        var response = persons.Select(p => new PersonResponse
+        {
+            Id = p.Id,
+            TenantId = p.TenantId,
+            EmployeeNumber = p.EmployeeNumber,
+            FirstName = p.FirstName,
+            PaternalLastName = p.PaternalLastName,
+            MaternalLastName = p.MaternalLastName,
+            AcademicDegree = p.AcademicDegree,
+            Email = p.Email,
+            Phone = p.Phone,
+            Status = p.Status,
+            CreatedAtUtc = p.CreatedAtUtc,
+            UpdatedAtUtc = p.UpdatedAtUtc
+        }).ToList();
+
+        return Ok(response);
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(Person), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PersonResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Person>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<PersonResponse>> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var tenantId = _tenantContext.TenantId;
-        var person = await _personQueries.GetByIdAsync(tenantId, id, cancellationToken);
+        var p = await _personQueries.GetByIdAsync(tenantId, id, cancellationToken);
 
-        if (person == null)
+        if (p == null)
         {
             return NotFound(new { message = $"No se encontró la persona con Id {id}." });
         }
 
-        return Ok(person);
+        var response = new PersonResponse
+        {
+            Id = p.Id,
+            TenantId = p.TenantId,
+            EmployeeNumber = p.EmployeeNumber,
+            FirstName = p.FirstName,
+            PaternalLastName = p.PaternalLastName,
+            MaternalLastName = p.MaternalLastName,
+            AcademicDegree = p.AcademicDegree,
+            Email = p.Email,
+            Phone = p.Phone,
+            Status = p.Status,
+            CreatedAtUtc = p.CreatedAtUtc,
+            UpdatedAtUtc = p.UpdatedAtUtc
+        };
+
+        return Ok(response);
     }
 
     [HttpPost]
