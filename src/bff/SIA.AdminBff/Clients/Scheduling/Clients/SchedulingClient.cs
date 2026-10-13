@@ -47,7 +47,7 @@ public sealed class SchedulingClient : ISchedulingClient
 
     public async Task<LoadDto> CreateLoadAsync(LoadCreateDto request, CancellationToken cancellationToken)
     {
-        using var response = await _httpClient.PostAsJsonAsync("api/academic-loads", request, cancellationToken);
+        using var response = await _httpClient.PostAsJsonAsync("api/AcademicLoad", request, cancellationToken);
 
         response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
@@ -57,7 +57,7 @@ public sealed class SchedulingClient : ISchedulingClient
 
     public async Task<LoadDto> UpdateLoadAsync(Guid loadId, LoadUpdateDto request, CancellationToken cancellationToken)
     {
-        using var response = await _httpClient.PutAsJsonAsync($"api/academic-loads/{loadId}", request, cancellationToken);
+        using var response = await _httpClient.PutAsJsonAsync($"api/AcademicLoad/{loadId}", request, cancellationToken);
 
         response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
@@ -77,7 +77,7 @@ public sealed class SchedulingClient : ISchedulingClient
 
     public async Task<SupportHourDto> CreateSupportHourAsync(SupportHourCreateDto request, CancellationToken cancellationToken)
     {
-        using var response = await _httpClient.PostAsJsonAsync("api/teaching-support-hours", request, cancellationToken);
+        using var response = await _httpClient.PostAsJsonAsync("api/TeachingSupportHours", request, cancellationToken);
 
         response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
@@ -87,7 +87,7 @@ public sealed class SchedulingClient : ISchedulingClient
 
     public async Task<SupportHourDto> UpdateSupportHourAsync(Guid supportHourId, SupportHourUpdateDto request, CancellationToken cancellationToken)
     {
-        using var response = await _httpClient.PutAsJsonAsync($"api/teaching-support-hours/{supportHourId}", request, cancellationToken);
+        using var response = await _httpClient.PutAsJsonAsync($"api/TeachingSupportHours/{supportHourId}", request, cancellationToken);
 
         response.EnsureInternalSuccess(InternalServiceConfiguration.SchedulingService);
 
