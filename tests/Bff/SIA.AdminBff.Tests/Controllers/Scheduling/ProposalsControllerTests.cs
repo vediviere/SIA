@@ -8,7 +8,6 @@ using SIA.AdminBff.Contracts.Scheduling.Enums;
 using SIA.AdminBff.Contracts.Scheduling.Requests;
 using SIA.AdminBff.Contracts.Scheduling.Responses;
 using SIA.AdminBff.Controllers.Scheduling;
-using SIA.AdminBff.Infrastructure.Tenancy;
 
 namespace SIA.AdminBff.Tests.Controllers.Scheduling;
 
@@ -37,7 +36,8 @@ public sealed class ProposalsControllerTests
             CorrelationId = Guid.NewGuid()
         });
 
-        var controller = new ProposalsController(client, new TenantContextFake(tenantId));
+        // Se removió la inyección de TenantContext
+        var controller = new ProposalsController(client);
 
         // Act
         var result = await controller.CreateAsync(new CreateProposalRequest
@@ -80,7 +80,8 @@ public sealed class ProposalsControllerTests
             CorrelationId = Guid.NewGuid()
         });
 
-        var controller = new ProposalsController(client, new TenantContextFake(tenantId));
+        // Se removió la inyección de TenantContext
+        var controller = new ProposalsController(client);
 
         // Act
         var result = await controller.SubmitForReviewAsync(proposalId, CancellationToken.None);
@@ -120,16 +121,6 @@ public sealed class ProposalsControllerTests
         Assert.Equal(ProposalStatus.RequiresCorrection, response.ProposalStatus);
         Assert.Equal(serviceResponse.Id, response.Id);
         Assert.Equal(serviceResponse.CorrelationId, response.CorrelationId);
-    }
-
-    private sealed class TenantContextFake : ITenantContext
-    {
-        public TenantContextFake(Guid tenantId)
-        {
-            TenantId = tenantId;
-        }
-
-        public Guid TenantId { get; }
     }
 
     private sealed class SchedulingClientFake : ISchedulingClient
