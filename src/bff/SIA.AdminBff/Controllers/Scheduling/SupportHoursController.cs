@@ -5,7 +5,6 @@ using SIA.AdminBff.Clients.Scheduling.Clients;
 using SIA.AdminBff.Contracts.Scheduling.Requests;
 using SIA.AdminBff.Contracts.Scheduling.Responses;
 using SIA.AdminBff.Infrastructure.Errors;
-using SIA.AdminBff.Infrastructure.Tenancy;
 
 namespace SIA.AdminBff.Controllers.Scheduling;
 
@@ -15,12 +14,9 @@ namespace SIA.AdminBff.Controllers.Scheduling;
 public sealed class SupportHoursController : ControllerBase
 {
     private readonly ISchedulingClient _schedulingClient;
-    private readonly ITenantContext _tenantContext;
-
-    public SupportHoursController(ISchedulingClient schedulingClient, ITenantContext tenantContext)
+    public SupportHoursController(ISchedulingClient schedulingClient)
     {
         _schedulingClient = schedulingClient;
-        _tenantContext = tenantContext;
     }
 
     [HttpPost("loads/{loadId:guid}/support-hours")]

@@ -5,7 +5,6 @@ using SIA.AdminBff.Clients.Scheduling.Dtos.Load;
 using SIA.AdminBff.Contracts.Scheduling.Requests;
 using SIA.AdminBff.Contracts.Scheduling.Responses;
 using SIA.AdminBff.Infrastructure.Errors;
-using SIA.AdminBff.Infrastructure.Tenancy;
 
 namespace SIA.AdminBff.Controllers.Scheduling;
 
@@ -15,12 +14,10 @@ namespace SIA.AdminBff.Controllers.Scheduling;
 public sealed class LoadsController : ControllerBase
 {
     private readonly ISchedulingClient _schedulingClient;
-    private readonly ITenantContext _tenantContext;
 
-    public LoadsController(ISchedulingClient schedulingClient, ITenantContext tenantContext)
+    public LoadsController(ISchedulingClient schedulingClient)
     {
         _schedulingClient = schedulingClient;
-        _tenantContext = tenantContext;
     }
 
     [HttpPost("proposals/{proposalId:guid}/loads")]
