@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using SIA.AdminBff.Extensions;
 using SIA.AdminBff.Infrastructure.Authentication;
 using SIA.AdminBff.Infrastructure.Errors;
@@ -22,6 +23,19 @@ builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddScoped<ICorrelationIdAccessor, CorrelationIdAccessor>();
 builder.Services.AddInternalClients(builder.Configuration);
 
+var allowebOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.AddCors(Options =>
+{
+    Options.AddDefaultPolicy(policy =>
+    {
+        policy
+            .WithOrigins(allowebOrigins)
+            .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
+            .WithHeaders("Authorization", "Content-Type", "X-Correlation-Id")
+            .WithExposedHeaders("X-Correlation-Id");
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -35,6 +49,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseBffExceptionHandling();
 app.UseAuthentication();
