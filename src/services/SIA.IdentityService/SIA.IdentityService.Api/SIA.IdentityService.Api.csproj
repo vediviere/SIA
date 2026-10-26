@@ -11,7 +11,7 @@
     <ProjectReference Include="..\SIA.IdentityService.Application\SIA.IdentityService.Application.csproj" />
     <ProjectReference Include="..\SIA.IdentityService.Infrastructure\SIA.IdentityService.Infrastructure.csproj" />
     <ProjectReference Include="..\SIA.IdentityService.Contracts\SIA.IdentityService.Contracts.csproj" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
