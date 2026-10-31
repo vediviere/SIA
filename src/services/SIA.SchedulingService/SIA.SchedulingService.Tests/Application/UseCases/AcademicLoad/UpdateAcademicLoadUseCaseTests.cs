@@ -2,6 +2,7 @@ using SIA.SchedulingService.Application.Common.Exceptions;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
 using SIA.SchedulingService.Application.UseCases.AcademicLoads;
 using SIA.SchedulingService.Contracts.Requests.AcademicLoad;
+using SIA.SchedulingService.Domain.Entities.Academics;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Tests.Common.Fakes;
 

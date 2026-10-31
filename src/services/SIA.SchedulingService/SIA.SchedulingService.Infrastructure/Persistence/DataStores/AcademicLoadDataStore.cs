@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
-using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.BuildingBlocks.Messaging.Outbox;
 using System.Text.Json;
+using SIA.SchedulingService.Domain.Entities.Academics;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 

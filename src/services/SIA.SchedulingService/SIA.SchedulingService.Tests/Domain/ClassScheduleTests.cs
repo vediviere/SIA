@@ -1,4 +1,4 @@
-﻿using SIA.SchedulingService.Domain.Entities;
+﻿using SIA.SchedulingService.Domain.Entities.Schedules;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -3,7 +3,7 @@ using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using System.Text.Json;
 

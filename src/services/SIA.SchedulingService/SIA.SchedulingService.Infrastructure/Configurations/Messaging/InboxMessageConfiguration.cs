@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIA.SchedulingService.Infrastructure.Persistence.Entities;
 
-namespace SIA.SchedulingService.Infrastructure.Persistence.Configurations;
+namespace SIA.SchedulingService.Infrastructure.Configurations.Messaging;
 
 public sealed class InboxMessageConfiguration : IEntityTypeConfiguration<InboxMessage>
 {

@@ -1,5 +1,5 @@
-using SIA.SchedulingService.Domain.Entities;
-namespace SIA.SchedulingService.Tests.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
+namespace SIA.SchedulingService.Tests.Domain.Entities.TeachingSupport;
 
 public sealed class TeachingSupportHourTest
 {

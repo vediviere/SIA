@@ -1,5 +1,5 @@
 ﻿using SIA.SchedulingService.Application.DTOs.ClassroomTypes;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Facilities;
 
 
 namespace SIA.SchedulingService.Application.Interfaces.Queries;

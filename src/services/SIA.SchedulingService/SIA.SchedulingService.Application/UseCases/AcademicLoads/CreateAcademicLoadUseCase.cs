@@ -2,7 +2,7 @@ using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoad;
 using SIA.SchedulingService.Contracts.Requests.AcademicLoad;
 using SIA.SchedulingService.Contracts.Responses.AcademicLoad;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
 
 namespace SIA.SchedulingService.Application.UseCases.AcademicLoads;

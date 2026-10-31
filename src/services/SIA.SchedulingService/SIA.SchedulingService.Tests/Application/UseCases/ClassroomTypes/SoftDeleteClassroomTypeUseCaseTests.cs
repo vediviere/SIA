@@ -1,6 +1,6 @@
 ﻿using SIA.SchedulingService.Application.Common.Exceptions.ClassroomType;
 using SIA.SchedulingService.Application.UseCases.ClassroomTypes;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Facilities;
 using SIA.SchedulingService.Tests.Common.Fakes;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿namespace SIA.SchedulingService.Domain.Entities;
+﻿namespace SIA.SchedulingService.Domain.Entities.Facilities;
 
 public sealed class Building
 {

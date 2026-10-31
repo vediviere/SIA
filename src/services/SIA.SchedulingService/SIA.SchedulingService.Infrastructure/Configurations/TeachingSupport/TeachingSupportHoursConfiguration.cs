@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 
-namespace SIA.SchedulingService.Infrastructure.Persistence.Configurations;
+namespace SIA.SchedulingService.Infrastructure.Configurations.TeachingSupport;
 
 public sealed class TeachingSupportHoursConfiguration : IEntityTypeConfiguration<TeachingSupportHour>
 {

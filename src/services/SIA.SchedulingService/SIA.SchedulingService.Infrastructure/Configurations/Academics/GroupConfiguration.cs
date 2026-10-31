@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIA.SchedulingService.Domain.Entities;
 
-namespace SIA.SchedulingService.Infrastructure.Configurations;
+namespace SIA.SchedulingService.Infrastructure.Configurations.Academics;
 
 public sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
 {

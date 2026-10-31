@@ -6,7 +6,7 @@ using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Contracts.Requests.TeachingSupportHours;
 using SIA.SchedulingService.Contracts.Responses.TeachingSupportHours;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 
 namespace SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 

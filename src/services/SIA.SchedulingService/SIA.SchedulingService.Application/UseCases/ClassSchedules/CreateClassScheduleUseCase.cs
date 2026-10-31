@@ -2,7 +2,7 @@
 using SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
 using SIA.SchedulingService.Contracts.Requests.ClassSchedule;
 using SIA.SchedulingService.Contracts.Responses.ClassSchedule;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Schedules;
 using System;
 using System.Collections.Generic;
 using System.Text;

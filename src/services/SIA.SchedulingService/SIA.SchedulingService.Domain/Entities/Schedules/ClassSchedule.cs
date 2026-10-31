@@ -1,29 +1,30 @@
-﻿using System;
+﻿using SIA.SchedulingService.Domain.Entities.Academics;
+using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Text;
 
-namespace SIA.SchedulingService.Domain.Entities;
+namespace SIA.SchedulingService.Domain.Entities.Schedules;
 
-public sealed class SupportSchedule
+public sealed class ClassSchedule
 {
-    private SupportSchedule()
-    {
-    }
+    private ClassSchedule() { }
 
-    public SupportSchedule(
+    public ClassSchedule(
         Guid tenantId,
-        Guid supportHourId,
+        Guid offeringId,
         Guid classroomLabId,
         Guid academicPeriodId,
         string day,
         DateTime startTime,
         DateTime endTime)
+
     {
         if (tenantId == Guid.Empty)
             throw new ArgumentException("El tenant es obligatorio.", nameof(tenantId));
 
-        if (supportHourId == Guid.Empty)
-            throw new ArgumentException("La hora de apoyo es obligatoria.", nameof(supportHourId));
+        if (offeringId == Guid.Empty)
+            throw new ArgumentException("La oferta (Offering) es obligatoria.", nameof(offeringId));
 
         if (classroomLabId == Guid.Empty)
             throw new ArgumentException("El aula o laboratorio es obligatorio.", nameof(classroomLabId));
@@ -39,7 +40,7 @@ public sealed class SupportSchedule
 
         Id = Guid.NewGuid();
         TenantId = tenantId;
-        SupportHourId = supportHourId;
+        OfferingId = offeringId;
         ClassroomLabId = classroomLabId;
         AcademicPeriodId = academicPeriodId;
         Day = day.Trim().ToUpperInvariant();
@@ -51,7 +52,7 @@ public sealed class SupportSchedule
 
     public Guid Id { get; private set; }
     public Guid TenantId { get; private set; }
-    public Guid SupportHourId { get; private set; }
+    public Guid OfferingId { get; private set; }
     public Guid ClassroomLabId { get; private set; }
     public Guid AcademicPeriodId { get; private set; }
     public string Day { get; private set; } = string.Empty;
@@ -62,14 +63,13 @@ public sealed class SupportSchedule
     public DateTime? UpdatedAtUtc { get; private set; }
 
     public ClassroomLab? ClassroomLab { get; private set; }
-    public TeachingSupportHour? SupportHour { get; private set; }
+    public AcademicOffering? Offering { get; private set; }
 
     public void Update(
-            string day,
-            DateTime startTime,
-            DateTime endTime)
+        string day,
+        DateTime startTime,
+        DateTime endTime)
     {
-
         if (string.IsNullOrWhiteSpace(day))
             throw new ArgumentException("El día es obligatorio.", nameof(day));
 

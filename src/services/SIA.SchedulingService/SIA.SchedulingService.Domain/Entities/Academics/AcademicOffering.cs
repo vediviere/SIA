@@ -1,4 +1,4 @@
-namespace SIA.SchedulingService.Domain.Entities;
+namespace SIA.SchedulingService.Domain.Entities.Academics;
 
 public sealed class AcademicOffering
 {

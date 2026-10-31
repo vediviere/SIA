@@ -1,7 +1,7 @@
 using SIA.SchedulingService.Application.Common.Exceptions;
 using SIA.SchedulingService.Application.Common.Exceptions.AcademicLoadProposal;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
 using SIA.SchedulingService.Domain.Enums;
 
 namespace SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;

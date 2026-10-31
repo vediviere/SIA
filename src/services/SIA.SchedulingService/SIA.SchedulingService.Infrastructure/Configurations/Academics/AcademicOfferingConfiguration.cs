@@ -2,8 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
 
-namespace SIA.SchedulingService.Infrastructure.Configurations;
+namespace SIA.SchedulingService.Infrastructure.Configurations.Academics;
 
 public sealed class AcademicOfferingConfiguration : IEntityTypeConfiguration<AcademicOffering>
 {

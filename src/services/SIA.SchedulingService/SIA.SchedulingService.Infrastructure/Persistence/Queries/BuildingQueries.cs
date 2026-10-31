@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIA.SchedulingService.Application.Interfaces.Queries;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Facilities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 
 

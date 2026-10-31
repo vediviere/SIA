@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Domain.Enums;
 
-namespace SIA.SchedulingService.Infrastructure.Configurations;
+namespace SIA.SchedulingService.Infrastructure.Configurations.Academics;
 
 public sealed class ProposalConfiguration : IEntityTypeConfiguration<Proposal>
 {

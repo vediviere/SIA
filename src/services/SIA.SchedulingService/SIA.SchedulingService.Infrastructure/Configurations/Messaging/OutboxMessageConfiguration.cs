@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SIA.BuildingBlocks.Messaging.Outbox;
 
 
-namespace SIA.SchedulingService.Infrastructure.Configurations;
+namespace SIA.SchedulingService.Infrastructure.Configurations.Messaging;
 
 public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage>
 {

@@ -1,5 +1,6 @@
 using SIA.SchedulingService.Application.Common.Exceptions.AcademicOffering;
 using SIA.SchedulingService.Application.UseCases.AcademicOfferings;
+using SIA.SchedulingService.Domain.Entities.Academics;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Tests.Common.Fakes;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoads;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SIA.SchedulingService.Domain.Entities;
+namespace SIA.SchedulingService.Domain.Entities.TeachingSupport;
 
 public sealed class SupportActivity
 {

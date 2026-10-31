@@ -1,6 +1,6 @@
 ﻿using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Facilities;
 using System;
 using System.Collections.Generic;
 using System.Text;

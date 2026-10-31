@@ -1,7 +1,7 @@
 ﻿using SIA.SchedulingService.Application.Common.Exceptions.SupportActivity;
 using SIA.SchedulingService.Application.UseCases.SupportActivities;
 using SIA.SchedulingService.Contracts.Requests.SupportActivity;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 using SIA.SchedulingService.Tests.Common.Fakes;
 using System;
 using System.Threading;
