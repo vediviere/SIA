@@ -11,12 +11,6 @@
     <ProjectReference Include="..\..\..\building-blocks\SIA.BuildingBlocks.Domain\SIA.BuildingBlocks.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common\AcademicLoadGroups\" />
-    <Folder Include="DTOs\AcademicLoadGroups\" />
-    <Folder Include="UseCases\AcademicLoadGroups\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
