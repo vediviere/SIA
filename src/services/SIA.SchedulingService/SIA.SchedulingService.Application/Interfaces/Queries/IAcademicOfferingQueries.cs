@@ -1,4 +1,4 @@
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
 
 namespace SIA.SchedulingService.Application.Interfaces.Queries;
 

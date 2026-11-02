@@ -279,6 +279,10 @@ builder.Services.AddScoped<SubmitForReviewUseCase>();
 builder.Services.AddScoped<ApplyApprovedUseCase>();
 builder.Services.AddScoped<ApplyCorrectionUseCase>();
 
+// UseCases: Tutores de Grupos
+builder.Services.AddScoped<IAcademicLoadGroupDataStore, AcademicLoadGroupDataStore>();
+builder.Services.AddScoped<IAcademicLoadGroupQueries, AcademicLoadGroupQueries>();
+
 // ExternalServices: AcademicStaffService
 builder.Services.AddHttpClient<IAcademicStaffServiceClient, AcademicStaffServiceClient>(client =>
 {

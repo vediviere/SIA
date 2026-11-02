@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIA.SchedulingService.Application.DTOs.ClassSchedules;
 using SIA.SchedulingService.Application.Interfaces.Queries;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Schedules;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using System;
 using System.Collections.Generic;

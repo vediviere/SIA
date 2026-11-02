@@ -8,7 +8,7 @@ using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.UseCases.SupportActivities;
 using SIA.SchedulingService.Contracts.Requests.SupportActivity;
 using SIA.SchedulingService.Contracts.Responses.SupportActivity;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 
 
 namespace SIA.SchedulingService.Api.Controllers.Support;

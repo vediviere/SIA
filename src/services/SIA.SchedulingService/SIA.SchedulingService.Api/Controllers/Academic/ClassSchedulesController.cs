@@ -8,7 +8,7 @@ using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Application.UseCases.ClassSchedules;
 using SIA.SchedulingService.Contracts.Requests.ClassSchedule;
 using SIA.SchedulingService.Contracts.Responses.ClassSchedule;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Schedules;
 
 namespace SIA.SchedulingService.Api.Controllers.Academic;
 

@@ -101,8 +101,6 @@ public sealed class AcademicLoadController : ControllerBase
         var response = await _getAcademicLoadByIdUseCase.ExecuteAsync(tenantId, id, cancellationToken);
         return Ok(response);
     }
-
-
     private Guid ResolveCorrelationId()
     {
         const string headerName = "X-Correlation-Id";

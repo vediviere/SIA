@@ -2,11 +2,11 @@
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.ClassSchedule;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
-using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.BuildingBlocks.Messaging.Outbox;
 
 using System.Text.Json;
+using SIA.SchedulingService.Domain.Entities.Schedules;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 

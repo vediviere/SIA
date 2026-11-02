@@ -1,7 +1,7 @@
 ﻿using SIA.SchedulingService.Application.Common.Exceptions;
 using SIA.SchedulingService.Application.UseCases.Buildings;
 using SIA.SchedulingService.Contracts.Requests.Building;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Facilities;
 using SIA.SchedulingService.Tests.Common.Fakes;
 
 namespace SIA.SchedulingService.Tests.Application.UseCases.Buildings;

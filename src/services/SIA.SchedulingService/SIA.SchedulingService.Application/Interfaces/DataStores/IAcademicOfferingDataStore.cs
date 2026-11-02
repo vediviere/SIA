@@ -1,6 +1,6 @@
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicOffering;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
 
 namespace SIA.SchedulingService.Application.Interfaces.DataStores;
 

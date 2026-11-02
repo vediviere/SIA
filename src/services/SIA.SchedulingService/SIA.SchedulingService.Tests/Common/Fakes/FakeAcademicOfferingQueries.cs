@@ -1,5 +1,5 @@
 using SIA.SchedulingService.Application.Interfaces.Queries;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
 
 namespace SIA.SchedulingService.Tests.Common.Fakes;
 

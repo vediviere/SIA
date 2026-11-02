@@ -1,6 +1,7 @@
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 
 namespace SIA.SchedulingService.Tests.Common.Fakes;
 

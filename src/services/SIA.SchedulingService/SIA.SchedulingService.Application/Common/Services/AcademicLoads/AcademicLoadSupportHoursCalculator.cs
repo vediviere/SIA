@@ -1,5 +1,6 @@
 using SIA.SchedulingService.Application.Interfaces.Queries;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 
 namespace SIA.SchedulingService.Application.Common.Services.AcademicLoads;
 

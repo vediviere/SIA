@@ -2,6 +2,8 @@ using SIA.SchedulingService.Application.Common.Exceptions.TeachingSupportHours;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoads;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
 using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
+using SIA.SchedulingService.Domain.Entities.Academics;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Tests.Common.Fakes;
 

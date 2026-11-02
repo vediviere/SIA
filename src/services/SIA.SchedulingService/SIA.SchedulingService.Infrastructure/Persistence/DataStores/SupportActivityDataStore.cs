@@ -3,9 +3,9 @@ using System.Text.Json;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
-using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.BuildingBlocks.Messaging.Outbox;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.DataStores;
 

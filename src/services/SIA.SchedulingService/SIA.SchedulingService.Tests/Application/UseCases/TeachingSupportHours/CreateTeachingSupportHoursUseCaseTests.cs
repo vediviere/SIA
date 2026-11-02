@@ -4,6 +4,7 @@ using SIA.SchedulingService.Application.Common.Services.AcademicLoads;
 using SIA.SchedulingService.Application.Common.Services.AcademicLoadProposals;
 using SIA.SchedulingService.Application.UseCases.TeachingSupportHours;
 using SIA.SchedulingService.Contracts.Requests.TeachingSupportHours;
+using SIA.SchedulingService.Domain.Entities.Academics;
 using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Tests.Common.Fakes;
 

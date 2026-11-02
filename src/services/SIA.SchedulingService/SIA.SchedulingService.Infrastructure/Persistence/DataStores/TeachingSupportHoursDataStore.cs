@@ -2,7 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using SIA.BuildingBlocks.Messaging.Outbox;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.Academics;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using System.Text.Json;
 
@@ -22,7 +23,7 @@ public sealed class TeachingSupportHoursDataStore : ITeachingSupportHoursDataSto
     return _dbContext.TeachingSupportHours.AnyAsync(supportHour => supportHour.TenantId == tenantId && supportHour.ActivityId == activityId && supportHour.AcademicLoadId == academicLoadId, cancellationToken);
   }
 
-  public async Task AddTeachingSupportHoursWithOutboxAsync(Domain.Entities.TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  public async Task AddTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursCreatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     var payload = JsonSerializer.Serialize(integrationEvent);
     var eventType = SchedulingIntegrationEventTypes.TeachingSupportHoursCreatedV1;
@@ -34,12 +35,12 @@ public sealed class TeachingSupportHoursDataStore : ITeachingSupportHoursDataSto
     await _dbContext.SaveChangesAsync(cancellationToken);
   }
 
-  public Task<Domain.Entities.TeachingSupportHour?> GetByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken)
+  public Task<TeachingSupportHour?> GetByIdAsync(Guid tenantId, Guid id, CancellationToken cancellationToken)
   {
     return _dbContext.TeachingSupportHours.FirstOrDefaultAsync(hours => hours.TenantId == tenantId && hours.Id == id, cancellationToken);
   }
 
-  public async Task UpdateTeachingSupportHoursWithOutboxAsync(Domain.Entities.TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  public async Task UpdateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursUpdatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     var payload = JsonSerializer.Serialize(integrationEvent);
     var eventType = SchedulingIntegrationEventTypes.TeachingSupportHoursUpdatedV1;
@@ -51,7 +52,7 @@ public sealed class TeachingSupportHoursDataStore : ITeachingSupportHoursDataSto
     await _dbContext.SaveChangesAsync(cancellationToken);
   }
 
-  public async Task DeactivateTeachingSupportHoursWithOutboxAsync(Domain.Entities.TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  public async Task DeactivateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursDeactivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     var payload = JsonSerializer.Serialize(integrationEvent);
     var eventType = SchedulingIntegrationEventTypes.TeachingSupportHoursDeactivatedV1;
@@ -63,7 +64,7 @@ public sealed class TeachingSupportHoursDataStore : ITeachingSupportHoursDataSto
     await _dbContext.SaveChangesAsync(cancellationToken);
   }
 
-  public async Task ActivateTeachingSupportHoursWithOutboxAsync(Domain.Entities.TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+  public async Task ActivateTeachingSupportHoursWithOutboxAsync(TeachingSupportHour teachingSupportHours, AcademicLoad academicLoad, TeachingSupportHoursActivatedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
   {
     var payload = JsonSerializer.Serialize(integrationEvent);
     var eventType = SchedulingIntegrationEventTypes.TeachingSupportHoursActivatedV1;

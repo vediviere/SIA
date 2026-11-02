@@ -1,6 +1,6 @@
 ﻿using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

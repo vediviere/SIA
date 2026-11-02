@@ -2,7 +2,7 @@
 using SIA.SchedulingService.Contracts.IntegrationEvents.SupportActivity;
 using SIA.SchedulingService.Contracts.Requests.SupportActivity;
 using SIA.SchedulingService.Contracts.Responses.SupportActivity;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 using System;
 using System.Collections.Generic;
 using System.Text;

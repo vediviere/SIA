@@ -2,10 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using SIA.SchedulingService.Application.Interfaces.DataStores;
 using SIA.SchedulingService.Contracts.IntegrationEvents.ClassroomTypes;
-using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Contracts.IntegrationEvents;
 using SIA.BuildingBlocks.Messaging.Outbox;
+using SIA.SchedulingService.Domain.Entities.Facilities;
 
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.DataStores;

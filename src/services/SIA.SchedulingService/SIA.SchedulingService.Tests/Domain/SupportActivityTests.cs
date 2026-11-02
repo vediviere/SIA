@@ -1,4 +1,4 @@
-﻿using SIA.SchedulingService.Domain.Entities;
+﻿using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 using System;
 using Xunit;
 

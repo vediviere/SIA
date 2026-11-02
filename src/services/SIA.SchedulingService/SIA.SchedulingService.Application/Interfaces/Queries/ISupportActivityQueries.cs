@@ -1,5 +1,5 @@
 ﻿using SIA.SchedulingService.Application.DTOs.SupportActivity;
-using SIA.SchedulingService.Domain.Entities;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIA.SchedulingService.Application.DTOs.SupportActivity;
-using SIA.SchedulingService.Domain.Entities;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 using SIA.SchedulingService.Application.Interfaces.Queries;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using SIA.SchedulingService.Domain.Entities.TeachingSupport;
 
 namespace SIA.SchedulingService.Infrastructure.Persistence.Queries;
 
