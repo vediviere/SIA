@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIA.SchedulingService.Application.DTOs.AcademicLoadGroups;
+﻿namespace SIA.SchedulingService.Application.DTOs.AcademicLoadGroups;
 
 public sealed record AcademicLoadGroupDto
 {

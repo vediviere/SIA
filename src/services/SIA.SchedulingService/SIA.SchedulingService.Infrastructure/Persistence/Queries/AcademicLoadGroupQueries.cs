@@ -3,7 +3,6 @@ using SIA.SchedulingService.Application.Interfaces.Queries;
 using SIA.SchedulingService.Domain.Entities.Academics;
 using SIA.SchedulingService.Infrastructure.Persistence.Contexts;
 
-
 namespace SIA.SchedulingService.Infrastructure.Persistence.Queries;
 
 public sealed class AcademicLoadGroupQueries : IAcademicLoadGroupQueries

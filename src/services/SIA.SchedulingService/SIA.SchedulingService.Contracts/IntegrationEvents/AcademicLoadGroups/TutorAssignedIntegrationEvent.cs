@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoadGroups;
+﻿namespace SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoadGroups;
 
 public sealed record TutorAssignedIntegrationEvent
 {

@@ -30,7 +30,8 @@ public sealed class AcademicLoadGroupDataStore : IAcademicLoadGroupDataStore
             .FirstOrDefaultAsync(x => x.TenantId == tenantId && x.GroupId == groupId, cancellationToken);
     }
 
-    public async Task AddAcademicLoadGroupWithOutboxAsync(AcademicLoadGroup academicLoadGroup, TutorAssignedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task AddAcademicLoadGroupWithOutboxAsync(AcademicLoadGroup academicLoadGroup,
+        TutorAssignedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
         var eventType = "TutorAssignedIntegrationEventV1";
@@ -41,7 +42,8 @@ public sealed class AcademicLoadGroupDataStore : IAcademicLoadGroupDataStore
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task RemoveAcademicLoadGroupWithOutboxAsync(AcademicLoadGroup academicLoadGroup, TutorRemovedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
+    public async Task RemoveAcademicLoadGroupWithOutboxAsync(AcademicLoadGroup academicLoadGroup,
+        TutorRemovedIntegrationEvent integrationEvent, CancellationToken cancellationToken)
     {
         var payload = JsonSerializer.Serialize(integrationEvent);
         var eventType = "TutorRemovedIntegrationEventV1";
@@ -52,7 +54,8 @@ public sealed class AcademicLoadGroupDataStore : IAcademicLoadGroupDataStore
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task ReplaceAcademicLoadGroupWithOutboxAsync(AcademicLoadGroup oldAssignment, AcademicLoadGroup newAssignment, TutorRemovedIntegrationEvent removedEvent, TutorAssignedIntegrationEvent assignedEvent, CancellationToken cancellationToken)
+    public async Task ReplaceAcademicLoadGroupWithOutboxAsync(AcademicLoadGroup oldAssignment, AcademicLoadGroup newAssignment,
+        TutorRemovedIntegrationEvent removedEvent, TutorAssignedIntegrationEvent assignedEvent, CancellationToken cancellationToken)
     {
         var removedPayload = JsonSerializer.Serialize(removedEvent);
         var removedOutboxMessage = new OutboxMessage("TutorRemovedIntegrationEventV1", removedPayload, removedEvent.CorrelationId);

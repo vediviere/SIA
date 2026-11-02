@@ -1,8 +1,5 @@
 ﻿using SIA.SchedulingService.Contracts.IntegrationEvents.AcademicLoadGroups;
 using SIA.SchedulingService.Domain.Entities.Academics;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIA.SchedulingService.Application.Interfaces.DataStores;
 

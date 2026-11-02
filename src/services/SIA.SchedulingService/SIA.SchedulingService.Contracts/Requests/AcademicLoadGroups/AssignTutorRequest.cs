@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace SIA.SchedulingService.Contracts.Requests.AcademicLoadGroups;
 
-namespace SIA.SchedulingService.Contracts.Requests.AcademicLoadGroups
+public sealed record AssignTutorRequest
 {
-    internal class AssignTutorRequest
-    {
-    }
+    public Guid GroupId { get; init; }
+    public Guid AcademicLoadId { get; init; }
 }

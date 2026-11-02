@@ -1,5 +1,4 @@
 ﻿namespace SIA.SchedulingService.Domain.Entities.Academics;
-
 public sealed class AcademicLoadGroup
 {
     private AcademicLoadGroup()

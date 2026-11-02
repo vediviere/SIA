@@ -1,7 +1,4 @@
 ﻿using SIA.BuildingBlocks.Application.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SIA.SchedulingService.Application.Common.Exceptions.AcademicLoadGroups;
 

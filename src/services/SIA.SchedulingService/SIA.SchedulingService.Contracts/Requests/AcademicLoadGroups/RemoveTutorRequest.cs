@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SIA.SchedulingService.Contracts.Requests.AcademicLoadGroups;
+﻿namespace SIA.SchedulingService.Contracts.Requests.AcademicLoadGroups;
 
 public sealed record RemoveTutorRequest
 {
