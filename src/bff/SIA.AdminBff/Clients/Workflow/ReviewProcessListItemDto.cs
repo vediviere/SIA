@@ -1,4 +1,4 @@
-﻿namespace SIA.AdminBff.Clients.Workflow;
+namespace SIA.AdminBff.Clients.Workflow;
 
 public sealed record ReviewProcessListItemDto(
     Guid Id,
@@ -22,7 +22,7 @@ public sealed record ReviewProcessDetailDto(
 
 public sealed record ObservationDetailDto(
     Guid Id,
-    int TargetType,
+    ObservationTarget TargetType,
     Guid TargetId,
     string Description,
     DateTime CreatedAtUtc);
@@ -31,6 +31,6 @@ public sealed record ReturnRequestDto(
     IEnumerable<ObservationInputDto> Observations);
 
 public sealed record ObservationInputDto(
-    int TargetType,
+    ObservationTarget TargetType,
     Guid TargetId,
     string Description);
