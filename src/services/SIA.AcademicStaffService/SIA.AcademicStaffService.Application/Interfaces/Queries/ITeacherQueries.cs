@@ -9,5 +9,5 @@ public interface ITeacherQueries
 
     Task<IReadOnlyCollection<Teacher>> SearchAsync(TeacherFilter filter, CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<Teacher>> GetCandidatesAsync(CandidateTeacherFilter filter, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<TeacherCandidateDto>> GetCandidatesAsync(CandidateTeacherFilter filter, CancellationToken cancellationToken);
 }

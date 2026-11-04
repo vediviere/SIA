@@ -61,6 +61,8 @@ public sealed class Teacher
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
 
+    public ICollection<TeacherCompetency> TeacherCompetencies { get; private set; } = new List<TeacherCompetency>();
+
     public void Deactivate()
     {
         Status = false;

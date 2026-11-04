@@ -6,6 +6,7 @@ using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Application.UseCases.Teachers;
 using SIA.AcademicStaffService.Contracts.Requests.Teacher;
 using SIA.AcademicStaffService.Contracts.Responses.Teacher;
+using SIA.AcademicStaffService.Contracts.Responses.TeacherCompetency;
 
 namespace SIA.AcademicStaffService.Api.Controllers;
 
@@ -181,7 +182,19 @@ public sealed class TeachersController : ControllerBase
             ProfessionalProfile = teacher.ProfessionalProfile,
             ProgramId = teacher.ProgramId,
             ContractHours = teacher.ContractHours,
-            Status = teacher.Status
+            Status = teacher.Status,
+            Competencies = teacher.Competencies.Select(tc => new CreateTeacherCompetencyResponse
+            {
+                TeacherCompetencyId = tc.TeacherCompetencyId,
+                TenantId = tenantId,
+                TeacherId = teacher.Id,
+                CompetencyId = tc.CompetencyId,
+                Level = tc.Level,
+                Stage = tc.Stage,
+                Status = tc.Status,
+                CreatedAtUtc = DateTime.UtcNow,
+                CorrelationId = Guid.Empty
+            }).ToList()
         }).ToList();
 
         return Ok(response);
