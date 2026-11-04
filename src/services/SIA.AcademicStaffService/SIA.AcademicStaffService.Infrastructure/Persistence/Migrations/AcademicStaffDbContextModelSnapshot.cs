@@ -199,6 +199,53 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.TeacherCompetency", b =>
+                {
+                    b.Property<Guid>("TeacherCompetencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompetencyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TeacherId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ValidatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("TeacherCompetencyId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.HasIndex("TenantId", "TeacherId", "CompetencyId")
+                        .IsUnique();
+
+                    b.ToTable("TeacherCompetencies", (string)null);
+                });
+
             modelBuilder.Entity("SIA.BuildingBlocks.Messaging.Outbox.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -270,6 +317,15 @@ namespace SIA.AcademicStaffService.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SIA.AcademicStaffService.Domain.Entities.TeacherCompetency", b =>
+                {
+                    b.HasOne("SIA.AcademicStaffService.Domain.Entities.Teacher", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

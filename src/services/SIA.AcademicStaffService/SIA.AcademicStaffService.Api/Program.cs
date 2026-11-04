@@ -11,11 +11,13 @@ using SIA.AcademicStaffService.Application.UseCases.Coordinators;
 using SIA.AcademicStaffService.Application.UseCases.DivisionHeads;
 using SIA.AcademicStaffService.Application.UseCases.Persons;
 using SIA.AcademicStaffService.Application.UseCases.Teachers;
+using SIA.AcademicStaffService.Application.UseCases.TeacherCompetencies;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.Coordinators;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.DivisionHeads;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.Persons;
 using SIA.AcademicStaffService.Contracts.IntegrationEvents.Teacher;
+using SIA.AcademicStaffService.Contracts.IntegrationEvents.TeacherCompetency;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
 using SIA.AcademicStaffService.Infrastructure.Persistence.DataStores;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Queries;
@@ -138,7 +140,11 @@ builder.Services.AddSingleton(new OutboxEventRegistry()
     .Register<PersonCreatedIntegrationEvent>(AcademicStaffIntegrationEventTypes.PersonCreatedV1)
     .Register<PersonUpdatedIntegrationEvent>(AcademicStaffIntegrationEventTypes.PersonUpdatedV1)
     .Register<PersonActivatedIntegrationEvent>(AcademicStaffIntegrationEventTypes.PersonActivatedV1)
-    .Register<PersonDeactivatedIntegrationEvent>(AcademicStaffIntegrationEventTypes.PersonDeactivatedV1));
+    .Register<PersonDeactivatedIntegrationEvent>(AcademicStaffIntegrationEventTypes.PersonDeactivatedV1)
+    .Register<TeacherCompetencyCreatedIntegrationEvent>("AcademicStaff.TeacherCompetency.Created.v1")
+    .Register<TeacherCompetencyUpdatedIntegrationEvent>("AcademicStaff.TeacherCompetency.Updated.v1")
+    .Register<TeacherCompetencyActivatedIntegrationEvent>("AcademicStaff.TeacherCompetency.Activated.v1")
+    .Register<TeacherCompetencyDeactivatedIntegrationEvent>("AcademicStaff.TeacherCompetency.Deactivated.v1"));
 
 builder.Services.AddScoped<IOutboxStore, OutboxStore>();
 builder.Services.AddScoped<IOutboxEventPublisher, MassTransitOutboxEventPublisher>();
@@ -169,6 +175,12 @@ builder.Services.AddScoped<ICoordinatorQueries, CoordinatorQueries>();
 builder.Services.AddScoped<CreateCoordinatorUseCase>();
 builder.Services.AddScoped<ActivateCoordinatorUseCase>();
 builder.Services.AddScoped<DeactivateCoordinatorUseCase>();
+
+builder.Services.AddScoped<ITeacherCompetencyDataStore, TeacherCompetencyDataStore>();
+builder.Services.AddScoped<CreateTeacherCompetencyUseCase>();
+builder.Services.AddScoped<UpdateTeacherCompetencyUseCase>();
+builder.Services.AddScoped<ActivateTeacherCompetencyUseCase>();
+builder.Services.AddScoped<DeactivateTeacherCompetencyUseCase>();
 
 builder.Services.AddSiaExceptionHandling();
 builder.Services.AddHttpContextAccessor();

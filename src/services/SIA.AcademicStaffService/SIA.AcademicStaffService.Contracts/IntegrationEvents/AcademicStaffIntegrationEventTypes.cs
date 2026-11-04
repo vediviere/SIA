@@ -19,4 +19,9 @@ public static class AcademicStaffIntegrationEventTypes
     public const string PersonUpdatedV1 = "PersonUpdatedIntegrationEvent.v1";
     public const string PersonActivatedV1 = "PersonActivatedIntegrationEvent.v1";
     public const string PersonDeactivatedV1 = "PersonDeactivatedIntegrationEvent.v1";
+
+    public const string TeacherCompetencyCreatedV1 = "AcademicStaff.TeacherCompetency.Created.v1";
+    public const string TeacherCompetencyUpdatedV1 = "AcademicStaff.TeacherCompetency.Updated.v1";
+    public const string TeacherCompetencyActivatedV1 = "AcademicStaff.TeacherCompetency.Activated.v1";
+    public const string TeacherCompetencyDeactivatedV1 = "AcademicStaff.TeacherCompetency.Deactivated.v1";
 }
