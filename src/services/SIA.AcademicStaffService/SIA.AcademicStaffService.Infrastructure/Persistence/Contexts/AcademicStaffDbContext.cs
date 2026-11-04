@@ -20,6 +20,8 @@ public sealed class AcademicStaffDbContext : DbContext
 
     public DbSet<Person> Persons => Set<Person>();
 
+    public DbSet<TeacherCompetency> TeacherCompetencies => Set<TeacherCompetency>();
+
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
