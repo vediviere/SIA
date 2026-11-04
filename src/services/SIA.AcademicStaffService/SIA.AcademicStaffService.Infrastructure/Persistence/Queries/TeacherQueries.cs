@@ -52,11 +52,33 @@ public sealed class TeacherQueries : ITeacherQueries
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Teacher>> GetCandidatesAsync(CandidateTeacherFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<TeacherCandidateDto>> GetCandidatesAsync(CandidateTeacherFilter filter, CancellationToken cancellationToken)
     {
         return await _dbContext.Teachers
             .AsNoTracking()
             .Where(x => x.TenantId == filter.TenantId && x.Status)
+            .Select(t => new TeacherCandidateDto
+            {
+                Id = t.Id,
+                TenantId = t.TenantId,
+                PersonId = t.PersonId,
+                ProfessionalProfile = t.ProfessionalProfile,
+                ContractType = t.ContractType,
+                ContractHours = t.ContractHours,
+                ProgramId = t.ProgramId,
+                Status = t.Status,
+                Competencies = t.TeacherCompetencies
+                    .Where(tc => tc.Status)
+                    .Select(tc => new TeacherCompetencyDto
+                    {
+                        TeacherCompetencyId = tc.TeacherCompetencyId,
+                        CompetencyId = tc.CompetencyId,
+                        Level = tc.Level,
+                        Stage = tc.Stage,
+                        Status = tc.Status
+                    })
+                    .ToList()
+            })
             .OrderBy(x => x.ProgramId == null)
             .ThenBy(x => x.ProfessionalProfile)
             .ToListAsync(cancellationToken);
