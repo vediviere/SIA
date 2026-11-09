@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIA.AcademicStaffService.Application.DTOs.Teacher;
+using SIA.AcademicStaffService.Application.DTOs.TeacherCompetency;
 using SIA.AcademicStaffService.Application.Interfaces.Queries;
 using SIA.AcademicStaffService.Domain.Entities;
 using SIA.AcademicStaffService.Infrastructure.Persistence.Contexts;
@@ -15,16 +16,27 @@ public sealed class TeacherQueries : ITeacherQueries
         _dbContext = dbContext;
     }
 
-    public async Task<Teacher?> GetByIdAsync(Guid tenantId, Guid teacherId, CancellationToken cancellationToken)
+    public async Task<TeacherDto?> GetByIdAsync(Guid tenantId, Guid teacherId, CancellationToken cancellationToken)
     {
         return await _dbContext.Teachers
             .AsNoTracking()
-            .FirstOrDefaultAsync(
-                x => x.TenantId == tenantId && x.Id == teacherId,
-                cancellationToken);
+            .Where(x => x.TenantId == tenantId && x.Id == teacherId)
+            .Select(t => new TeacherDto
+            {
+                Id = t.Id,
+                TenantId = t.TenantId,
+                PersonId = t.PersonId,
+                ProfessionalProfile = t.ProfessionalProfile,
+                ContractType = t.ContractType,
+                ContractHours = t.ContractHours,
+                Status = t.Status,
+                CreatedAtUtc = t.CreatedAtUtc,
+                UpdatedAtUtc = t.UpdatedAtUtc
+            })
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Teacher>> SearchAsync(TeacherFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<TeacherDto>> SearchAsync(TeacherFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<Teacher> query = _dbContext.Teachers
             .AsNoTracking()
@@ -49,6 +61,18 @@ public sealed class TeacherQueries : ITeacherQueries
             .Take(filter.PageSize);
 
         return await query.OrderBy(x => x.ContractType)
+            .Select(t => new TeacherDto
+            {
+                Id = t.Id,
+                TenantId = t.TenantId,
+                PersonId = t.PersonId,
+                ProfessionalProfile = t.ProfessionalProfile,
+                ContractType = t.ContractType,
+                ContractHours = t.ContractHours,
+                Status = t.Status,
+                CreatedAtUtc = t.CreatedAtUtc,
+                UpdatedAtUtc = t.UpdatedAtUtc
+            })
             .ToListAsync(cancellationToken);
     }
 
@@ -75,7 +99,8 @@ public sealed class TeacherQueries : ITeacherQueries
                         CompetencyId = tc.CompetencyId,
                         Level = tc.Level,
                         Stage = tc.Stage,
-                        Status = tc.Status
+                        Status = tc.Status,
+                        CreatedAtUtc = tc.CreatedAtUtc
                     })
                     .ToList()
             })

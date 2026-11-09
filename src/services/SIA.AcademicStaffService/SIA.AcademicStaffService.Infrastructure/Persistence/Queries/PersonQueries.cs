@@ -15,16 +15,30 @@ public sealed class PersonQueries : IPersonQueries
         _dbContext = dbContext;
     }
 
-    public async Task<Person?> GetByIdAsync(Guid tenantId, Guid personId, CancellationToken cancellationToken)
+    public async Task<PersonDto?> GetByIdAsync(Guid tenantId, Guid personId, CancellationToken cancellationToken)
     {
         return await _dbContext.Persons
             .AsNoTracking()
-            .FirstOrDefaultAsync(
-                x => x.TenantId == tenantId && x.Id == personId,
-                cancellationToken);
+            .Where(x => x.TenantId == tenantId && x.Id == personId)
+            .Select(p => new PersonDto
+            {
+                Id = p.Id,
+                TenantId = p.TenantId,
+                EmployeeNumber = p.EmployeeNumber,
+                FirstName = p.FirstName,
+                PaternalLastName = p.PaternalLastName,
+                MaternalLastName = p.MaternalLastName,
+                AcademicDegree = p.AcademicDegree,
+                Email = p.Email,
+                Phone = p.Phone,
+                Status = p.Status,
+                CreatedAtUtc = p.CreatedAtUtc,
+                UpdatedAtUtc = p.UpdatedAtUtc
+            })
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Person>> SearchAsync(PersonFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<PersonDto>> SearchAsync(PersonFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<Person> query = _dbContext.Persons
             .AsNoTracking()
@@ -50,11 +64,28 @@ public sealed class PersonQueries : IPersonQueries
             query = query.Where(x => x.Status == filter.Status.Value);
         }
 
-        query = query.Skip((filter.Page - 1) * filter.PageSize)
+        query = query
+            .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize);
 
-        return await query.OrderBy(x => x.PaternalLastName)
+        return await query
+            .OrderBy(x => x.PaternalLastName)
             .ThenBy(x => x.FirstName)
+            .Select(p => new PersonDto
+            {
+                Id = p.Id,
+                TenantId = p.TenantId,
+                EmployeeNumber = p.EmployeeNumber,
+                FirstName = p.FirstName,
+                PaternalLastName = p.PaternalLastName,
+                MaternalLastName = p.MaternalLastName,
+                AcademicDegree = p.AcademicDegree,
+                Email = p.Email,
+                Phone = p.Phone,
+                Status = p.Status,
+                CreatedAtUtc = p.CreatedAtUtc,
+                UpdatedAtUtc = p.UpdatedAtUtc
+            })
             .ToListAsync(cancellationToken);
     }
 }
