@@ -1,4 +1,6 @@
-﻿namespace SIA.AcademicStaffService.Application.DTOs.Teacher;
+﻿using SIA.AcademicStaffService.Application.DTOs.TeacherCompetency;
+
+namespace SIA.AcademicStaffService.Application.DTOs.Teacher;
 
 public sealed record TeacherCandidateDto
 {
@@ -12,13 +14,4 @@ public sealed record TeacherCandidateDto
     public bool Status { get; init; }
 
     public IEnumerable<TeacherCompetencyDto> Competencies { get; init; } = Enumerable.Empty<TeacherCompetencyDto>();
-}
-
-public sealed record TeacherCompetencyDto
-{
-    public Guid TeacherCompetencyId { get; init; }
-    public Guid CompetencyId { get; init; }
-    public string Level { get; init; } = default!;
-    public string Stage { get; init; } = default!;
-    public bool Status { get; init; }
 }

@@ -192,7 +192,7 @@ public sealed class TeachersController : ControllerBase
                 Level = tc.Level,
                 Stage = tc.Stage,
                 Status = tc.Status,
-                CreatedAtUtc = DateTime.UtcNow,
+                CreatedAtUtc = tc.CreatedAtUtc,
                 CorrelationId = Guid.Empty
             }).ToList()
         }).ToList();

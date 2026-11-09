@@ -15,16 +15,25 @@ public sealed class DivisionHeadQueries : IDivisionHeadQueries
         _dbContext = dbContext;
     }
 
-    public async Task<DivisionHead?> GetByIdAsync(Guid tenantId, Guid divisionHeadId, CancellationToken cancellationToken)
+    public async Task<DivisionHeadDto?> GetByIdAsync(Guid tenantId, Guid divisionHeadId, CancellationToken cancellationToken)
     {
         return await _dbContext.DivisionHeads
             .AsNoTracking()
-            .FirstOrDefaultAsync(
-                x => x.TenantId == tenantId && x.Id == divisionHeadId,
-                cancellationToken);
+            .Where(x => x.TenantId == tenantId && x.Id == divisionHeadId)
+            .Select(d => new DivisionHeadDto
+            {
+                Id = d.Id,
+                TenantId = d.TenantId,
+                ProgramId = d.ProgramId,
+                PersonId = d.PersonId,
+                Status = d.Status,
+                CreatedAtUtc = d.CreatedAtUtc,
+                UpdatedAtUtc = d.UpdatedAtUtc
+            })
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<DivisionHead>> SearchAsync(DivisionHeadFilter filter, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<DivisionHeadDto>> SearchAsync(DivisionHeadFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<DivisionHead> query = _dbContext.DivisionHeads
             .AsNoTracking()
@@ -45,10 +54,22 @@ public sealed class DivisionHeadQueries : IDivisionHeadQueries
             query = query.Where(x => x.Status == filter.Status.Value);
         }
 
-        query = query.Skip((filter.Page - 1) * filter.PageSize)
+        query = query
+            .Skip((filter.Page - 1) * filter.PageSize)
             .Take(filter.PageSize);
 
-        return await query.OrderBy(x => x.ProgramId)
+        return await query
+            .OrderBy(x => x.ProgramId)
+            .Select(d => new DivisionHeadDto
+            {
+                Id = d.Id,
+                TenantId = d.TenantId,
+                ProgramId = d.ProgramId,
+                PersonId = d.PersonId,
+                Status = d.Status,
+                CreatedAtUtc = d.CreatedAtUtc,
+                UpdatedAtUtc = d.UpdatedAtUtc
+            })
             .ToListAsync(cancellationToken);
     }
 }

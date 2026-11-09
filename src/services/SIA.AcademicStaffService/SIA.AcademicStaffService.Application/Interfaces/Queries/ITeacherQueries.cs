@@ -1,13 +1,12 @@
 ﻿using SIA.AcademicStaffService.Application.DTOs.Teacher;
-using SIA.AcademicStaffService.Domain.Entities;
 
 namespace SIA.AcademicStaffService.Application.Interfaces.Queries;
 
 public interface ITeacherQueries
 {
-    Task<Teacher?> GetByIdAsync(Guid tenantId, Guid professorId, CancellationToken cancellationToken);
+    Task<TeacherDto?> GetByIdAsync(Guid tenantId, Guid professorId, CancellationToken cancellationToken);
 
-    Task<IReadOnlyCollection<Teacher>> SearchAsync(TeacherFilter filter, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<TeacherDto>> SearchAsync(TeacherFilter filter, CancellationToken cancellationToken);
 
     Task<IReadOnlyCollection<TeacherCandidateDto>> GetCandidatesAsync(CandidateTeacherFilter filter, CancellationToken cancellationToken);
 }
