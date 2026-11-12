@@ -85,14 +85,28 @@ public sealed class AcademicLoadTests
   }
 
   [Fact]
-  public void Constructor_ZeroClassHoursAndSupportHours_DoesNotThrow()
-  {
-    var academicLoad = new AcademicLoad(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "OF-2026-001", DateTime.UtcNow, 0, 0, DateTime.UtcNow);
-    Assert.Equal(0, academicLoad.ClassHours);
-    Assert.Equal(0, academicLoad.SupportHours);
-  }
+  public void Constructor_HoursZero_ThrowArgumentException()
+    {
+        Assert.Throws<ArgumentException>(() => new AcademicLoad(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Prueba-2026-001", DateTime.UtcNow, 0, 0, DateTime.UtcNow));
+    }
 
   [Fact]
+  public void Constructor_SupportHoursCero_DoesNotThrow()
+    {
+        var academicload =  new AcademicLoad(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Prueba-2026-001", DateTime.UtcNow, 8, 0, DateTime.UtcNow);
+        Assert.Equal(8, academicload.ClassHours);
+        Assert.Equal(0, academicload.SupportHours);
+    }
+
+  [Fact]
+  public void Constructor_ClassHoursCero_DoesNotThrow()
+  {
+      var academicload = new AcademicLoad(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Prueba-2026-001", DateTime.UtcNow, 0, 9, DateTime.UtcNow);
+      Assert.Equal(0, academicload.ClassHours);
+      Assert.Equal(9, academicload.SupportHours);
+  }
+
+    [Fact]
   public void Update_ValidData_UpdatesPropertiesAndSetsUpdatedAtUtc()
   {
     var tenantId = Guid.NewGuid();
