@@ -27,6 +27,8 @@ public sealed class CreateAcademicLoadUseCaseTests
       DivisionHeadId = Guid.NewGuid(),
       AcademicPeriodId = academicPeriodId,
       OfficialLetterNumber = "  OF-2026-001  ",
+      ClassHours = 10,
+      SupportHours = 10,
       ProposedDate = DateTime.UtcNow,
       AssignmentDate = DateTime.UtcNow
     };
@@ -74,6 +76,8 @@ public sealed class CreateAcademicLoadUseCaseTests
             DivisionHeadId = Guid.NewGuid(),
             AcademicPeriodId = academicPeriodId,
             OfficialLetterNumber = "OF-2026-CROSS",
+            ClassHours = 10,
+            SupportHours = 10,
             ProposedDate = DateTime.UtcNow,
             AssignmentDate = DateTime.UtcNow
         };
@@ -103,6 +107,8 @@ public sealed class CreateAcademicLoadUseCaseTests
       DivisionHeadId = Guid.NewGuid(),
       AcademicPeriodId = Guid.NewGuid(),
       OfficialLetterNumber = "OF-2026-001",
+      ClassHours = 10,
+      SupportHours = 10,
       ProposedDate = DateTime.UtcNow,
       AssignmentDate = DateTime.UtcNow
     };

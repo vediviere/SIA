@@ -30,8 +30,8 @@ public sealed class CreateAcademicLoadUseCase
         request.AcademicPeriodId,
         request.OfficialLetterNumber,
         request.ProposedDate,
-        0,
-        0,
+        request.ClassHours,
+        request.SupportHours,
         request.AssignmentDate);
 
     var integrationEvent = new AcademicLoadCreatedIntegrationEvent

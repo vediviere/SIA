@@ -38,14 +38,19 @@ public sealed class AcademicLoad
       throw new ArgumentException("El número de oficio es obligatorio.", nameof(officialLetterNumber));
     }
 
+    if(classHours == 0 && supportHours == 0)
+        {
+            throw new ArgumentException("Los valores de ambos no pueden ser 0");
+        }
+
     if (classHours < 0)
     {
-      throw new ArgumentOutOfRangeException(nameof(classHours), "Las horas clase no pueden ser negativas, Tampoco pueden ser 0");
+      throw new ArgumentOutOfRangeException(nameof(classHours), "Las horas clase no pueden ser negativas");
     }
 
     if (supportHours < 0)
     {
-      throw new ArgumentOutOfRangeException(nameof(supportHours), "Las horas de apoyo no pueden ser negativas, Tampoco pueden ser 0");
+      throw new ArgumentOutOfRangeException(nameof(supportHours), "Las horas de apoyo no pueden ser negativas");
     }
 
     Id = Guid.NewGuid();
@@ -92,6 +97,14 @@ public sealed class AcademicLoad
     UpdatedAtUtc = DateTime.UtcNow;
   }
 
+  public void ValidateClasssHoursAndSupportHours(int classHours, int supportHours)
+    {
+        if(classHours == 0 && supportHours == 0)
+        {
+            throw new ArgumentException("Los valores de ambos no pueden ser 0");
+        }
+    }
+
   public void SetClassHours(int classHours)
   {
     if (classHours < 0)
@@ -99,6 +112,7 @@ public sealed class AcademicLoad
       throw new ArgumentOutOfRangeException(nameof(classHours), "Class hours cannot be negative.");
     }
 
+    ValidateClasssHoursAndSupportHours(classHours, SupportHours);
     ClassHours = classHours;
     UpdatedAtUtc = DateTime.UtcNow;
   }
@@ -110,6 +124,7 @@ public sealed class AcademicLoad
       throw new ArgumentOutOfRangeException(nameof(supportHours), "Support hours cannot be negative.");
     }
 
+    ValidateClasssHoursAndSupportHours(ClassHours, supportHours);
     SupportHours = supportHours;
     UpdatedAtUtc = DateTime.UtcNow;
   }
