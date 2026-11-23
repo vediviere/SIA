@@ -23,17 +23,30 @@ public sealed class GatewayRouteTests : IAsyncLifetime
     private const string PlainSigningKey = "gateway-tests-signing-key-with-more-than-32-bytes";
     private readonly string _signingKey = Convert.ToBase64String(Encoding.UTF8.GetBytes(PlainSigningKey));
     private WebApplication? _adminBff;
+    private WebApplication? _teacherBff;
     private WebApplicationFactory<Program>? _factory;
     private HttpClient? _client;
     private int _forwardedRequests;
     private string? _forwardedAuthorization;
     private string? _forwardedCorrelationId;
 
+    private int _teacherForwardedRequests;
+    private string? _teacherForwardedAuthorization;
+    private string? _teacherForwardedCorrelationId;
+    private string? _teacherForwardedPath;
+
+
     public async Task InitializeAsync()
     {
         var adminBuilder = WebApplication.CreateBuilder();
         adminBuilder.WebHost.UseUrls("http://127.0.0.1:0");
         _adminBff = adminBuilder.Build();
+
+        var teacherBuilder = WebApplication.CreateBuilder();
+        teacherBuilder.WebHost.UseUrls("http://127.0.0.1:0");
+        _teacherBff = teacherBuilder.Build();
+
+
 
         _adminBff.MapGet("/api/academic-planning/context/{educationalProgramId:guid}", async context =>
         {
@@ -59,6 +72,34 @@ public sealed class GatewayRouteTests : IAsyncLifetime
         var addresses = server.Features.Get<IServerAddressesFeature>()?.Addresses;
         var adminBffAddress = addresses?.Single() ?? throw new InvalidOperationException("No se pudo obtener la dirección del AdminBff simulado.");
 
+        _teacherBff.MapGet("/{**catch-all}", async context =>
+        {
+            Interlocked.Increment(ref _teacherForwardedRequests);
+
+            _teacherForwardedAuthorization = context.Request.Headers.Authorization.ToString();
+
+            _teacherForwardedCorrelationId = context.Request.Headers["X-Correlation-Id"].ToString();
+
+            _teacherForwardedPath = context.Request.Path.ToString();
+
+            context.Response.Headers["X-Backend"] = "TeacherBff";
+
+            await context.Response.WriteAsJsonAsync(new
+            {
+                source = "TeacherBff",
+                path = context.Request.Path.ToString()
+            });
+        });
+
+        await _teacherBff.StartAsync();
+
+        var teacherServer = _teacherBff.Services.GetRequiredService<IServer>();
+        var teacherAddresses = teacherServer.Features.Get<IServerAddressesFeature>()?.Addresses;
+
+        var teacherBffAddress = teacherAddresses?.Single() ?? throw new InvalidOperationException(
+                "No se pudo obtener la dirección del TeacherBff simulado."
+        );
+
         _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Testing");
@@ -75,6 +116,13 @@ public sealed class GatewayRouteTests : IAsyncLifetime
             builder.UseSetting("ReverseProxy:Routes:admin-bff-review-processes:Match:Path", "/api/review-processes/{**catch-all}");
 
             builder.UseSetting("ReverseProxy:Clusters:admin-bff:Destinations:admin-bff-primary:Address", $"{adminBffAddress}/");
+
+            builder.UseSetting("ReverseProxy:Routes:teacher-bff:ClusterId", "teacher-bff");
+            builder.UseSetting("ReverseProxy:Routes:teacher-bff:AuthorizationPolicy", "Authenticated");
+            builder.UseSetting("ReverseProxy:Routes:teacher-bff:Match:Path", "/api/teacher/{**catch-all}");
+            builder.UseSetting("ReverseProxy:Clusters:teacher-bff:Destinations:teacher-bff-primary:Address", $"{teacherBffAddress}/");
+            builder.UseSetting("ReverseProxy:Routes:teacher-bff:Transforms:0:PathRemovePrefix", "/api/teacher");
+
         });
 
         _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
@@ -150,6 +198,59 @@ public sealed class GatewayRouteTests : IAsyncLifetime
         Assert.Equal(correlationId, response.Headers.GetValues("X-Correlation-Id").Single());
     }
 
+    [Fact]
+    public async Task TeacherBff_WithoutToken_ReturnsUnauthorizedWithoutForwarding()
+    {
+        var response = await Client.GetAsync("/api/teacher/profile");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+
+        Assert.Equal(0, Volatile.Read(ref _teacherForwardedRequests));
+    }
+
+    [Fact]
+    public async Task TeacherBff_WithValidToken_ForwardsTokenAndCorrelationId()
+    {
+        var tenantId = Guid.NewGuid();
+        var token = GenerateToken(tenantId);
+        var correlationId = Guid.NewGuid().ToString();
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/teacher/profile");
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        request.Headers.Add("X-Correlation-Id", correlationId);
+
+        var response = await Client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        Assert.Equal(1, Volatile.Read(ref _teacherForwardedRequests));
+
+        Assert.Equal($"Bearer {token}", _teacherForwardedAuthorization);
+
+        Assert.Equal(correlationId, _teacherForwardedCorrelationId);
+
+        Assert.Equal("TeacherBff", response.Headers.GetValues("X-Backend").Single());
+
+        Assert.Equal(correlationId, response.Headers.GetValues("X-Correlation-Id").Single());
+
+        Assert.Equal("/profile", _teacherForwardedPath);
+    }
+
+    [Fact]
+    public async Task UnknownRoute_ReturnsNotFoundWithoutForwarding()
+    {
+        var response = await Client.GetAsync("/api/unknown/resource");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        Assert.Equal(0, Volatile.Read(ref _forwardedRequests));
+
+        Assert.Equal(0, Volatile.Read(ref _teacherForwardedRequests));
+    }
+
+
     public async Task DisposeAsync()
     {
         _client?.Dispose();
@@ -160,9 +261,16 @@ public sealed class GatewayRouteTests : IAsyncLifetime
             await _adminBff.StopAsync();
             await _adminBff.DisposeAsync();
         }
+
+        if (_teacherBff is not null)
+        {
+            await _teacherBff.StopAsync();
+            await _teacherBff.DisposeAsync();
+        }
     }
 
-    private HttpClient Client => _client ?? throw new InvalidOperationException("El cliente de prueba no fue inicializado.");
+    private HttpClient Client => _client ??
+        throw new InvalidOperationException("El cliente de prueba no fue inicializado.");
 
     private string GenerateToken(Guid tenantId)
     {

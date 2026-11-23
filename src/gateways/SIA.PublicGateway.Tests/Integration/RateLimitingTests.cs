@@ -1,19 +1,28 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using System.Net;
+using System.Text;
 
 namespace SIA.PublicGateway.Tests;
 
 public sealed class RateLimiterTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
+    private const string Issuer = "gateway-tests";
+    private const string Audience = "sia-tests";
+    private const string PlainSigningKey = "gateway-tests-signing-key-with-more-than-32-bytes";
+
+    private readonly string _signingKey =
+        Convert.ToBase64String(Encoding.UTF8.GetBytes(PlainSigningKey));
 
     public RateLimiterTests(WebApplicationFactory<Program> factory)
     {
         _factory = factory.WithWebHostBuilder(builder =>
         {
+            builder.UseSetting("Token:Issuer", Issuer);
+            builder.UseSetting("Token:Audience", Audience);
+            builder.UseSetting("Token:SigningKey", _signingKey);
+
             builder.ConfigureAppConfiguration((context, config) =>
             {
                 config.AddInMemoryCollection(new Dictionary<string, string?>
